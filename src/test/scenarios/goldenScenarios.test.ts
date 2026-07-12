@@ -1,0 +1,30 @@
+import { describe,expect,it } from 'vitest'; import { createRecommendation } from '../../domain/engine/scoring'; import type { Conditions } from '../../domain/models/types'
+const base:Conditions={targetFish:'perch',waterType:'lake',season:'summer',timeOfDay:'day',turbidity:'slightly_turbid',current:'none',depth:'medium',observedStructure:[]}
+const scenarios:Array<[string,Partial<Conditions>,string?]>=[
+ ['klarer Sommersee an Kraut',{turbidity:'clear',depth:'shallow',observedStructure:['vegetation']},'vegetation'],
+ ['trüber Sommersee im Flachen',{turbidity:'turbid',depth:'shallow',observedStructure:['shallow']},'shallow'],
+ ['kalter Wintersee an tiefer Kante',{season:'winter',depth:'deep',waterTemperature:'cold',observedStructure:['dropoff']},'dropoff'],
+ ['Herbstsee mit Kleinfisch',{season:'autumn',activitySigns:['baitfish'],observedStructure:['dropoff']},'dropoff'],
+ ['Frühjahrssee am Schilf',{season:'spring',depth:'shallow',observedStructure:['vegetation']},'vegetation'],
+ ['klarer See unter Angeldruck',{turbidity:'clear',fishingPressure:'high'},undefined],
+ ['starker Fluss in Kehrströmung',{waterType:'river',current:'strong',observedStructure:['current_break']},'current-break'],
+ ['trüber Fluss an Steinen',{waterType:'river',turbidity:'turbid',current:'medium',observedStructure:['rocks']},'rocks'],
+ ['kalter tiefer Fluss',{waterType:'river',season:'winter',depth:'deep',waterTemperature:'cold',observedStructure:['current_break']},'current-break'],
+ ['Sommerfluss unter Holz',{waterType:'river',observedStructure:['wood'],light:'bright'},'wood'],
+ ['Flusszufluss nach Front',{waterType:'river',observedStructure:['inflow'],weatherTrend:'front'},'inflow'],
+ ['Kanal an Spundwand',{waterType:'canal',observedStructure:['vertical']},'vertical'],
+ ['klarer Kanal unter Druck',{waterType:'canal',turbidity:'clear',fishingPressure:'high'},undefined],
+ ['trüber Kanal an Brücke',{waterType:'canal',turbidity:'turbid',observedStructure:['bridge']},'bridge'],
+ ['Hafeneinfahrt in Dämmerung',{waterType:'canal',timeOfDay:'dusk',observedStructure:['harbor']},'harbor'],
+ ['Nacht mit wenigen Angaben',{timeOfDay:'night',turbidity:'unknown',current:'unknown',depth:'unknown'},undefined],
+ ['alles Wesentliche unbekannt',{timeOfDay:'unknown',turbidity:'unknown',current:'unknown',depth:'unknown'},undefined],
+ ['sichtbare Steinschüttung',{observedStructure:['rocks']},'rocks'],
+ ['Brücke am See',{observedStructure:['bridge']},'bridge'],
+ ['Totholz am See',{observedStructure:['wood']},'wood'],
+ ['Einlauf am See',{observedStructure:['inflow']},'inflow'],
+ ['Abendliches Flachwasser',{timeOfDay:'dusk',depth:'shallow',observedStructure:['shallow']},'shallow'],
+ ['tiefe Zone ohne Struktur',{depth:'deep'},'dropoff'],
+ ['mittlere Kanalströmung',{waterType:'canal',current:'medium',observedStructure:['bridge']},'bridge'],
+ ['kaltes Wasser mit hohem Druck',{waterTemperature:'cold',fishingPressure:'high'},undefined],
+]
+describe('25 fachliche Golden-Szenarien',()=>{it.each(scenarios)('%s',(_name,overrides,spot)=>{const result=createRecommendation({...base,...overrides});expect(result.attemptPlan).toHaveLength(3);expect(result.primarySetup.score).toBeGreaterThanOrEqual(0);expect(result.primarySetup.score).toBeLessThanOrEqual(100);if(spot)expect(result.spot.spot.id).toBe(spot)})})
