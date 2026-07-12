@@ -47,6 +47,7 @@ export interface RankedSpot { spot: SpotType; score: number; reasons: ReasonCont
 export interface RankedSetup { lure: LureType; score: number; size: SizeClass; color: ColorFamily; weight: WeightClass; reasons: ReasonContribution[] }
 export interface ConfidenceMetric { value: number; level: ConfidenceLevel; explanation: string; missingFields?: string[]; contributingRules?: number }
 export interface SwitchStep { phase: 'initial' | 'refine' | 'move'; title: string; change: string; limit: string; reason: string }
+export interface ColorGuidance { family: ColorFamily; familyLabel: string; examples: string[]; reason: string }
 
 export interface Recommendation {
   rank: number
@@ -54,6 +55,7 @@ export interface Recommendation {
   setup: RankedSetup
   inputCoverage: ConfidenceMetric
   evidenceQuality: ConfidenceMetric
+  colorGuidance: ColorGuidance
   reasons: string[]
   switchPlan: SwitchStep[]
 }

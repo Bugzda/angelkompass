@@ -1,5 +1,6 @@
 import { describe,expect,it } from 'vitest'
 import { applyRuleGroups,calculateInputCoverage,createRecommendationDecision,createRecommendations,evaluateSetups,evaluateSpots } from '../../domain/engine/scoring'
+import { buildColorGuidance } from '../../domain/engine/colorGuidance'
 import { knownReasonCodes } from '../../domain/engine/explanations'
 import type { Conditions } from '../../domain/models/types'
 import { allRules,groupCaps,spotRules } from '../../domain/rules/perchLakeRules'
@@ -48,4 +49,10 @@ describe('Regelpipeline und Konfidenz',()=>{
 describe('Bestand und Scope',()=>{
  it('verändert der Bestand niemals das Fachranking',()=>{const inventories=[[],[{lureTypeId:'spinner'}] as const,[{lureTypeId:'jig'},{lureTypeId:'ned'},{lureTypeId:'drop-shot'},{lureTypeId:'twitchbait'},{lureTypeId:'spinner'}] as const];const expected=createRecommendationDecision(base,[]).expertRanking;for(const inventory of inventories)expect(createRecommendationDecision(base,[...inventory]).expertRanking).toEqual(expected)})
  it('wählt beste vorhandene und fehlende Option erst nach dem Ranking',()=>{const decision=createRecommendationDecision({...base,turbidity:'clear'},[{lureTypeId:'spinner'},{lureTypeId:'drop-shot'}]);expect(decision.practicalPrimary?.setup.lure.id).toBe('drop-shot');expect(decision.bestMissing?.setup.lure.id).not.toBe('drop-shot')})
+})
+
+describe('Farbanzeige ohne Rankingeinfluss',()=>{
+ it('liefert für jede Farbfamilie vier generische Beispiele',()=>{for(const family of ['natural','transparent','contrast'] as const){const guidance=buildColorGuidance(family,base);expect(guidance.family).toBe(family);expect(guidance.familyLabel.length).toBeGreaterThan(3);expect(guidance.examples).toHaveLength(4);expect(guidance.reason.length).toBeGreaterThan(30)}})
+ it('erklärt klare, trübe und dunkle Situationen unterschiedlich',()=>{const clear=buildColorGuidance('natural',{...base,turbidity:'clear'});const turbid=buildColorGuidance('contrast',{...base,turbidity:'turbid'});const dark=buildColorGuidance('contrast',{...base,turbidity:'unknown',light:'dark'});expect(new Set([clear.reason,turbid.reason,dark.reason]).size).toBe(3)})
+ it('ist eine reine Projektion und verändert Ranking oder Scores nicht',()=>{const before=createRecommendations(base).map(item=>[item.rank,item.spot.spot.id,item.setup.lure.id,item.spot.score,item.setup.score]);for(const family of ['natural','transparent','contrast'] as const)buildColorGuidance(family,base);const after=createRecommendations(base).map(item=>[item.rank,item.spot.spot.id,item.setup.lure.id,item.spot.score,item.setup.score]);expect(after).toEqual(before)})
 })
