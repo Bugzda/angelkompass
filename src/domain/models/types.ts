@@ -4,10 +4,11 @@ export type Turbidity = 'clear' | 'slightly_turbid' | 'turbid' | 'unknown'
 export type Depth = 'shallow' | 'medium' | 'deep' | 'unknown'
 export type WaterTemperature = 'cold' | 'cool' | 'mild' | 'warm' | 'hot' | 'unknown'
 export type Light = 'bright' | 'diffuse' | 'dark' | 'unknown'
-export type ActivitySign = 'baitfish' | 'huntingPerch' | 'surfaceActivity'
+export type TargetFish = 'perch' | 'pike'
+export type ActivitySign = 'baitfish' | 'huntingPerch' | 'surfaceActivity' | 'pikeContact'
 export type ActivityObservation = { status: 'unknown' | 'none' | 'observed'; signs: ActivitySign[] }
 export type Vegetation = 'none' | 'edgeOrGaps' | 'dense' | 'unknown'
-export type SpotFeature = 'vegetation' | 'shallow' | 'dropoff'
+export type SpotFeature = 'vegetation' | 'shallow' | 'dropoff' | 'hardCover'
 export type ObservableStructure = Exclude<SpotFeature, 'vegetation'>
 export type SizeClass = 'small' | 'medium' | 'large'
 export type ColorFamily = 'natural' | 'contrast' | 'transparent'
@@ -17,7 +18,7 @@ export type EvidenceClass = 'science' | 'experience' | 'weak' | 'observation'
 export type RuleGroup = 'thermalPhase' | 'visibility' | 'habitatObservation' | 'activityObservation' | 'presentation' | 'control'
 
 export interface Conditions {
-  targetFish: 'perch'
+  targetFish: TargetFish
   waterType: 'lake'
   season: Season
   timeOfDay: TimeOfDay
@@ -28,10 +29,11 @@ export interface Conditions {
   activity: ActivityObservation
   vegetation: Vegetation
   observedStructure: ObservableStructure[]
+  pikeSafetyConfirmed?: boolean
 }
 
 export interface SpotType { id: SpotFeature; label: string; description: string; seasonalAffinity: Season[]; depthAffinity: Array<Exclude<Depth, 'unknown'>>; priority: number }
-export type LureId = 'jig' | 'ned' | 'drop-shot' | 'twitchbait' | 'spinner' | 'crankbait' | 'chatterbait' | 'blade-bait' | 'spinnerbait' | 'popper'
+export type LureId = 'jig' | 'ned' | 'drop-shot' | 'twitchbait' | 'spinner' | 'crankbait' | 'chatterbait' | 'blade-bait' | 'spinnerbait' | 'popper' | 'jerkbait' | 'spoon' | 'swimbait'
 export interface LureType { id: LureId; label: string; mounting: string; guidance: string; sizes: SizeClass[]; depths: Array<Exclude<Depth, 'unknown'>>; style: 'finesse' | 'bottom' | 'search'; priority: number }
 
 export interface ReasonContribution {
@@ -61,7 +63,7 @@ export interface Recommendation {
   switchPlan: SwitchStep[]
 }
 
-export interface InventoryItem { lureTypeId: LureType['id'] }
+export interface InventoryItem { lureTypeId: LureType['id']; sizes?: SizeClass[]; legacyPerch?: boolean }
 export interface RecommendationDecision { expertRanking: Recommendation[]; practicalPrimary?: Recommendation; bestMissing?: Recommendation; suitabilityGap: number; suitabilityWarning?: string; hotWaterWarning?: string }
 
 export type SessionStatus = 'active' | 'completed'
