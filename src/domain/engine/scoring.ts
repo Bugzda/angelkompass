@@ -11,6 +11,7 @@ import type {
   InventoryItem,
 } from '../models/types'
 import { explain } from './explanations'
+import { evidencePoints, evidenceRules } from '../rules/perchLakeRules'
 
 const clamp = (value: number) => Math.max(0, Math.min(100, value))
 const contribution = (ruleId: string, reasonCode: string, scoreDelta: number): ReasonContribution => ({ ruleId, reasonCode, scoreDelta })
@@ -19,16 +20,19 @@ export function evaluateSpots(conditions: Conditions): RankedSpot[] {
   return spots.map((spot) => {
     const reasons: ReasonContribution[] = []
     if (conditions.observedStructure.includes(spot.id)) reasons.push(contribution('spot.observed', 'OBSERVED_STRUCTURE', 20))
-    if (spot.seasonalAffinity.includes(conditions.season)) reasons.push(contribution('spot.season', 'SEASONAL_SPOT', 10))
+    if (spot.id === 'vegetation' && ['spring', 'summer'].includes(conditions.season)) reasons.push(contribution(evidenceRules.springSummerVegetation.id, evidenceRules.springSummerVegetation.reasonCode, evidencePoints(evidenceRules.springSummerVegetation)))
+    if (spot.id === 'dropoff' && conditions.season === 'autumn') reasons.push(contribution(evidenceRules.autumnDropoff.id, evidenceRules.autumnDropoff.reasonCode, evidencePoints(evidenceRules.autumnDropoff)))
+    if (spot.id === 'dropoff' && conditions.season === 'winter') reasons.push(contribution(evidenceRules.winterDropoff.id, evidenceRules.winterDropoff.reasonCode, evidencePoints(evidenceRules.winterDropoff)))
     if (conditions.depth !== 'unknown' && spot.depthAffinity.includes(conditions.depth)) reasons.push(contribution('spot.depth', 'DEPTH_MATCH', 12))
-    if (['dawn', 'dusk'].includes(conditions.timeOfDay) && spot.id === 'shallow') reasons.push(contribution('spot.feeding-window', 'FEEDING_WINDOW_SHALLOW', 10))
+    if (conditions.season !== 'summer' && ['dawn', 'dusk'].includes(conditions.timeOfDay) && spot.id === 'shallow') reasons.push(contribution(evidenceRules.twilightShallow.id, evidenceRules.twilightShallow.reasonCode, evidencePoints(evidenceRules.twilightShallow)))
+    if (conditions.turbidity === 'clear' && conditions.timeOfDay === 'day' && spot.id === 'dropoff') reasons.push(contribution(evidenceRules.clearBrightDepth.id, evidenceRules.clearBrightDepth.reasonCode, evidencePoints(evidenceRules.clearBrightDepth)))
     if (conditions.season === 'winter' && spot.id === 'shallow') reasons.push(contribution('spot.winter-shallow', 'WINTER_SHALLOW_PENALTY', -12))
     return { spot, score: clamp(50 + reasons.reduce((sum, item) => sum + item.scoreDelta, 0)), reasons }
   }).sort((a, b) => b.score - a.score || a.spot.priority - b.spot.priority || a.spot.id.localeCompare(b.spot.id))
 }
 
 function setupProperties(conditions: Conditions, lure: (typeof lures)[number]) {
-  const color = conditions.turbidity === 'clear' ? 'natural' : conditions.turbidity === 'turbid' ? 'contrast' : 'transparent'
+  const color = conditions.turbidity === 'clear' ? 'natural' : conditions.turbidity === 'turbid' || conditions.timeOfDay === 'night' ? 'contrast' : 'transparent'
   const size = conditions.season === 'winter' ? 'small' : 'medium'
   const weight = conditions.depth === 'deep' ? 'heavy' : conditions.depth === 'shallow' ? 'light' : 'medium'
   return {
@@ -43,11 +47,11 @@ export function evaluateSetups(conditions: Conditions, spot: RankedSpot): Ranked
     .filter((lure) => conditions.depth === 'unknown' || lure.depths.includes(conditions.depth))
     .map((lure) => {
       const reasons: ReasonContribution[] = []
-      if (conditions.turbidity === 'clear' && lure.style === 'finesse') reasons.push(contribution('lure.clear', 'CLEAR_WATER_FINESSE', 16))
-      if (conditions.turbidity === 'turbid' && lure.style === 'search') reasons.push(contribution('lure.turbid', 'TURBID_WATER_SEARCH', 16))
-      if (conditions.season === 'winter' && lure.style === 'finesse') reasons.push(contribution('lure.winter', 'COLD_SEASON_SLOW', 16))
+      if (conditions.turbidity === 'clear' && lure.style === 'finesse') reasons.push(contribution('PL010', 'CLEAR_WATER_NATURAL', 4))
+      if (conditions.turbidity === 'turbid' && lure.style === 'search') reasons.push(contribution(evidenceRules.turbidSearch.id, evidenceRules.turbidSearch.reasonCode, evidencePoints(evidenceRules.turbidSearch)))
+      if (conditions.season === 'winter' && lure.style === 'finesse') reasons.push(contribution(evidenceRules.winterFinesse.id, evidenceRules.winterFinesse.reasonCode, evidencePoints(evidenceRules.winterFinesse)))
       if (spot.spot.id === 'dropoff' && ['jig', 'drop-shot'].includes(lure.id)) reasons.push(contribution('lure.dropoff', 'DROPOFF_CONTROL', 14))
-      if (spot.spot.id === 'vegetation' && ['twitchbait', 'spinner'].includes(lure.id)) reasons.push(contribution('lure.vegetation', 'VEGETATION_EDGE_SEARCH', 12))
+      if (spot.spot.id === 'vegetation' && ['twitchbait', 'spinner'].includes(lure.id)) reasons.push(contribution(evidenceRules.vegetationEdge.id, evidenceRules.vegetationEdge.reasonCode, evidencePoints(evidenceRules.vegetationEdge)))
       if (spot.spot.id === 'shallow' && lure.style === 'search') reasons.push(contribution('lure.shallow', 'SHALLOW_SEARCH', 12))
       const properties = setupProperties(conditions, lure)
       return { lure, score: clamp(50 + reasons.reduce((sum, item) => sum + item.scoreDelta, 0)), ...properties, reasons } as RankedSetup
@@ -105,6 +109,6 @@ export function createRecommendationDecision(conditions: Conditions, inventory: 
     practicalPrimary,
     bestMissing,
     suitabilityGap,
-    suitabilityWarning: suitabilityGap >= 15 ? `Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.` : undefined,
+    suitabilityWarning: suitabilityGap >= 8 ? `Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.` : undefined,
   }
 }

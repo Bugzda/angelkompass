@@ -52,8 +52,8 @@ describe('Engine-Invarianten', () => {
     expect(decision.practicalPrimary?.setup.lure.id).toBe('spinner')
   })
   it('warnt bei deutlich schlechterer vorhandener Option', () => {
-    const decision = createRecommendationDecision({ ...base, turbidity: 'clear' }, [{ lureTypeId: 'spinner' }])
-    expect(decision.suitabilityGap).toBeGreaterThanOrEqual(15)
+    const decision = createRecommendationDecision({ ...base, season: 'winter', turbidity: 'clear' }, [{ lureTypeId: 'spinner' }])
+    expect(decision.suitabilityGap).toBeGreaterThanOrEqual(8)
     expect(decision.suitabilityWarning).toBeTruthy()
   })
 })
