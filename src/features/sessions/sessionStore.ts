@@ -1,4 +1,5 @@
 import type { Conditions, FeedbackOutcome, FishingSession, Recommendation, SessionProgress } from '../../domain/models/types'
+import { profileFor } from '../../domain/species/profiles'
 
 const STORAGE_KEY = 'angelkompass.sessions.v1'
 const SCHEMA_VERSION = 1 as const
@@ -15,7 +16,7 @@ const oneOf = (value: unknown, values: readonly string[]) => typeof value === 's
 
 function isConditions(value: unknown): value is Conditions {
   if (!isRecord(value) || !isRecord(value.activity)) return false
-  return value.targetFish === 'perch' && value.waterType === 'lake' &&
+  return oneOf(value.targetFish,['perch','pike']) && value.waterType === 'lake' &&
     oneOf(value.season, ['spring', 'summer', 'autumn', 'winter']) &&
     oneOf(value.timeOfDay, ['dawn', 'day', 'dusk', 'night', 'unknown']) &&
     oneOf(value.turbidity, ['clear', 'slightly_turbid', 'turbid', 'unknown']) &&
@@ -23,7 +24,8 @@ function isConditions(value: unknown): value is Conditions {
     oneOf(value.waterTemperature, ['cold', 'cool', 'mild', 'warm', 'hot', 'unknown']) &&
     oneOf(value.light, ['bright', 'diffuse', 'dark', 'unknown']) &&
     oneOf(value.vegetation, ['none', 'edgeOrGaps', 'dense', 'unknown']) && Array.isArray(value.observedStructure) &&
-    oneOf(value.activity.status, ['unknown', 'none', 'observed']) && Array.isArray(value.activity.signs)
+    oneOf(value.activity.status, ['unknown', 'none', 'observed']) && Array.isArray(value.activity.signs) &&
+    (value.targetFish!=='pike'||value.pikeSafetyConfirmed===true)
 }
 
 function isRecommendation(value: unknown): value is Recommendation {
@@ -90,7 +92,7 @@ export const sessionStore = {
     if (current().some((session) => session.status === 'active')) return undefined
     const now = new Date().toISOString()
     const session: FishingSession = {
-      id: crypto.randomUUID(), schemaVersion: SCHEMA_VERSION, rulesetVersion: RULESET_VERSION,
+      id: crypto.randomUUID(), schemaVersion: SCHEMA_VERSION, rulesetVersion: profileFor(conditions.targetFish).rulesetVersion,
       conditions, recommendation, progress: 'initial', feedback: [], status: 'active', createdAt: now, updatedAt: now,
     }
     return persist([session, ...current()]) ? session : undefined

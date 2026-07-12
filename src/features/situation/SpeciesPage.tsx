@@ -1,0 +1,2 @@
+import { Link } from 'react-router-dom'
+export function SpeciesPage(){return <section><p className="eyebrow">NEUE SEE-SESSION</p><h1>Auf welchen Fisch angelst du?</h1><p className="lead">Die Fischart bestimmt Regelwerk, Spots und Köderprofile.</p><div className="species-grid"><Link className="species-card" to="/neu/perch"><strong>Barsch</strong><span>3 Spots · 10 Ködertypen</span></Link><Link className="species-card" to="/neu/pike"><strong>Hecht</strong><span>4 Spots · 8 Ködertypen</span></Link></div></section>}

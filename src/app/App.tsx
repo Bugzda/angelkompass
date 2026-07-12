@@ -6,6 +6,7 @@ import { InventoryPage } from '../features/inventory/InventoryPage'
 import { Layout } from '../ui/components/Layout'
 import { SessionPage } from '../features/sessions/SessionPage'
 import { SessionsPage } from '../features/sessions/SessionsPage'
+import { SpeciesPage } from '../features/situation/SpeciesPage'
 
 const router = createBrowserRouter([
   {
@@ -13,7 +14,8 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'neu', element: <SituationPage /> },
+      { path: 'neu', element: <SpeciesPage /> },
+      { path: 'neu/:fish', element: <SituationPage /> },
       { path: 'empfehlung', element: <RecommendationPage /> },
       { path: 'bestand', element: <InventoryPage /> },
       { path: 'session/:id', element: <SessionPage /> },
