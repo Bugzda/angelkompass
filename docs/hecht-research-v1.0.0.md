@@ -4,11 +4,11 @@ Geltungsbereich: Europäischer Hecht (`Esox lucius`), See, Uferangeln, manuelle 
 
 ## Quellen und Ableitungen
 
-- P01: Nilsson et al. (2023), *Influence of reed beds and submerged vegetation on pike*. Schilf und submerse Vegetation werden als Habitat gewertet, ohne daraus pauschal einen Fangbonus abzuleiten.
-- P02: Skov et al. (2023), *First-season growth and food of YOY pike are habitat specific within a lake*. Unterstützt die Relevanz unterschiedlicher Vegetationstypen, nicht konkrete Köderwahl.
+- P01: Niemi et al. (2023), *Influence of reed beds and submerged vegetation on pike*, DOI `10.1016/j.fishres.2023.106621`. Die Studie betrifft adulte Hechte in Küstenbuchten während der Laichzeit. Sie stützt nur vorsichtige, saisonal begrenzte Habitataussagen und keine konkrete Köderwahl.
+- P02: Nilsson et al. (2023), *First-season growth and food of YOY pike are habitat specific within a lake*. Unterstützt vorsichtig die Relevanz unterschiedlicher Habitate für juvenile Hechte, nicht allgemeine Regeln für adulte Hechte oder konkrete Köderwahl.
 - P03: Öhlund et al. (2015), *Temperature dependence of predation depends on relative performance*. Unterstützt vorsichtige Temperatur-/Präsentationsregeln; keine Fangwahrscheinlichkeit.
 - P04: aktuelle Temperatur-/Browning-Experimente werden nur als vorsichtige Wohlfahrtsgrenze genutzt. Ohne Sauerstoffmessung wird keine physiologische Diagnose behauptet.
-- P05: Köderführung, Hängerrisiko und Kontrollierbarkeit sind Erfahrungswissen und deshalb niedriger gewichtet.
+- P05/P06: Köderführung, Hängerrisiko, Tailbait und Kontrollierbarkeit stammen aus ausgewiesenen Praxisquellen von Westin beziehungsweise Sportfiskarna und bleiben deshalb als `experience` niedriger gewichtet.
 
 ## Regelgrenzen
 

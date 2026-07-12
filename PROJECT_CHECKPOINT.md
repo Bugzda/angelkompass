@@ -94,7 +94,7 @@ Die generische Pipeline in `src/domain/engine/scoring.ts`:
 
 Die Farbdarstellung liegt getrennt in `src/domain/engine/colorGuidance.ts`. Sie darf nicht in die Regelpipeline verschoben werden, solange keine neue fachliche Entscheidung getroffen wurde.
 
-Artenprofile liefern je Fischart Kataloge, Spots, Regeln, Regelversion und fachliche Metadaten. Barsch bleibt `perch-lake-1.0.0`; Hecht nutzt `pike-lake-1.0.0`. Bestand, Sicherheitsbestätigung und Farbhilfe verändern niemals das Fachranking.
+Artenprofile liefern je Fischart Kataloge, Spots, Regeln, Regelversion und fachliche Metadaten. Barsch nutzt `perch-lake-2.0.0`; Hecht nutzt `pike-lake-2.0.0`. Bestand, Sicherheitsbestätigung und die materialgerechte Farbhilfe verändern niemals das Fachranking.
 
 Für die fünf zusätzlichen Suchköder gelten folgende harte Grenzen: Popper ist nur im Flachwasser kompatibel; Blade Bait nur in mittlerer und tiefer Zone. Crankbait, Chatterbait und Spinnerbait sind für flache und mittlere Tiefe katalogisiert. Spinner und Spinnerbait bleiben eigenständige Typen.
 
@@ -108,9 +108,9 @@ Für Hecht gilt: Topwater ist nur im flachen, warmen Aktivitätsfenster fachlich
 4. Ergebnis zeigt zunächst beste vorhandene und beste fehlende Option.
 5. Darunter erscheinen die fachlichen Top 3.
 6. Jede Karte enthält Datenlage, Evidenz, Größe, Gewicht, Farbe, Montage, Führung, Gründe und drei Wechselphasen.
-7. Der Bestand wird unter `/bestand` in `angelkompass.inventory.v2` lokal gespeichert; alte v1-Einträge werden verlustarm als Barsch-Altbestand übernommen.
+7. Der Bestand wird unter `/bestand` artspezifisch in `angelkompass.inventory.v3` lokal gespeichert; v1/v2-Einträge werden verlustarm übernommen und bis zur Größenprüfung markiert. Alte Schlüssel bleiben erhalten.
 
-Die Bedingungen werden zur Berechnung als React-Router-State an `/empfehlung` übergeben. Erst nach bewusster Auswahl einer Top-3-Empfehlung werden Bedingungen und Empfehlung als unveränderlicher Session-Snapshot lokal gespeichert. Hecht-Sessions enthalten `pikeSafetyConfirmed: true` und `pike-lake-1.0.0`; alte Barsch-Sessions bleiben lesbar und werden nicht neu berechnet. Es darf nur eine aktive Session geben; abgeschlossene Sessions stehen unter `/verlauf` bereit.
+Die Bedingungen werden zur Berechnung als React-Router-State an `/empfehlung` übergeben. Erst nach bewusster Auswahl einer Top-3-Empfehlung werden Bedingungen und Empfehlung einschließlich der aufgelösten Präsentation als unveränderlicher Session-Snapshot lokal gespeichert. Neue Hecht-Sessions enthalten `pikeSafetyConfirmed: true` und `pike-lake-2.0.0`; alte v1-Snapshots bleiben lesbar, verwenden ihre gespeicherten Montage-/Führungstexte und werden nicht neu berechnet. Es darf nur eine aktive Session geben; abgeschlossene Sessions stehen unter `/verlauf` bereit.
 
 ## 5. Wichtige Dateien
 
@@ -216,7 +216,7 @@ Noch nicht entschieden oder nachgewiesen:
 
 ### Unmittelbar
 
-1. Die öffentliche App auf iOS Safari und Android Chromium mit Fischartwahl, Bestand v2 und Sessionverlauf manuell testen.
+1. Die öffentliche App auf iOS Safari und Android Chromium mit Fischartwahl, artspezifischem Bestand v3 und Sessionverlauf manuell testen.
 2. Die 24 Hecht-Referenzsituationen fachlich mit einem erfahrenen Hechtangler prüfen.
 3. Verständlichkeit von Größenbutton, Sicherheitsgate, Farbe, Datenlage, Evidenz und Wechselstrategie bewerten.
 4. Beobachtete Probleme dokumentieren, ohne Regeln anhand einzelner Eindrücke automatisch umzubauen.

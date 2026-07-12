@@ -3,8 +3,6 @@ import { profileFor } from '../../domain/species/profiles'
 
 const STORAGE_KEY = 'angelkompass.sessions.v1'
 const SCHEMA_VERSION = 1 as const
-export const RULESET_VERSION = 'perch-lake-1.0.0'
-
 interface SessionEnvelope { schemaVersion: 1; sessions: FishingSession[] }
 
 const listeners = new Set<() => void>()

@@ -1,39 +1,115 @@
 import type { Conditions, ConfidenceLevel, ConfidenceMetric, InventoryItem, LureType, RankedSetup, RankedSpot, ReasonContribution, Recommendation, RecommendationDecision, RuleGroup, SwitchStep } from '../models/types'
 import { evidencePoints, type ScoringContext, type ScoringRule } from '../rules/perchLakeRules'
 import { profileFor } from '../species/profiles'
+import { buildColorGuidance, preferredColorFamily } from './colorGuidance'
 import { explain } from './explanations'
-import { buildColorGuidance } from './colorGuidance'
+import { resolvePresentation } from './presentation'
 
-const clamp = (value:number,min=0,max=100)=>Math.max(min,Math.min(max,value))
+const clamp=(value:number,min=0,max=100)=>Math.max(min,Math.min(max,value))
 const level=(value:number,high:number,medium:number):ConfidenceLevel=>value>=high?'high':value>=medium?'medium':'low'
 
 export function applyRuleGroups(rules:ScoringRule[],context:ScoringContext,previous:ReasonContribution[]=[]):ReasonContribution[]{
   const groupCaps=profileFor(context.conditions.targetFish).groupCaps
-  const running = new Map<RuleGroup,number>()
+  const running=new Map<RuleGroup,number>()
   for(const item of previous)running.set(item.group,(running.get(item.group)??0)+item.appliedDelta)
   return rules.filter(rule=>rule.matches(context)).map(rule=>{
-    const rawDelta=evidencePoints(rule); const used=running.get(rule.group)??0; const cap=groupCaps[rule.group]
-    const appliedDelta=clamp(rawDelta,cap.min-used,cap.max-used); running.set(rule.group,used+appliedDelta)
-    return {ruleId:rule.id,reasonCode:rule.reasonCode,group:rule.group,evidenceClass:rule.evidenceClass,evidenceConfidence:rule.confidence,rawDelta,appliedDelta}
+    const rawDelta=evidencePoints(rule)
+    const used=running.get(rule.group)??0
+    const cap=groupCaps[rule.group]
+    const appliedDelta=clamp(rawDelta,cap.min-used,cap.max-used)
+    running.set(rule.group,used+appliedDelta)
+    return{ruleId:rule.id,reasonCode:rule.reasonCode,group:rule.group,evidenceClass:rule.evidenceClass,evidenceConfidence:rule.confidence,rawDelta,appliedDelta}
   })
 }
 
-export function evaluateSpots(conditions:Conditions):RankedSpot[]{const profile=profileFor(conditions.targetFish);return profile.spots.map(spot=>{const reasons=applyRuleGroups(profile.spotRules,{conditions,candidateId:spot.id});return{spot,score:clamp(50+reasons.reduce((sum,item)=>sum+item.appliedDelta,0)),reasons}}).sort((a,b)=>b.score-a.score||a.spot.priority-b.spot.priority||a.spot.id.localeCompare(b.spot.id))}
+export function evaluateSpots(conditions:Conditions):RankedSpot[]{
+  const profile=profileFor(conditions.targetFish)
+  return profile.spots.map(spot=>{
+    const reasons=applyRuleGroups(profile.spotRules,{conditions,candidateId:spot.id})
+    return{spot,score:clamp(50+reasons.reduce((sum,item)=>sum+item.appliedDelta,0)),reasons}
+  }).sort((a,b)=>b.score-a.score||a.spot.priority-b.spot.priority||a.spot.id.localeCompare(b.spot.id))
+}
 
-function setupProperties(conditions:Conditions,lure:LureType){const color=conditions.turbidity==='clear'?'natural':conditions.turbidity==='turbid'||conditions.light==='dark'||conditions.timeOfDay==='night'?'contrast':'transparent';const preferred=conditions.targetFish==='pike'?(['cold','cool'].includes(conditions.waterTemperature)?'medium':'large'):((['cold','cool'].includes(conditions.waterTemperature)||conditions.season==='winter')?'small':'medium');const weight=conditions.depth==='deep'?'heavy':conditions.depth==='shallow'?'light':'medium';return{color:lure.id==='ned'&&conditions.turbidity==='clear'?'transparent':color,size:lure.sizes.includes(preferred)?preferred:lure.sizes[0],weight} as const}
-export function evaluateSetups(conditions:Conditions,spot:RankedSpot):RankedSetup[]{const profile=profileFor(conditions.targetFish);return profile.lures.filter(lure=>conditions.depth==='unknown'||lure.depths.includes(conditions.depth)).map(lure=>{const reasons=applyRuleGroups(profile.setupRules,{conditions,candidateId:lure.id,spotId:spot.spot.id},spot.reasons);return{lure,score:clamp(50+reasons.reduce((sum,item)=>sum+item.appliedDelta,0)),...setupProperties(conditions,lure),reasons} as RankedSetup}).sort((a,b)=>b.score-a.score||a.lure.priority-b.lure.priority||a.lure.id.localeCompare(b.lure.id))}
+function setupProperties(conditions:Conditions,lure:LureType,spot:RankedSpot){
+  const preferred=conditions.targetFish==='pike'?(['cold','cool'].includes(conditions.waterTemperature)?'medium':'large'):((['cold','cool'].includes(conditions.waterTemperature)||conditions.season==='winter')?'small':'medium')
+  const size=lure.sizes.includes(preferred)?preferred:lure.sizes[0]
+  const{presentation,weight}=resolvePresentation(conditions,lure,spot,size)
+  return{color:preferredColorFamily(conditions,lure),size,weight,resolvedPresentation:presentation} as const
+}
 
-export function calculateInputCoverage(c:Conditions):ConfidenceMetric{const fields:Array<[string,boolean]>=[['Jahreszeit',true],['Tageszeit',c.timeOfDay!=='unknown'],['Wassertrübung',c.turbidity!=='unknown'],['Tiefe',c.depth!=='unknown'],['Wassertemperatur',c.waterTemperature!=='unknown'],['Licht',c.light!=='unknown'],['Aktivitätsanzeichen',c.activity.status!=='unknown'],['Krautbild',c.vegetation!=='unknown']];const missingFields=fields.filter(([,known])=>!known).map(([name])=>name);const value=Math.round(((fields.length-missingFields.length)/fields.length)*100);return{value,level:level(value,75,50),missingFields,explanation:missingFields.length?`Offen: ${missingFields.join(', ')}.`:'Alle relevanten Beobachtungen wurden eingeordnet.'}}
-export function calculateEvidenceQuality(contributions:ReasonContribution[]):ConfidenceMetric{const applied=contributions.filter(item=>item.appliedDelta!==0);const weight=applied.reduce((sum,item)=>sum+Math.abs(item.appliedDelta),0);if(!weight)return{value:50,level:'low',contributingRules:0,explanation:'Nur schwach differenziert: Keine bewertbare Regel trägt zum Ergebnis bei.'};const value=Math.round(applied.reduce((sum,item)=>sum+item.evidenceConfidence*Math.abs(item.appliedDelta),0)/weight*100);return{value,level:level(value,80,65),contributingRules:applied.length,explanation:`${applied.length} angewandte ${applied.length===1?'Regel':'Regeln'}; Evidenz und Beobachtungen gewichtet.`}}
+export function evaluateSetups(conditions:Conditions,spot:RankedSpot):RankedSetup[]{
+  const profile=profileFor(conditions.targetFish)
+  return profile.lures
+    .filter(lure=>conditions.depth==='unknown'||lure.depths.includes(conditions.depth))
+    .map(lure=>{
+      const reasons=applyRuleGroups(profile.setupRules,{conditions,candidateId:lure.id,spotId:spot.spot.id},spot.reasons)
+      return{lure,score:clamp(50+reasons.reduce((sum,item)=>sum+item.appliedDelta,0)),...setupProperties(conditions,lure,spot),reasons} as RankedSetup
+    })
+    .sort((a,b)=>b.score-a.score||a.lure.priority-b.lure.priority||a.lure.id.localeCompare(b.lure.id))
+}
 
-function buildSwitchPlan(setup:RankedSetup,alternative:string,nextSpot:string,active:boolean):SwitchStep[]{const refine=setup.lure.style==='search'?`Wechsle am selben Horizont auf ${alternative} und führe kontrollierter.`:`Wechsle am selben Spot auf ${alternative} und suche den Horizont fächerförmig ab.`;return[
-  {phase:'initial',title:'Ausgangsversuch',change:'Setup konstant halten; nur Winkel und Zielhorizont systematisch variieren.',limit:'15–25 gute Würfe oder 10–15 Minuten',reason:'So bleibt erkennbar, ob Spot und Tiefenband tragen.'},
-  {phase:'refine',title:'Präzisieren',change:active?`Aktivität bestätigt: ${refine}`:refine,limit:'Ein zweiter Präsentationsstil am selben Mikrospot',reason:'Führung zuerst ändern; danach Größe, Silhouette/Farbe und erst zuletzt Montage.'},
-  {phase:'move',title:'Spot wechseln',change:`Ohne Kontakt zum nächsten gerankten Strukturtyp wechseln: ${nextSpot}.`,limit:'Nach zwei Präsentationsstilen ohne Kontakt',reason:'Standort und Begegnung wiegen stärker als endlose Farbrotation.'},
-]}
+export function calculateInputCoverage(c:Conditions):ConfidenceMetric{
+  const fields:Array<[string,boolean]>=[['Jahreszeit',true],['Tageszeit',c.timeOfDay!=='unknown'],['Wassertrübung',c.turbidity!=='unknown'],['Tiefe',c.depth!=='unknown'],['Wassertemperatur',c.waterTemperature!=='unknown'],['Licht',c.light!=='unknown'],['Aktivitätsanzeichen',c.activity.status!=='unknown'],['Krautbild',c.vegetation!=='unknown']]
+  const missingFields=fields.filter(([,known])=>!known).map(([name])=>name)
+  const value=Math.round(((fields.length-missingFields.length)/fields.length)*100)
+  return{value,level:level(value,75,50),missingFields,explanation:missingFields.length?`Offen: ${missingFields.join(', ')}.`:'Alle relevanten Beobachtungen wurden eingeordnet.'}
+}
 
-function rankCandidates(conditions:Conditions):Array<Recommendation&{totalScore:number}>{const profile=profileFor(conditions.targetFish);const rankedSpots=evaluateSpots(conditions);const candidates=rankedSpots.flatMap(spot=>evaluateSetups(conditions,spot).map(setup=>({spot,setup}))).sort((a,b)=>(b.spot.score+b.setup.score)-(a.spot.score+a.setup.score)||a.spot.spot.priority-b.spot.spot.priority||a.setup.lure.priority-b.setup.lure.priority);const selected:typeof candidates=[];for(const candidate of candidates){if(!selected.some(item=>item.setup.lure.id===candidate.setup.lure.id))selected.push(candidate);if(selected.length===profile.lures.length)break}const coverage=calculateInputCoverage(conditions);return selected.map(({spot,setup},index)=>{const specialIds=setup.lure.id==='popper'?(conditions.targetFish==='pike'?['jerkbait','spinnerbait','crankbait']:['twitchbait','spinnerbait','crankbait']):setup.lure.id==='blade-bait'?['jig','drop-shot']:[];const alternative=candidates.find(item=>item.spot.spot.id===spot.spot.id&&item.setup.lure.id!==setup.lure.id&&(specialIds.length?specialIds.includes(item.setup.lure.id):setup.lure.style==='search'?item.setup.lure.style!=='search':item.setup.lure.style==='search'))?.setup.lure.label??(conditions.targetFish==='pike'?'Gummifisch am Jigkopf':setup.lure.style==='search'?'Ned Rig':'Twitchbait');const allApplied=[...spot.reasons,...setup.reasons].filter(item=>item.appliedDelta!==0);const positive=allApplied.filter(item=>item.appliedDelta>0).sort((a,b)=>b.appliedDelta-a.appliedDelta);const explained=(positive.length?positive:allApplied.sort((a,b)=>Math.abs(b.appliedDelta)-Math.abs(a.appliedDelta))).slice(0,4);return{rank:index+1,spot,setup,inputCoverage:coverage,evidenceQuality:calculateEvidenceQuality([...spot.reasons,...setup.reasons]),colorGuidance:buildColorGuidance(setup.color,conditions),reasons:explained.map(explain),switchPlan:buildSwitchPlan(setup,alternative,rankedSpots.find(item=>item.spot.id!==spot.spot.id)?.spot.label??'nächster erreichbarer Bereich',conditions.activity.status==='observed'),totalScore:spot.score+setup.score}})}
+export function calculateEvidenceQuality(contributions:ReasonContribution[]):ConfidenceMetric{
+  const applied=contributions.filter(item=>item.appliedDelta!==0)
+  const weight=applied.reduce((sum,item)=>sum+Math.abs(item.appliedDelta),0)
+  if(!weight)return{value:50,level:'low',contributingRules:0,explanation:'Nur schwach differenziert: Keine bewertbare Regel trägt zum Ergebnis bei.'}
+  const value=Math.round(applied.reduce((sum,item)=>sum+item.evidenceConfidence*Math.abs(item.appliedDelta),0)/weight*100)
+  return{value,level:level(value,80,65),contributingRules:applied.length,explanation:`${applied.length} angewandte ${applied.length===1?'Regel':'Regeln'}; Evidenz und Beobachtungen gewichtet.`}
+}
+
+function buildSwitchPlan(setup:RankedSetup,alternative:string,nextSpot:string,active:boolean):SwitchStep[]{
+  const refine=setup.lure.style==='search'?`Wechsle am selben Horizont auf ${alternative} und führe kontrollierter.`:`Wechsle am selben Spot auf ${alternative} und suche den Horizont fächerförmig ab.`
+  return[
+    {phase:'initial',title:'Ausgangsversuch',change:'Setup konstant halten; nur Winkel und Zielhorizont systematisch variieren.',limit:'15–25 gute Würfe oder 10–15 Minuten',reason:'So bleibt erkennbar, ob Spot und Tiefenband tragen.'},
+    {phase:'refine',title:'Präzisieren',change:active?`Aktivität bestätigt: ${refine}`:refine,limit:'Ein zweiter Präsentationsstil am selben Mikrospot',reason:'Führung zuerst ändern; danach Größe, Silhouette/Farbe und erst zuletzt Montage.'},
+    {phase:'move',title:'Spot wechseln',change:`Ohne Kontakt zum nächsten gerankten Strukturtyp wechseln: ${nextSpot}.`,limit:'Nach zwei Präsentationsstilen ohne Kontakt',reason:'Standort und Begegnung wiegen stärker als endlose Farbrotation.'},
+  ]
+}
+
+function rankCandidates(conditions:Conditions):Array<Recommendation&{totalScore:number}>{
+  const profile=profileFor(conditions.targetFish)
+  const rankedSpots=evaluateSpots(conditions)
+  const candidates=rankedSpots.flatMap(spot=>evaluateSetups(conditions,spot).map(setup=>({spot,setup}))).sort((a,b)=>(b.spot.score+b.setup.score)-(a.spot.score+a.setup.score)||a.spot.spot.priority-b.spot.spot.priority||a.setup.lure.priority-b.setup.lure.priority)
+  const selected:typeof candidates=[]
+  for(const candidate of candidates){
+    if(!selected.some(item=>item.setup.lure.id===candidate.setup.lure.id))selected.push(candidate)
+    if(selected.length===profile.lures.length)break
+  }
+  const coverage=calculateInputCoverage(conditions)
+  return selected.map(({spot,setup},index)=>{
+    const specialIds=setup.lure.id==='popper'?(conditions.targetFish==='pike'?['jerkbait','spinnerbait','crankbait']:['twitchbait','spinnerbait','crankbait']):setup.lure.id==='blade-bait'||setup.lure.id==='tail-spinner'?['jig','drop-shot']:setup.lure.id==='tailbait'?['jig','jerkbait']:[]
+    const alternative=candidates.find(item=>item.spot.spot.id===spot.spot.id&&item.setup.lure.id!==setup.lure.id&&(specialIds.length?specialIds.includes(item.setup.lure.id):setup.lure.style==='search'?item.setup.lure.style!=='search':item.setup.lure.style==='search'))?.setup.lure.label??(conditions.targetFish==='pike'?'Hecht-Softbait / Gummifisch':setup.lure.style==='search'?'Ned Rig':'Twitchbait')
+    const allApplied=[...spot.reasons,...setup.reasons].filter(item=>item.appliedDelta!==0)
+    const positive=allApplied.filter(item=>item.appliedDelta>0).sort((a,b)=>b.appliedDelta-a.appliedDelta)
+    const explained=(positive.length?positive:allApplied.sort((a,b)=>Math.abs(b.appliedDelta)-Math.abs(a.appliedDelta))).slice(0,4)
+    return{rank:index+1,spot,setup,inputCoverage:coverage,evidenceQuality:calculateEvidenceQuality([...spot.reasons,...setup.reasons]),colorGuidance:buildColorGuidance(setup.color,conditions,setup.lure),reasons:explained.map(explain),switchPlan:buildSwitchPlan(setup,alternative,rankedSpots.find(item=>item.spot.id!==spot.spot.id)?.spot.label??'nächster erreichbarer Bereich',conditions.activity.status==='observed'),totalScore:spot.score+setup.score}
+  })
+}
 
 export function createRecommendations(conditions:Conditions):Recommendation[]{return rankCandidates(conditions).slice(0,3)}
-export function createRecommendationDecision(conditions:Conditions,inventory:InventoryItem[]):RecommendationDecision{const completeRanking=rankCandidates(conditions);const isAvailable=(r:Recommendation)=>inventory.some(item=>item.lureTypeId===r.setup.lure.id&&(conditions.targetFish==='perch'&&(!item.sizes||item.legacyPerch)||item.sizes?.includes(r.setup.size)));const practicalPrimary=completeRanking.find(isAvailable);const bestMissing=completeRanking.find(item=>!isAvailable(item));const suitabilityGap=practicalPrimary?completeRanking[0].totalScore-practicalPrimary.totalScore:0;return{expertRanking:completeRanking.slice(0,3),practicalPrimary,bestMissing,suitabilityGap,suitabilityWarning:suitabilityGap>=8?`Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.`:undefined,hotWaterWarning:conditions.waterTemperature==='hot'?(conditions.targetFish==='pike'?'Sehr warmes Wasser kann Hechte zusätzlich belasten. Drill und Versorgung kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.':'Sehr warmes Wasser kann Temperatur- und Sauerstoffstress bedeuten. Drills kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.'):undefined}}
+
+export function isRecommendationAvailable(conditions:Conditions,inventory:InventoryItem[],recommendation:Recommendation){
+  return inventory.some(item=>{
+    if(item.lureTypeId!==recommendation.setup.lure.id)return false
+    if(item.targetFish)return item.targetFish===conditions.targetFish&&item.sizes?.includes(recommendation.setup.size)===true
+    if(conditions.targetFish==='perch'&&(!item.sizes||item.legacyPerch))return true
+    return item.sizes?.includes(recommendation.setup.size)===true
+  })
+}
+
+export function createRecommendationDecision(conditions:Conditions,inventory:InventoryItem[]):RecommendationDecision{
+  const completeRanking=rankCandidates(conditions)
+  const isAvailable=(recommendation:Recommendation)=>isRecommendationAvailable(conditions,inventory,recommendation)
+  const practicalPrimary=completeRanking.find(isAvailable)
+  const bestMissing=completeRanking.find(item=>!isAvailable(item))
+  const suitabilityGap=practicalPrimary?completeRanking[0].totalScore-practicalPrimary.totalScore:0
+  return{expertRanking:completeRanking.slice(0,3),practicalPrimary,bestMissing,suitabilityGap,suitabilityWarning:suitabilityGap>=8?`Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.`:undefined,hotWaterWarning:conditions.waterTemperature==='hot'?(conditions.targetFish==='pike'?'Sehr warmes Wasser kann Hechte zusätzlich belasten. Drill und Versorgung kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.':'Sehr warmes Wasser kann Temperatur- und Sauerstoffstress bedeuten. Drills kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.'):undefined}
+}
+
 export const productiveRuleIds=(['perch','pike'] as const).flatMap(fish=>profileFor(fish).allRules.map(rule=>rule.id))

@@ -11,3 +11,5 @@
 @media(max-width:760px){.hero-copy{padding:34px 26px 160px}}
 :root[data-theme="dark"] .species-art img{filter:grayscale(1) invert(1);mix-blend-mode:screen;opacity:.88}
 .hero-copy .eyebrow{color:#123c36}
+.inventory-species{margin-top:38px}.inventory-species>header{margin-bottom:16px}.inventory-species>header h2{margin:5px 0}.inventory-species>header p{margin:0;color:var(--ink-soft);font-size:.82rem}.session-presentation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin:0 0 22px;padding:1px;border-radius:var(--radius);overflow:hidden;background:var(--line)}.session-presentation>div{min-width:0;padding:15px;background:var(--surface);display:flex;flex-direction:column;gap:5px}.session-presentation span{color:var(--ink-soft);font-size:.67rem}.session-presentation strong{font-size:.78rem;line-height:1.45;overflow-wrap:anywhere}.color-guidance>small{display:block;color:var(--ink-soft);line-height:1.5}.water-specs span{overflow-wrap:anywhere;font-size:.78rem;line-height:1.35}
+@media(max-width:480px){.session-presentation{grid-template-columns:1fr}}

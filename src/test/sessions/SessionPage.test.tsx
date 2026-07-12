@@ -38,4 +38,17 @@ describe('Sessionansicht', () => {
     expect(screen.getByRole('heading',{name:'Session nicht gefunden'})).toBeInTheDocument()
     expect(screen.getByRole('link',{name:'Zum Verlauf'})).toHaveAttribute('href','/verlauf')
   })
+
+  it('zeigt einen alten v1-Snapshot ohne resolvedPresentation unverändert an',()=>{
+    const session=sessionStore.create(conditions,createRecommendations(conditions)[0])!
+    const envelope=JSON.parse(localStorage.getItem('angelkompass.sessions.v1')!)
+    delete envelope.sessions[0].recommendation.setup.resolvedPresentation
+    envelope.sessions[0].rulesetVersion='perch-lake-1.0.0'
+    envelope.sessions[0].recommendation.setup.lure.mounting='Gespeicherte Legacy-Montage'
+    envelope.sessions[0].recommendation.setup.lure.guidance='Gespeicherte Legacy-Führung'
+    localStorage.setItem('angelkompass.sessions.v1',JSON.stringify(envelope));sessionStore.resetForTests()
+    render(<MemoryRouter initialEntries={[`/session/${session.id}`]}><Routes><Route path="/session/:id" element={<SessionPage/>}/></Routes></MemoryRouter>)
+    expect(screen.getByText('Gespeicherte Legacy-Montage')).toBeInTheDocument()
+    expect(screen.getByText('Gespeicherte Legacy-Führung')).toBeInTheDocument()
+  })
 })

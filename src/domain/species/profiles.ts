@@ -8,7 +8,7 @@ import { pikeAllRules, pikeSetupRules, pikeSpotRules } from '../rules/pikeLakeRu
 
 export interface SpeciesProfile {targetFish:TargetFish;label:string;rulesetVersion:string;lures:LureType[];spots:SpotType[];spotRules:ScoringRule[];setupRules:ScoringRule[];allRules:ScoringRule[];groupCaps:typeof groupCaps}
 export const speciesProfiles:Record<TargetFish,SpeciesProfile>={
- perch:{targetFish:'perch',label:'Barsch',rulesetVersion:'perch-lake-1.0.0',lures,spots,spotRules,setupRules,allRules,groupCaps},
- pike:{targetFish:'pike',label:'Hecht',rulesetVersion:'pike-lake-1.0.0',lures:pikeLures,spots:pikeSpots,spotRules:pikeSpotRules,setupRules:pikeSetupRules,allRules:pikeAllRules,groupCaps},
+ perch:{targetFish:'perch',label:'Barsch',rulesetVersion:'perch-lake-2.0.0',lures,spots,spotRules,setupRules,allRules,groupCaps},
+ pike:{targetFish:'pike',label:'Hecht',rulesetVersion:'pike-lake-2.0.0',lures:pikeLures,spots:pikeSpots,spotRules:pikeSpotRules,setupRules:pikeSetupRules,allRules:pikeAllRules,groupCaps},
 }
 export const profileFor=(fish:TargetFish)=>speciesProfiles[fish]

@@ -23,7 +23,7 @@ const scenarios:Conditions[]=[
 
 describe('24 Hecht-Golden-Szenarien',()=>{
  it.each(scenarios.map((conditions,index)=>({name:`Hecht-Szenario ${index+1}`,conditions})))('$name',({conditions})=>{const result=createRecommendations(conditions);expect(result).toHaveLength(3);expect(new Set(result.map(item=>item.setup.lure.id)).size).toBe(3);expect(result.every(item=>item.reasons.length>0&&item.switchPlan.length===3)).toBe(true)})
- it('enthält genau acht vollständige Hecht-Ködertypen',()=>{expect(pikeLures).toHaveLength(8);expect(new Set(pikeLures.map(item=>item.id)).size).toBe(8);expect(pikeLures.every(item=>item.sizes.includes('medium')&&item.depths.length)).toBe(true)})
+ it('enthält genau neun vollständige Hecht-Ködertypen',()=>{expect(pikeLures).toHaveLength(9);expect(new Set(pikeLures.map(item=>item.id)).size).toBe(9);expect(pikeLures.every(item=>item.sizes.includes('medium')&&item.depths.length&&item.sizeRangesCm&&item.presentations?.length)).toBe(true)})
  it('hält tiefe und flache Köder kompatibel',()=>{const deep={...base,depth:'deep' as const};const deepIds=evaluateSetups(deep,evaluateSpots(deep)[0]).map(item=>item.lure.id);expect(deepIds).not.toContain('popper');expect(deepIds).toEqual(expect.arrayContaining(['jig','spoon','swimbait']))})
  it('lässt Bestand das Fachranking niemals verändern',()=>{const empty=createRecommendationDecision(base,[]).expertRanking;const stocked=createRecommendationDecision(base,pikeLures.map(lure=>({lureTypeId:lure.id,sizes:['large']}))).expertRanking;expect(stocked).toEqual(empty)})
  it('wertet Altbestand und kleine Größen nicht als hechtgeeignet',()=>{expect(createRecommendationDecision(base,[{lureTypeId:'jig',legacyPerch:true},{lureTypeId:'spinner',sizes:['small']}]).practicalPrimary).toBeUndefined()})

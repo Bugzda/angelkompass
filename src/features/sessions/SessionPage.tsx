@@ -3,6 +3,7 @@ import type { FeedbackOutcome, FishingSession } from '../../domain/models/types'
 import { sessionStore } from './sessionStore'
 import { useSessions } from './useSessions'
 import { Icon } from '../../ui/components/Icon'
+import { presentationForDisplay } from '../../domain/engine/presentation'
 
 const outcomeLabels: Record<FeedbackOutcome, string> = { bite: 'Biss', catch: 'Fang', no_success: 'Kein Erfolg' }
 const phaseOrder = ['initial', 'refine', 'move'] as const
@@ -12,10 +13,12 @@ const list = (values: string[]) => values.length ? values.map((value) => conditi
 
 function SessionDetails({ session }: { session: FishingSession }) {
   const active = session.status === 'active'
+  const presentation=presentationForDisplay(session.recommendation.setup)
   const feedback = (outcome: FeedbackOutcome) => sessionStore.addFeedback(session.id, outcome)
   return <>
     <div className="session-head"><div><span className="overline">GEWÄHLTE EMPFEHLUNG</span><h2>{session.recommendation.setup.lure.label}</h2><p>{session.recommendation.spot.spot.label} · Rang {session.recommendation.rank}</p></div><span className={`session-status ${session.status}`}>{active ? 'Aktiv' : 'Abgeschlossen'}</span></div>
     <Link className="primary water-card-link" to={`/session/${session.id}/karte`}>Am-Wasser-Karte öffnen <Icon name="arrow-right"/></Link>
+    <div className="session-presentation"><div><span>Größe</span><strong>{presentation.sizeLabel}</strong></div><div><span>{presentation.weightKind==='lure-total'?'Ködergewicht':'Beschwerung'}</span><strong>{presentation.weightLabel}</strong></div><div><span>Montage</span><strong>{presentation.mounting}</strong></div><div><span>Führung</span><strong>{presentation.guidance}</strong></div></div>
     <dl className="condition-summary"><div><dt>Jahreszeit</dt><dd>{conditionLabels[session.conditions.season]}</dd></div><div><dt>Tageszeit</dt><dd>{conditionLabels[session.conditions.timeOfDay]}</dd></div><div><dt>Trübung</dt><dd>{conditionLabels[session.conditions.turbidity]}</dd></div><div><dt>Tiefe</dt><dd>{conditionLabels[session.conditions.depth]}</dd></div><div><dt>Temperatur</dt><dd>{conditionLabels[session.conditions.waterTemperature]}</dd></div><div><dt>Licht</dt><dd>{conditionLabels[session.conditions.light]}</dd></div><div><dt>Kraut</dt><dd>{conditionLabels[session.conditions.vegetation]}</dd></div><div><dt>Aktivität</dt><dd>{session.conditions.activity.status === 'observed' ? list(session.conditions.activity.signs) : session.conditions.activity.status === 'none' ? 'Nichts sichtbar' : 'Nicht geprüft'}</dd></div><div><dt>Struktur</dt><dd>{list(session.conditions.observedStructure)}</dd></div></dl>
     <div className="attempts">{session.recommendation.switchPlan.map((step, index) => {
       const currentIndex = session.progress === 'exhausted' ? phaseOrder.length : phaseOrder.indexOf(session.progress)

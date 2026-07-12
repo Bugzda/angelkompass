@@ -35,3 +35,38 @@ if (errors.length) {
   process.exit(1)
 }
 console.log(`Research-Archiv gültig: ${rules.length} Regeln, ${scenarios.length} Szenarien, ${sources.length} Quellen.`)
+
+const productSourceFile=resolve('src/domain/research/productSources.ts')
+const productSourceText=await readFile(productSourceFile,'utf8')
+const sourceLines=productSourceText.split('\n').filter(line=>line.trim().startsWith("{id:'"))
+const productSources=new Map()
+for(const line of sourceLines){
+  const id=line.match(/\bid:'([^']+)'/)?.[1]
+  if(!id){errors.push('Produktive Quelle ohne ID.');continue}
+  if(productSources.has(id))errors.push(`Doppelte produktive Quellen-ID: ${id}`)
+  const evidenceType=line.match(/\bevidenceType:'([^']+)'/)?.[1]
+  const url=line.match(/\burl:'([^']+)'/)?.[1]
+  for(const field of ['title','authors','year','url','evidenceType','scope','lastVerifiedAt'])if(!new RegExp(`\\b${field}:`).test(line))errors.push(`${id}: produktives Quellenfeld ${field} fehlt`)
+  if(!['science','experience','official-guidance','weak'].includes(evidenceType??''))errors.push(`${id}: ungültiger produktiver Evidenztyp ${String(evidenceType)}`)
+  try{new URL(url)}catch{errors.push(`${id}: ungültige URL ${String(url)}`)}
+  productSources.set(id,{evidenceType,url})
+}
+
+for(const ruleFile of ['src/domain/rules/perchLakeRules.ts','src/domain/rules/pikeLakeRules.ts']){
+  const text=await readFile(resolve(ruleFile),'utf8')
+  for(const line of text.split('\n').filter(value=>value.includes('sourceIds:['))){
+    const ruleId=line.match(/\bid:'([^']+)'/)?.[1]
+    const evidenceClass=line.match(/\bevidenceClass:'([^']+)'/)?.[1]
+    const ids=[...line.matchAll(/'([SP]\d+)'/g)].map(match=>match[1])
+    for(const id of ids)if(!productSources.has(id))errors.push(`${ruleId}: unbekannte produktive Quelle ${id}`)
+    if(evidenceClass==='science'&&!ids.some(id=>productSources.get(id)?.evidenceType==='science'))errors.push(`${ruleId}: Science-Regel ohne wissenschaftliche Quelle`)
+  }
+}
+
+if(productSources.get('P01')?.url!=='https://doi.org/10.1016/j.fishres.2023.106621')errors.push('P01: korrigierter DOI 106621 fehlt')
+if(errors.length){
+  console.error(`Produktive Research-Validierung fehlgeschlagen (${errors.length}):`)
+  for(const error of errors)console.error(`- ${error}`)
+  process.exit(1)
+}
+console.log(`Produktives Quellenregister gültig: ${productSources.size} Quellen; alle Regelreferenzen aufgelöst.`)
