@@ -84,7 +84,8 @@ export function readInventory():InventoryItem[]{
 
 export function useInventory(){
   const[inventory,setInventory]=useState<InventoryItem[]>(readInventory)
-  useEffect(()=>localStorage.setItem(STORAGE_KEY,JSON.stringify({schemaVersion:3,items:inventory})),[inventory])
+  const[error,setError]=useState<string>()
+  useEffect(()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify({schemaVersion:3,items:inventory}));setError(undefined)}catch{setError('Der Bestand konnte nicht lokal gespeichert werden. Prüfe den verfügbaren Browser-Speicher.')}},[inventory])
   const toggleSize=(targetFish:TargetFish,lureTypeId:LureType['id'],size:SizeClass)=>setInventory(current=>{
     const supported=supportedSizes(targetFish,lureTypeId)
     if(!supported.includes(size))return current
@@ -101,7 +102,5 @@ export function useInventory(){
     if(!found)return[...current,{targetFish,lureTypeId,sizes:[...all],migratedNeedsReview:false}]
     return current.map(item=>item===found?{...item,sizes:[...all],migratedNeedsReview:false}:item)
   })
-  return{inventory,toggleSize,toggleAllSizes}
+  return{inventory,toggleSize,toggleAllSizes,error}
 }
-
-export const inventoryStorageKeys={current:STORAGE_KEY,v2:V2_KEY,v1:V1_KEY} as const

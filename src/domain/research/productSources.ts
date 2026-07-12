@@ -37,4 +37,3 @@ const entries:ProductSource[]=[
 ]
 
 export const productSources=Object.fromEntries(entries.map(source=>[source.id,source])) as Record<string,ProductSource>
-export const sourceSubset=(ids:string[])=>Object.fromEntries(ids.map(id=>[id,productSources[id]]).filter((entry):entry is [string,ProductSource]=>Boolean(entry[1])))

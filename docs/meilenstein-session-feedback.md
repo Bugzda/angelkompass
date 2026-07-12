@@ -21,7 +21,7 @@ Es darf nur eine aktive Session geben. Abgeschlossene Sessions bleiben auf dem G
 
 Sessions liegen als versionierter JSON-Envelope unter `angelkompass.sessions.v1` im lokalen Browser-Speicher. Bedingungen und gewählte Empfehlung werden vollständig als Snapshot gespeichert. Historische Sessions werden deshalb nach Regel- oder Katalogänderungen nicht neu berechnet.
 
-Der persönliche Bestand bleibt separat unter `angelkompass.inventory.v1`. Ein alter IndexedDB-Prototyp wird weder importiert noch gelöscht. Defekte oder unvollständige Sessioneinträge werden beim Lesen verworfen; Schreibfehler werden in der Oberfläche angezeigt.
+Der persönliche Bestand wird separat unter `angelkompass.inventory.v3` gespeichert. Die Schlüssel `angelkompass.inventory.v1` und `.v2` bleiben ausschließlich als Migrationsquellen für bestehende Nutzer erhalten. Ein alter IndexedDB-Prototyp wird weder importiert noch gelöscht. Defekte oder unvollständige Sessioneinträge werden beim Lesen verworfen; Schreibfehler werden in der Oberfläche angezeigt.
 
 ## Fachliche Grenzen
 

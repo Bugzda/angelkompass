@@ -137,25 +137,19 @@ function neutralSpot(conditions:Conditions):RankedSpot{
 
 export function createRecommendationDecision(conditions:Conditions,inventory:InventoryItem[]):RecommendationDecision{
   const completeRanking=rankCandidates(conditions)
-  const isAvailable=(recommendation:Recommendation)=>isRecommendationAvailable(conditions,inventory,recommendation)
   const confirmedSpots=evaluateSpots(conditions).filter(spot=>isPracticalSpot(conditions,spot))
   const applicableRanking=confirmedSpots.length?rankCandidates(conditions,()=>true,confirmedSpots):rankCandidates(conditions,()=>true,[neutralSpot(conditions)])
-  const rankedOptions=applicableRanking.slice(0,3)
-  const practicalBase=applicableRanking.map(item=>adaptToInventory(conditions,inventory,item)).filter((item):item is NonNullable<typeof item>=>Boolean(item)).slice(0,3)
-  const nextSpot=confirmedSpots.find(spot=>spot.spot.id!==practicalBase[0]?.spot.spot.id)?.spot.label??'einen anderen erreichbaren Wasserbereich'
+  const inventoryCandidates=applicableRanking.map(expert=>({expert,practical:adaptToInventory(conditions,inventory,expert)}))
+  const practicalBase=inventoryCandidates.map(item=>item.practical).filter((item):item is NonNullable<typeof item>=>Boolean(item)).slice(0,3)
   const practicalRanking=practicalBase.map((item,index)=>{
     const alternative=practicalBase.find(other=>other.setup.lure.id!==item.setup.lure.id)?.setup.lure.label
+    const nextSpot=confirmedSpots.find(spot=>spot.spot.id!==item.spot.spot.id)?.spot.label??'einen anderen erreichbaren Wasserbereich'
     return{...item,rank:index+1,switchPlan:buildInventorySwitchPlan(item.setup,alternative,nextSpot,conditions.activity.status==='observed')}
   })
   const practicalPrimary=practicalRanking[0]
   const practicalAlternatives=practicalRanking.slice(1)
-  const practicalIds=new Set(practicalRanking.map(item=>item.setup.lure.id))
-  const optionalLureTip=applicableRanking.find(item=>!practicalIds.has(item.setup.lure.id))
+  const optionalLureTip=inventoryCandidates.find(item=>!item.practical)?.expert
   const optionalLureAdvantage=optionalLureTip&&practicalPrimary?Math.max(0,optionalLureTip.totalScore-practicalPrimary.totalScore):undefined
-  const optionalSpotTip=completeRanking.find(item=>!isPracticalSpot(conditions,item.spot))
-  const bestMissing=optionalLureTip
-  const suitabilityGap=practicalPrimary?applicableRanking[0].totalScore-practicalPrimary.totalScore:0
-  return{expertRanking:completeRanking.slice(0,3),rankedOptions,practicalRanking,practicalPrimary,practicalAlternatives,optionalSpotTip,optionalLureTip,optionalLureAdvantage,bestMissing,suitabilityGap,suitabilityWarning:suitabilityGap>=8?`Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.`:undefined,hotWaterWarning:conditions.waterTemperature==='hot'?(conditions.targetFish==='pike'?'Sehr warmes Wasser kann Hechte zusätzlich belasten. Drill und Versorgung kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.':'Sehr warmes Wasser kann Temperatur- und Sauerstoffstress bedeuten. Drills kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.'):undefined}
+  const optionalSpotTip=conditions.structureStatus==='none'?undefined:completeRanking.find(item=>!isPracticalSpot(conditions,item.spot))
+  return{expertRanking:completeRanking.slice(0,3),practicalRanking,practicalPrimary,practicalAlternatives,optionalSpotTip,optionalLureTip,optionalLureAdvantage,hotWaterWarning:conditions.waterTemperature==='hot'?(conditions.targetFish==='pike'?'Sehr warmes Wasser kann Hechte zusätzlich belasten. Drill und Versorgung kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.':'Sehr warmes Wasser kann Temperatur- und Sauerstoffstress bedeuten. Drills kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.'):undefined}
 }
-
-export const productiveRuleIds=(['perch','pike'] as const).flatMap(fish=>profileFor(fish).allRules.map(rule=>rule.id))

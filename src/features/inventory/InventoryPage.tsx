@@ -8,13 +8,13 @@ import { useInventory } from './useInventory'
 const sizeNames:Record<SizeClass,string>={small:'Klein',medium:'Mittel',large:'Groß'}
 
 export function InventoryPage(){
-  const{inventory,toggleSize,toggleAllSizes}=useInventory()
+  const{inventory,toggleSize,toggleAllSizes,error}=useInventory()
   const groups:Array<{fish:TargetFish;label:string;description:string;lures:LureType[]}>= [
     {fish:'perch',label:'Barsch',description:'Feine bis mittlere Ködergrößen für den Barschplan.',lures},
     {fish:'pike',label:'Hecht',description:'Artspezifisch größere Köder und ausschließlich hechtsichere Montagen.',lures:pikeLures},
   ]
   return <section className="page-shell inventory-page">
-    <p className="eyebrow">PERSÖNLICHER BESTAND</p><h1>Welche Köder hast du dabei?</h1><p className="lead">Der Bestand verändert niemals die fachliche Rangfolge. Er bestimmt nur, welche artspezifische Größe du direkt praktisch einsetzen kannst.</p>
+    <p className="eyebrow">PERSÖNLICHER BESTAND</p><h1>Welche Köder hast du dabei?</h1><p className="lead">Der Bestand verändert niemals die fachliche Rangfolge. Er bestimmt nur, welche artspezifische Größe du direkt praktisch einsetzen kannst.</p>{error&&<p className="storage-error">{error}</p>}
     {groups.map(group=><section className="inventory-species" aria-labelledby={`inventory-${group.fish}`} key={group.fish}><header><div><span className="overline">ZIELFISCH</span><h2 id={`inventory-${group.fish}`}>{group.label}</h2><p>{group.description}</p></div></header><div className="inventory-options">{group.lures.map(lure=>{
       const item=inventory.find(entry=>entry.targetFish===group.fish&&entry.lureTypeId===lure.id)
       const hasAll=Boolean(item)&&lure.sizes.every(size=>item?.sizes?.includes(size))

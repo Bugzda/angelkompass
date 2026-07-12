@@ -11,6 +11,7 @@ let lastError: string | undefined
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
 const oneOf = (value: unknown, values: readonly string[]) => typeof value === 'string' && values.includes(value)
+const stringArray = (value: unknown) => Array.isArray(value) && value.every((item) => typeof item === 'string')
 
 function isConditions(value: unknown): value is Conditions {
   if (!isRecord(value) || !isRecord(value.activity)) return false
@@ -21,16 +22,21 @@ function isConditions(value: unknown): value is Conditions {
     oneOf(value.depth, ['shallow', 'medium', 'deep', 'unknown']) &&
     oneOf(value.waterTemperature, ['cold', 'cool', 'mild', 'warm', 'hot', 'unknown']) &&
     oneOf(value.light, ['bright', 'diffuse', 'dark', 'unknown']) &&
-    oneOf(value.vegetation, ['none', 'edgeOrGaps', 'dense', 'unknown']) && Array.isArray(value.observedStructure) &&
+    oneOf(value.vegetation, ['none', 'edgeOrGaps', 'dense', 'unknown']) && Array.isArray(value.observedStructure) && value.observedStructure.every(item=>oneOf(item,['shallow','dropoff','hardCover'])) &&
     (value.structureStatus===undefined||oneOf(value.structureStatus,['unknown','none','observed'])) &&
-    oneOf(value.activity.status, ['unknown', 'none', 'observed']) && Array.isArray(value.activity.signs) &&
+    oneOf(value.activity.status, ['unknown', 'none', 'observed']) && Array.isArray(value.activity.signs) && value.activity.signs.every(item=>oneOf(item,['baitfish','huntingPerch','surfaceActivity','pikeContact'])) &&
     (value.targetFish!=='pike'||value.pikeSafetyConfirmed===true)
 }
 
 function isRecommendation(value: unknown): value is Recommendation {
   if (!isRecord(value) || !isRecord(value.spot) || !isRecord(value.spot.spot) || !isRecord(value.setup) || !isRecord(value.setup.lure)) return false
-  return typeof value.rank === 'number' && typeof value.spot.spot.label === 'string' && typeof value.setup.lure.label === 'string' &&
-    Array.isArray(value.switchPlan) && value.switchPlan.length === 3 && value.switchPlan.every((step) => isRecord(step) && oneOf(step.phase, ['initial', 'refine', 'move']) && typeof step.title === 'string')
+  if(!isRecord(value.colorGuidance)||!stringArray(value.colorGuidance.examples))return false
+  const presentation=value.setup.resolvedPresentation
+  const validPresentation=presentation===undefined||(isRecord(presentation)&&typeof presentation.profileId==='string'&&typeof presentation.profileLabel==='string'&&typeof presentation.mounting==='string'&&typeof presentation.sizeLabel==='string'&&typeof presentation.weightLabel==='string'&&typeof presentation.guidance==='string'&&oneOf(presentation.weightKind,['terminal','lure-total','none'])&&oneOf(presentation.mode,['slow','controlled','active']))
+  return typeof value.rank === 'number' && typeof value.spot.spot.label === 'string' && typeof value.setup.lure.id === 'string' && typeof value.setup.lure.label === 'string' && typeof value.setup.lure.mounting === 'string' && typeof value.setup.lure.guidance === 'string' &&
+    oneOf(value.setup.size,['small','medium','large'])&&oneOf(value.setup.weight,['ultralight','light','medium','heavy'])&&oneOf(value.setup.color,['natural','contrast','transparent'])&&validPresentation&&
+    oneOf(value.colorGuidance.family,['natural','contrast','transparent'])&&typeof value.colorGuidance.familyLabel==='string'&&typeof value.colorGuidance.reason==='string'&&stringArray(value.reasons)&&
+    Array.isArray(value.switchPlan) && value.switchPlan.length === 3 && value.switchPlan.every((step) => isRecord(step) && oneOf(step.phase, ['initial', 'refine', 'move']) && typeof step.title === 'string'&&typeof step.change==='string'&&typeof step.limit==='string'&&typeof step.reason==='string')
 }
 
 function isFeedback(value: unknown): boolean {

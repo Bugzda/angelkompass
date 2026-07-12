@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Verify
-        run: pnpm lint && pnpm test && pnpm research:validate
+        run: pnpm lint && pnpm test && pnpm research:validate && pnpm routing:validate
       - name: Build
         run: pnpm build
       - name: Configure Pages

@@ -98,16 +98,12 @@ export interface Recommendation {
 export interface InventoryItem { targetFish: TargetFish; lureTypeId: LureType['id']; sizes: SizeClass[]; migratedNeedsReview?: boolean }
 export interface RecommendationDecision {
   expertRanking: Recommendation[]
-  rankedOptions: Recommendation[]
   practicalRanking: Recommendation[]
   practicalPrimary?: Recommendation
   practicalAlternatives: Recommendation[]
   optionalSpotTip?: Recommendation
   optionalLureTip?: Recommendation
   optionalLureAdvantage?: number
-  bestMissing?: Recommendation
-  suitabilityGap: number
-  suitabilityWarning?: string
   hotWaterWarning?: string
 }
 

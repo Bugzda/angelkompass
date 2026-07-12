@@ -1,5 +1,4 @@
 import type { Conditions, LureType, SpotFeature } from '../models/types'
-import { sourceSubset } from '../research/productSources'
 import type { ScoringContext, ScoringRule } from './perchLakeRules'
 
 const sign=(c:Conditions,value:string)=>c.activity.status==='observed'&&c.activity.signs.includes(value as never)
@@ -36,5 +35,3 @@ export const pikeSetupRules:ScoringRule[]=[
  {id:'PKL021',target:'setup',group:'presentation',evidenceClass:'experience',confidence:.82,effect:3,reasonCode:'PIKE_TAILBAIT_COLD',sourceIds:['P06'],matches:x=>setup(x,'tailbait')&&['cold','cool'].includes(x.conditions.waterTemperature)&&x.conditions.vegetation!=='dense'},
 ]
 export const pikeAllRules=[...pikeSpotRules,...pikeSetupRules]
-
-export const pikeResearchSources=sourceSubset(['P01','P02','P03','P04','P05','P06'])

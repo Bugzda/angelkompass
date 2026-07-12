@@ -43,4 +43,25 @@ describe('bestandsbasierte Top-Empfehlungen',()=>{
     const result=createRecommendationDecision(conditions,[{targetFish:'perch',lureTypeId:'jig',sizes:['medium']}]).practicalRanking[0]
     expect(result.inventoryFit).toEqual({preferredSize:'medium',selectedSize:'medium',exact:true})
   })
+
+  it('zeigt bei vollständigem Bestand keinen vorhandenen Köder als fehlende Ergänzung',()=>{
+    const conditions=conditionsFor('perch','medium')
+    const inventory:InventoryItem[]=profileFor('perch').lures.map(lure=>({targetFish:'perch',lureTypeId:lure.id,sizes:[...lure.sizes]}))
+    expect(createRecommendationDecision(conditions,inventory).optionalLureTip).toBeUndefined()
+  })
+
+  it('unterdrückt Spot-Tipps nach der expliziten Auswahl keine weitere Struktur',()=>{
+    const none=createRecommendationDecision(conditionsFor('pike','medium'),[])
+    const unknown=createRecommendationDecision({...conditionsFor('pike','medium'),structureStatus:'unknown'},[])
+    expect(none.optionalSpotTip).toBeUndefined()
+    expect(unknown.optionalSpotTip).toBeDefined()
+  })
+
+  it('berechnet das Wechselziel relativ zum Spot jeder Empfehlung',()=>{
+    const conditions:Conditions={...conditionsFor('pike','shallow','warm'),structureStatus:'observed',observedStructure:['shallow','hardCover']}
+    const inventory:InventoryItem[]=profileFor('pike').lures.filter(lure=>lure.id==='jig'||lure.id==='popper').map(lure=>({targetFish:'pike',lureTypeId:lure.id,sizes:[...lure.sizes]}))
+    const ranking=createRecommendationDecision(conditions,inventory).practicalRanking
+    expect(new Set(ranking.map(item=>item.spot.spot.id)).size).toBeGreaterThan(1)
+    for(const item of ranking)expect(item.switchPlan.find(step=>step.phase==='move')?.change).not.toContain(`: ${item.spot.spot.label}.`)
+  })
 })

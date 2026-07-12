@@ -76,6 +76,16 @@ describe('lokaler Session-Zustandsautomat', () => {
     expect(sessionStore.getSnapshot()).toEqual([])
   })
 
+  it('verwirft einen unvollständigen Empfehlungssnapshot vor der Darstellung',()=>{
+    const session=sessionStore.create(conditions,createRecommendations(conditions)[0])!
+    const envelope=JSON.parse(localStorage.getItem('angelkompass.sessions.v1')!)
+    delete envelope.sessions[0].recommendation.colorGuidance
+    localStorage.setItem('angelkompass.sessions.v1',JSON.stringify(envelope))
+    sessionStore.resetForTests()
+    expect(sessionStore.getSnapshot()).toEqual([])
+    expect(session.id).toBeTruthy()
+  })
+
   it('übernimmt aus manipulierten Daten höchstens eine aktive Session', () => {
     const first = sessionStore.create(conditions, createRecommendations(conditions)[0])!
     const second = { ...first, id: 'zweite-aktive', createdAt: new Date(Date.now() + 1_000).toISOString() }

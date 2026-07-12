@@ -1,5 +1,4 @@
 import type { Conditions, EvidenceClass, LureType, RuleGroup, SpotFeature } from '../models/types'
-import { sourceSubset } from '../research/productSources'
 
 export interface ScoringContext { conditions: Conditions; candidateId: SpotFeature | LureType['id']; spotId?: SpotFeature }
 export interface ScoringRule {
@@ -78,8 +77,6 @@ export const setupRules: ScoringRule[] = [
 ]
 
 export const allRules = [...spotRules, ...setupRules]
-
-export const researchSources=sourceSubset(['S01','S02','S03','S04','S05','S06','S07','S10','S11','S15','S16','S18','S20','S24'])
 
 export function evidencePoints(rule: ScoringRule): number {
   const factor = rule.evidenceClass === 'experience' ? .75 : rule.evidenceClass === 'weak' ? .35 : 1

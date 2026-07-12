@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
-  <title id="title">Angelkompass</title>
-  <rect width="512" height="512" fill="#123C36"/>
-  <path d="M256 76 322 258l-66 57-66-57 66-182Z" fill="none" stroke="#F4F5F0" stroke-width="24" stroke-linejoin="round"/>
-  <path d="M256 104v183l-45-40 45-143Z" fill="#C5F22D"/>
-  <path d="M82 345c43 0 43-24 87-24s43 24 87 24 43-24 87-24 43 24 87 24" fill="none" stroke="#48D9C2" stroke-width="22" stroke-linecap="round"/>
-  <path d="M110 415c36 0 36-19 73-19s36 19 73 19 36-19 73-19 36 19 73 19" fill="none" stroke="#C5F22D" stroke-width="22" stroke-linecap="round"/>
-</svg>
