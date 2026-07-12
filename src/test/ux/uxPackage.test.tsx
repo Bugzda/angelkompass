@@ -41,8 +41,15 @@ describe('UX-Paket',()=>{
     const session=sessionStore.create(conditions,createRecommendations(conditions)[0])!
     render(<MemoryRouter initialEntries={[`/session/${session.id}/karte`]}><Routes><Route path="/session/:id/karte" element={<WaterCardPage/>}/></Routes></MemoryRouter>)
     expect(screen.getByText(session.recommendation.setup.lure.label)).toBeInTheDocument()
+    expect(screen.getByRole('group',{name:'Rückmeldung erfassen'})).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button',{name:'Kein Erfolg →'}))
     expect(sessionStore.getSnapshot()[0].progress).toBe('refine')
     expect(screen.getByText(session.recommendation.switchPlan[1].title)).toBeInTheDocument()
+  })
+
+  it('führt auch aus einer fehlenden Am-Wasser-Karte verständlich zurück',()=>{
+    render(<MemoryRouter initialEntries={['/session/fehlt/karte']}><Routes><Route path="/session/:id/karte" element={<WaterCardPage/>}/></Routes></MemoryRouter>)
+    expect(screen.getByRole('heading',{name:'Session nicht gefunden'})).toBeInTheDocument()
+    expect(screen.getByRole('link',{name:'Zum Verlauf'})).toHaveAttribute('href','/verlauf')
   })
 })

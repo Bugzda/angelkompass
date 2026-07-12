@@ -1,13 +1,13 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { usePwaStatus } from '../../ui/hooks/usePwaStatus'
+import { pwaStatusStore, usePwaStatus } from '../../ui/hooks/usePwaStatus'
 import { useTheme } from '../../ui/hooks/useTheme'
 
 function ThemeHarness(){const{preference,setPreference}=useTheme();return <div><output>{preference}</output><button onClick={()=>setPreference('system')}>System</button><button onClick={()=>setPreference('dark')}>Dunkel</button></div>}
-function StatusHarness(){const{online,offlineReady}=usePwaStatus();return <output>{online?'online':'offline'} · {offlineReady?'ready':'pending'}</output>}
+function StatusHarness(){const{online,offlineReady,updateAvailable,applyUpdate}=usePwaStatus();return <div><output>{online?'online':'offline'} · {offlineReady?'ready':'pending'} · {updateAvailable?'update':'current'}</output><button onClick={applyUpdate}>Aktualisieren</button></div>}
 
 beforeEach(()=>{
-  localStorage.clear()
+  localStorage.clear();pwaStatusStore.dismissUpdate()
   vi.stubGlobal('matchMedia',vi.fn().mockReturnValue({matches:false,addEventListener:vi.fn(),removeEventListener:vi.fn()}))
 })
 afterEach(()=>{cleanup();delete document.documentElement.dataset.theme;vi.restoreAllMocks()})
@@ -29,5 +29,14 @@ describe('UI-Zustände',()=>{
     expect(screen.getByText(/offline/)).toBeInTheDocument()
     fireEvent(window,new Event('online'))
     expect(screen.getByText(/online/)).toBeInTheDocument()
+  })
+
+  it('meldet und aktiviert ein Service-Worker-Update erst bewusst',()=>{
+    const update=vi.fn().mockResolvedValue(undefined)
+    pwaStatusStore.updateReady(update)
+    render(<StatusHarness/>)
+    expect(screen.getByText(/update/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button',{name:'Aktualisieren'}))
+    expect(update).toHaveBeenCalledWith(true)
   })
 })
