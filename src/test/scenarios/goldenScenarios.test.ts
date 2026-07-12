@@ -4,6 +4,7 @@ import { buildColorGuidance } from '../../domain/engine/colorGuidance'
 import { knownReasonCodes } from '../../domain/engine/explanations'
 import type { Conditions } from '../../domain/models/types'
 import { allRules,groupCaps,spotRules } from '../../domain/rules/perchLakeRules'
+import { lures } from '../../domain/catalogs/lures'
 
 const base:Conditions={targetFish:'perch',waterType:'lake',season:'summer',timeOfDay:'day',turbidity:'slightly_turbid',depth:'medium',waterTemperature:'mild',light:'diffuse',activity:{status:'none',signs:[]},vegetation:'none',observedStructure:[]}
 type Scenario={name:string;conditions:Conditions;expectedSpot?:string;allowedTopLures?:string[];hotWarning?:boolean}
@@ -14,8 +15,8 @@ const scenarios:Scenario[]=[
  {name:'kühles Wasser trotz kalenderischem Sommer',conditions:{...base,season:'summer',waterTemperature:'cool',depth:'medium'},expectedSpot:'dropoff'},
  {name:'milder Frühjahrssee mit Krautlücken',conditions:{...base,season:'spring',waterTemperature:'mild',vegetation:'edgeOrGaps'},expectedSpot:'vegetation'},
  {name:'milder Herbstsee mit sichtbarem Kleinfisch',conditions:{...base,season:'autumn',activity:{status:'observed',signs:['baitfish']},vegetation:'edgeOrGaps'},expectedSpot:'vegetation'},
- {name:'warmer Sommersee mit jagenden Barschen im Flachen',conditions:{...base,waterTemperature:'warm',depth:'shallow',activity:{status:'observed',signs:['huntingPerch']},observedStructure:['shallow']},expectedSpot:'shallow',allowedTopLures:['twitchbait','spinner']},
- {name:'warmer Sommersee ohne Aktivitätszeichen',conditions:{...base,waterTemperature:'warm',activity:{status:'none',signs:[]}},allowedTopLures:['jig','twitchbait']},
+ {name:'warmer Sommersee mit jagenden Barschen im Flachen',conditions:{...base,waterTemperature:'warm',depth:'shallow',activity:{status:'observed',signs:['huntingPerch']},observedStructure:['shallow']},expectedSpot:'shallow',allowedTopLures:['twitchbait','spinner','chatterbait']},
+ {name:'warmer Sommersee ohne Aktivitätszeichen',conditions:{...base,waterTemperature:'warm',activity:{status:'none',signs:[]}},allowedTopLures:['jig','twitchbait','chatterbait']},
  {name:'heißer flacher See mit Stresshinweis',conditions:{...base,waterTemperature:'hot',depth:'shallow',observedStructure:['shallow']},hotWarning:true},
  {name:'heißer See mit unbekannter Tiefe',conditions:{...base,waterTemperature:'hot',depth:'unknown'},hotWarning:true},
  {name:'klarer heller Sommermittag',conditions:{...base,turbidity:'clear',light:'bright'},expectedSpot:'dropoff'},
@@ -25,7 +26,7 @@ const scenarios:Scenario[]=[
  {name:'dunkle Situation ohne Aktivität',conditions:{...base,timeOfDay:'night',light:'dark',activity:{status:'none',signs:[]}},allowedTopLures:['jig','ned','drop-shot']},
  {name:'Dämmerung außerhalb des Hochsommers',conditions:{...base,season:'spring',waterTemperature:'unknown',timeOfDay:'dusk',turbidity:'clear',depth:'shallow',observedStructure:['shallow']},expectedSpot:'shallow'},
  {name:'Hochsommerdämmerung ohne pauschalen Bonus',conditions:{...base,season:'summer',waterTemperature:'unknown',timeOfDay:'dusk',depth:'shallow'},expectedSpot:'vegetation'},
- {name:'lockere Krautkante',conditions:{...base,vegetation:'edgeOrGaps'},expectedSpot:'vegetation',allowedTopLures:['twitchbait','spinner']},
+ {name:'lockere Krautkante',conditions:{...base,vegetation:'edgeOrGaps'},expectedSpot:'vegetation',allowedTopLures:['twitchbait','spinner','spinnerbait']},
  {name:'sehr dichtes Kraut mit Präzisionsstrategie',conditions:{...base,vegetation:'dense'},expectedSpot:'vegetation',allowedTopLures:['ned','drop-shot']},
  {name:'sehr dichtes Kraut ohne sichtbare Lücken',conditions:{...base,vegetation:'dense',depth:'shallow'},expectedSpot:'vegetation'},
  {name:'Kleinfisch sichtbar aber keine Jagd',conditions:{...base,activity:{status:'observed',signs:['baitfish']},vegetation:'edgeOrGaps'},expectedSpot:'vegetation'},
@@ -55,4 +56,26 @@ describe('Farbanzeige ohne Rankingeinfluss',()=>{
  it('liefert für jede Farbfamilie vier generische Beispiele',()=>{for(const family of ['natural','transparent','contrast'] as const){const guidance=buildColorGuidance(family,base);expect(guidance.family).toBe(family);expect(guidance.familyLabel.length).toBeGreaterThan(3);expect(guidance.examples).toHaveLength(4);expect(guidance.reason.length).toBeGreaterThan(30)}})
  it('erklärt klare, trübe und dunkle Situationen unterschiedlich',()=>{const clear=buildColorGuidance('natural',{...base,turbidity:'clear'});const turbid=buildColorGuidance('contrast',{...base,turbidity:'turbid'});const dark=buildColorGuidance('contrast',{...base,turbidity:'unknown',light:'dark'});expect(new Set([clear.reason,turbid.reason,dark.reason]).size).toBe(3)})
  it('ist eine reine Projektion und verändert Ranking oder Scores nicht',()=>{const before=createRecommendations(base).map(item=>[item.rank,item.spot.spot.id,item.setup.lure.id,item.spot.score,item.setup.score]);for(const family of ['natural','transparent','contrast'] as const)buildColorGuidance(family,base);const after=createRecommendations(base).map(item=>[item.rank,item.spot.spot.id,item.setup.lure.id,item.spot.score,item.setup.score]);expect(after).toEqual(before)})
+})
+
+describe('12 Golden-Szenarien der Ködererweiterung',()=>{
+ const topIds=(conditions:Conditions)=>createRecommendations(conditions).map(item=>item.setup.lure.id)
+ it('setzt Crankbait am milden Frühjahrs-Krautsaum in die Top 3',()=>expect(topIds({...base,season:'spring',timeOfDay:'dawn',turbidity:'clear',depth:'shallow',waterTemperature:'mild',vegetation:'edgeOrGaps'})).toContain('crankbait'))
+ it('setzt Crankbait an der herbstlichen mittleren Kante in die Top 3',()=>expect(topIds({...base,season:'autumn',depth:'medium',waterTemperature:'cool',observedStructure:['dropoff']})).toContain('crankbait'))
+ it('setzt Chatterbait im trüben warmen Flachwasser in die Top 3',()=>expect(topIds({...base,turbidity:'turbid',depth:'shallow',waterTemperature:'warm',observedStructure:['shallow']})).toContain('chatterbait'))
+ it('setzt Chatterbait bei warmer sichtbarer Jagd in die Top 3',()=>expect(topIds({...base,depth:'shallow',waterTemperature:'warm',activity:{status:'observed',signs:['huntingPerch']},observedStructure:['shallow']})).toContain('chatterbait'))
+ it('ordnet Blade Bait im kalten Tiefwasser hinter den Finesse-Optionen ein',()=>{const ids=topIds({...base,season:'winter',depth:'deep',waterTemperature:'cold',observedStructure:['dropoff']});expect(ids).not.toContain('blade-bait');expect(ids).toContain('drop-shot')})
+ it('setzt Blade Bait an der herbstlichen tiefen Kante in die Top 3',()=>expect(topIds({...base,season:'autumn',depth:'deep',waterTemperature:'cool',observedStructure:['dropoff']})).toContain('blade-bait'))
+ it('setzt Spinnerbait an der trüben lockeren Krautkante in die Top 3',()=>expect(topIds({...base,turbidity:'turbid',depth:'shallow',waterTemperature:'mild',vegetation:'edgeOrGaps'})).toContain('spinnerbait'))
+ it('bestraft Crank- und Chatterbait im dichten Kraut stärker als Spinnerbait',()=>{const conditions:Conditions={...base,depth:'shallow',vegetation:'dense'};const vegetationSpot=evaluateSpots(conditions).find(item=>item.spot.id==='vegetation')!;const scores=new Map(evaluateSetups(conditions,vegetationSpot).map(item=>[item.lure.id,item.score]));expect(scores.get('spinnerbait')).toBeGreaterThan(scores.get('crankbait')!);expect(scores.get('spinnerbait')).toBeGreaterThan(scores.get('chatterbait')!)})
+ it('setzt Popper bei warmem flachem Oberflächenfenster in die Top 3',()=>expect(topIds({...base,timeOfDay:'dusk',depth:'shallow',waterTemperature:'warm',light:'diffuse',activity:{status:'observed',signs:['surfaceActivity']},observedStructure:['shallow']})).toContain('popper'))
+ it('gibt Popper ohne Oberflächenaktivität keinen Top-3-Platz',()=>expect(topIds({...base,timeOfDay:'dusk',depth:'shallow',waterTemperature:'warm',light:'diffuse',activity:{status:'none',signs:[]}})).not.toContain('popper'))
+ it('wertet Popper im kalten Flachwasser aus den Top 3',()=>expect(topIds({...base,season:'winter',depth:'shallow',waterTemperature:'cold',light:'diffuse',activity:{status:'observed',signs:['surfaceActivity']}})).not.toContain('popper'))
+ it('hält die Tiefenkompatibilität aller fünf neuen Typen ein',()=>{const deep=evaluateSetups({...base,depth:'deep'},evaluateSpots({...base,depth:'deep'})[0]).map(item=>item.lure.id);expect(deep).toContain('blade-bait');for(const id of ['crankbait','chatterbait','spinnerbait','popper'])expect(deep).not.toContain(id);const shallow=evaluateSetups({...base,depth:'shallow'},evaluateSpots({...base,depth:'shallow'})[0]).map(item=>item.lure.id);expect(shallow).not.toContain('blade-bait');expect(shallow).toContain('popper')})
+})
+
+describe('Katalog- und Wechselinvarianten der Erweiterung',()=>{
+ it('enthält genau zehn eindeutige und vollständige Ködertypen',()=>{expect(lures).toHaveLength(10);expect(new Set(lures.map(lure=>lure.id)).size).toBe(10);expect(lures.every(lure=>lure.sizes.length&&lure.depths.length&&lure.mounting&&lure.guidance)).toBe(true)})
+ it('erstellt für jeden neuen Typ Farbhilfe und drei Wechselphasen',()=>{const conditions:Conditions={...base,depth:'unknown',waterTemperature:'warm',activity:{status:'observed',signs:['surfaceActivity','huntingPerch']}};const decision=createRecommendationDecision(conditions,lures.map(lure=>({lureTypeId:lure.id})));const allRanked=[...decision.expertRanking,decision.practicalPrimary,decision.bestMissing].filter(Boolean);expect(allRanked.every(item=>item!.colorGuidance.examples.length===4&&item!.switchPlan.length===3)).toBe(true)})
+ it('wählt Popper- und Blade-Alternativen aus dem fachlichen Gegenstil',()=>{const popper=createRecommendations({...base,timeOfDay:'dusk',depth:'shallow',waterTemperature:'warm',light:'diffuse',activity:{status:'observed',signs:['surfaceActivity']}}).find(item=>item.setup.lure.id==='popper');expect(popper?.switchPlan[1].change).toMatch(/Twitchbait|Spinnerbait|Crankbait/);const blade=createRecommendations({...base,season:'autumn',depth:'deep',waterTemperature:'cool',observedStructure:['dropoff']}).find(item=>item.setup.lure.id==='blade-bait');expect(blade?.switchPlan[1].change).toMatch(/Gummifisch|Drop Shot/)})
 })

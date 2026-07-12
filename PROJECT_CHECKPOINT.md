@@ -1,7 +1,7 @@
 # Projekt-Checkpoint Angelkompass
 
 Stand: 12. Juli 2026  
-Git-Referenz vor diesem Dokumentations-Checkpoint: `9f56af6` (`main`)  
+Ausgangsreferenz der Ködererweiterung: `4034cf7` (`main`)
 Produktstatus: lokal lauffähiger, installierbarer See-/Barsch-Vertikalschnitt
 
 Dieses Dokument ist der Einstiegspunkt für einen neuen Codex-Chat. Es beschreibt ausschließlich den vorhandenen Projektstand; es erweitert oder verändert keine Fachregeln.
@@ -16,7 +16,7 @@ Aktuell enthalten:
 - Gewässer ausschließlich See.
 - Schwerpunkt ausschließlich Uferangeln.
 - Drei Spot-Typen: Krautkante, Flachwasserzone und Tiefenkante.
-- Fünf Ködertypen: Jig, Ned Rig, Drop Shot, Twitchbait und Spinner.
+- Zehn Ködertypen: Jig, Ned Rig, Drop Shot, Twitchbait, Spinner, Crankbait, Chatterbait, Blade Bait, Spinnerbait und Popper.
 - Manuelle Eingaben für Jahreszeit, Tageszeit, Trübung, Tiefe, Wassertemperaturklasse, Licht, Aktivitätsanzeichen, Krautbild und weitere sichtbare Struktur.
 - Drei fachlich priorisierte Empfehlungen mit Spot, Köder, Größe, Gewicht, Montage, Führung, Begründungen und Wechselstrategie.
 - Getrennte Anzeigen für Eingabeabdeckung und Regel-Evidenz.
@@ -87,6 +87,8 @@ Die generische Pipeline in `src/domain/engine/scoring.ts`:
 
 Die Farbdarstellung liegt getrennt in `src/domain/engine/colorGuidance.ts`. Sie darf nicht in die Regelpipeline verschoben werden, solange keine neue fachliche Entscheidung getroffen wurde.
 
+Für die fünf zusätzlichen Suchköder gelten folgende harte Grenzen: Popper ist nur im Flachwasser kompatibel; Blade Bait nur in mittlerer und tiefer Zone. Crankbait, Chatterbait und Spinnerbait sind für flache und mittlere Tiefe katalogisiert. Spinner und Spinnerbait bleiben eigenständige Typen.
+
 ## 4. Benutzerablauf
 
 1. Startseite → „Session starten“.
@@ -134,7 +136,7 @@ Die 2026 referenzierte Studie zu fluoreszierenden Ködern konnte beim Audit tech
 Zuletzt erfolgreich geprüft nach Commit `9f56af6`:
 
 - TypeScript: erfolgreich.
-- 36 automatisierte Tests: erfolgreich.
+- 51 automatisierte Tests: erfolgreich.
 - Davon 24 fachliche See-/Ufer-Golden-Szenarien.
 - Produktions- und PWA-Build: erfolgreich.
 - Research-Validator: 53 Regeln, 32 Szenarien und 23 Quellen valide.
@@ -166,6 +168,7 @@ PATH=/Users/chriz/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/
 - `becaa5b`: vollständiges Research-Archiv; Tag `checkpoint-before-professional-rules-becaa5b`.
 - `7177b50`: fachliche Präzisierung mit deklarativen Regeln und neuen Eingaben.
 - `9f56af6`: verbesserte Farbanzeige ohne Rankingeinfluss.
+- `4034cf7`: dokumentarischer Projekt-Übergabecheckpoint und Ausgangspunkt der Ködererweiterung.
 
 Vor größeren Änderungen soll erneut ein Git-Checkpoint erstellt werden. Änderungen an Fachregeln und Research-Archiv sollten getrennte Commits bleiben.
 

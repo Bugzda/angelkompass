@@ -31,7 +31,8 @@ export interface Conditions {
 }
 
 export interface SpotType { id: SpotFeature; label: string; description: string; seasonalAffinity: Season[]; depthAffinity: Array<Exclude<Depth, 'unknown'>>; priority: number }
-export interface LureType { id: 'jig' | 'ned' | 'drop-shot' | 'twitchbait' | 'spinner'; label: string; mounting: string; guidance: string; sizes: SizeClass[]; depths: Array<Exclude<Depth, 'unknown'>>; style: 'finesse' | 'bottom' | 'search'; priority: number }
+export type LureId = 'jig' | 'ned' | 'drop-shot' | 'twitchbait' | 'spinner' | 'crankbait' | 'chatterbait' | 'blade-bait' | 'spinnerbait' | 'popper'
+export interface LureType { id: LureId; label: string; mounting: string; guidance: string; sizes: SizeClass[]; depths: Array<Exclude<Depth, 'unknown'>>; style: 'finesse' | 'bottom' | 'search'; priority: number }
 
 export interface ReasonContribution {
   ruleId: string

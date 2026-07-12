@@ -15,7 +15,7 @@ Stand: Implementiert auf Basis des Research-Archivs v1.0.0.
 ## Bewusste Grenzen
 
 - Ausschließlich Barsch, See und Uferangeln.
-- Weiterhin drei Spot- und fünf Ködertypen.
+- Weiterhin drei Spot-Typen; der aktive Katalog umfasst nach der separaten Ködererweiterung zehn Ködertypen.
 - Keine exakten Temperaturwerte, Sensoren, Wetterdaten oder externe APIs.
 - Keine Sessionhistorie und keine automatische Regelanpassung.
 - Research-Dateien werden weder importiert noch in das PWA-Bundle aufgenommen.
