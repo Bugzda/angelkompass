@@ -8,8 +8,8 @@ export type TargetFish = 'perch' | 'pike'
 export type ActivitySign = 'baitfish' | 'huntingPerch' | 'surfaceActivity' | 'pikeContact'
 export type ActivityObservation = { status: 'unknown' | 'none' | 'observed'; signs: ActivitySign[] }
 export type Vegetation = 'none' | 'edgeOrGaps' | 'dense' | 'unknown'
-export type SpotFeature = 'vegetation' | 'shallow' | 'dropoff' | 'hardCover'
-export type ObservableStructure = Exclude<SpotFeature, 'vegetation'>
+export type SpotFeature = 'vegetation' | 'shallow' | 'dropoff' | 'hardCover' | 'openWater'
+export type ObservableStructure = Exclude<SpotFeature, 'vegetation' | 'openWater'>
 export type SizeClass = 'small' | 'medium' | 'large'
 export type ColorFamily = 'natural' | 'contrast' | 'transparent'
 export type WeightClass = 'ultralight' | 'light' | 'medium' | 'heavy'
@@ -97,6 +97,7 @@ export interface Recommendation {
 export interface InventoryItem { targetFish: TargetFish; lureTypeId: LureType['id']; sizes: SizeClass[]; migratedNeedsReview?: boolean }
 export interface RecommendationDecision {
   expertRanking: Recommendation[]
+  rankedOptions: Recommendation[]
   practicalPrimary?: Recommendation
   practicalAlternatives: Recommendation[]
   optionalSpotTip?: Recommendation

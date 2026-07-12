@@ -39,9 +39,11 @@ describe('Session-Nutzerablauf', () => {
     localStorage.setItem('angelkompass.inventory.v1', JSON.stringify([{ lureTypeId: top[0].setup.lure.id }]))
     render(<MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}><Routes><Route path="/empfehlung" element={<RecommendationPage />} /></Routes></MemoryRouter>)
     expect(screen.getAllByText('Im Bestand')).toHaveLength(1)
-    expect(screen.queryByText('Nicht im Bestand')).not.toBeInTheDocument()
-    expect(screen.getByText('FALLS VERFÜGBAR')).toBeInTheDocument()
+    expect(screen.getAllByText('Nicht im Bestand')).toHaveLength(4)
     expect(screen.getAllByRole('button',{name:'Session mit dieser Empfehlung starten'})).toHaveLength(1)
+    screen.getAllByRole('button',{name:'Details anzeigen'}).forEach(button=>fireEvent.click(button))
+    expect(screen.getAllByRole('button',{name:'Nicht im Bestand'})).toHaveLength(2)
+    expect(screen.getAllByRole('button',{name:'Nicht im Bestand'}).every(button=>button.hasAttribute('disabled'))).toBe(true)
   })
 
   it('löscht erst nach bestätigter Rückfrage aus dem Verlauf', () => {
