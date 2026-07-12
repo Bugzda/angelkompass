@@ -22,6 +22,7 @@ function isConditions(value: unknown): value is Conditions {
     oneOf(value.waterTemperature, ['cold', 'cool', 'mild', 'warm', 'hot', 'unknown']) &&
     oneOf(value.light, ['bright', 'diffuse', 'dark', 'unknown']) &&
     oneOf(value.vegetation, ['none', 'edgeOrGaps', 'dense', 'unknown']) && Array.isArray(value.observedStructure) &&
+    (value.structureStatus===undefined||oneOf(value.structureStatus,['unknown','none','observed'])) &&
     oneOf(value.activity.status, ['unknown', 'none', 'observed']) && Array.isArray(value.activity.signs) &&
     (value.targetFish!=='pike'||value.pikeSafetyConfirmed===true)
 }

@@ -18,6 +18,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks() })
 
 describe('Session-Nutzerablauf', () => {
   it('startet eine bewusst gewählte Top-3-Empfehlung und öffnet ihre Session', () => {
+    const top=createRecommendations(conditions);localStorage.setItem('angelkompass.inventory.v1',JSON.stringify(top.map(item=>({lureTypeId:item.setup.lure.id}))))
     render(<MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}><Routes><Route path="/empfehlung" element={<RecommendationPage />} /><Route path="/session/:id" element={<SessionPage />} /></Routes></MemoryRouter>)
     fireEvent.click(screen.getAllByRole('button', { name: /Details anzeigen/ })[0])
     fireEvent.click(screen.getAllByRole('button', { name: 'Session mit dieser Empfehlung starten' })[1])
@@ -26,19 +27,21 @@ describe('Session-Nutzerablauf', () => {
   })
 
   it('blockiert bei einer aktiven Session alle weiteren Starts', () => {
+    const top=createRecommendations(conditions);localStorage.setItem('angelkompass.inventory.v1',JSON.stringify(top.map(item=>({lureTypeId:item.setup.lure.id}))))
     sessionStore.create(conditions, createRecommendations(conditions)[0])
     render(<MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}><Routes><Route path="/empfehlung" element={<RecommendationPage />} /></Routes></MemoryRouter>)
     expect(screen.getByText('Eine Session ist bereits aktiv.')).toBeInTheDocument()
     expect(screen.getAllByRole('button', { name: 'Session mit dieser Empfehlung starten' }).every((button) => button.hasAttribute('disabled'))).toBe(true)
   })
 
-  it('kennzeichnet vorhandene und fehlende Top-3-Köder eindeutig', () => {
+  it('trennt vorhandene Optionen von einem fehlenden Köder-Tipp', () => {
     const top = createRecommendations(conditions)
     localStorage.setItem('angelkompass.inventory.v1', JSON.stringify([{ lureTypeId: top[0].setup.lure.id }]))
     render(<MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}><Routes><Route path="/empfehlung" element={<RecommendationPage />} /></Routes></MemoryRouter>)
     expect(screen.getAllByText('Im Bestand')).toHaveLength(1)
-    expect(screen.getAllByText('Nicht im Bestand')).toHaveLength(2)
-    expect(screen.getAllByText(/fachlichen Plan trotzdem als Session speichern/)).toHaveLength(2)
+    expect(screen.queryByText('Nicht im Bestand')).not.toBeInTheDocument()
+    expect(screen.getByText('FALLS VERFÜGBAR')).toBeInTheDocument()
+    expect(screen.getAllByRole('button',{name:'Session mit dieser Empfehlung starten'})).toHaveLength(1)
   })
 
   it('löscht erst nach bestätigter Rückfrage aus dem Verlauf', () => {

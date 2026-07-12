@@ -32,6 +32,7 @@ export interface Conditions {
   activity: ActivityObservation
   vegetation: Vegetation
   observedStructure: ObservableStructure[]
+  structureStatus?: 'unknown' | 'none' | 'observed'
   pikeSafetyConfirmed?: boolean
 }
 
@@ -94,7 +95,17 @@ export interface Recommendation {
 }
 
 export interface InventoryItem { targetFish: TargetFish; lureTypeId: LureType['id']; sizes: SizeClass[]; migratedNeedsReview?: boolean }
-export interface RecommendationDecision { expertRanking: Recommendation[]; practicalPrimary?: Recommendation; bestMissing?: Recommendation; suitabilityGap: number; suitabilityWarning?: string; hotWaterWarning?: string }
+export interface RecommendationDecision {
+  expertRanking: Recommendation[]
+  practicalPrimary?: Recommendation
+  practicalAlternatives: Recommendation[]
+  optionalSpotTip?: Recommendation
+  optionalLureTip?: Recommendation
+  bestMissing?: Recommendation
+  suitabilityGap: number
+  suitabilityWarning?: string
+  hotWaterWarning?: string
+}
 
 export type SessionStatus = 'active' | 'completed'
 export type SessionProgress = SwitchStep['phase'] | 'exhausted'

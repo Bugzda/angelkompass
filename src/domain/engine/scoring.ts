@@ -72,10 +72,11 @@ function buildSwitchPlan(setup:RankedSetup,alternative:string,nextSpot:string,ac
   ]
 }
 
-function rankCandidates(conditions:Conditions):Array<Recommendation&{totalScore:number}>{
+function rankCandidates(conditions:Conditions,spotAllowed:((spot:RankedSpot)=>boolean)=()=>true):Array<Recommendation&{totalScore:number}>{
   const profile=profileFor(conditions.targetFish)
   const rankedSpots=evaluateSpots(conditions)
-  const candidates=rankedSpots.flatMap(spot=>evaluateSetups(conditions,spot).map(setup=>({spot,setup}))).sort((a,b)=>(b.spot.score+b.setup.score)-(a.spot.score+a.setup.score)||a.spot.spot.priority-b.spot.spot.priority||a.setup.lure.priority-b.setup.lure.priority)
+  const eligibleSpots=rankedSpots.filter(spotAllowed)
+  const candidates=eligibleSpots.flatMap(spot=>evaluateSetups(conditions,spot).map(setup=>({spot,setup}))).sort((a,b)=>(b.spot.score+b.setup.score)-(a.spot.score+a.setup.score)||a.spot.spot.priority-b.spot.spot.priority||a.setup.lure.priority-b.setup.lure.priority)
   const selected:typeof candidates=[]
   for(const candidate of candidates){
     if(!selected.some(item=>item.setup.lure.id===candidate.setup.lure.id))selected.push(candidate)
@@ -88,7 +89,7 @@ function rankCandidates(conditions:Conditions):Array<Recommendation&{totalScore:
     const allApplied=[...spot.reasons,...setup.reasons].filter(item=>item.appliedDelta!==0)
     const positive=allApplied.filter(item=>item.appliedDelta>0).sort((a,b)=>b.appliedDelta-a.appliedDelta)
     const explained=(positive.length?positive:allApplied.sort((a,b)=>Math.abs(b.appliedDelta)-Math.abs(a.appliedDelta))).slice(0,4)
-    return{rank:index+1,spot,setup,inputCoverage:coverage,evidenceQuality:calculateEvidenceQuality([...spot.reasons,...setup.reasons]),colorGuidance:buildColorGuidance(setup.color,conditions,setup.lure),reasons:explained.map(explain),switchPlan:buildSwitchPlan(setup,alternative,rankedSpots.find(item=>item.spot.id!==spot.spot.id)?.spot.label??'nächster erreichbarer Bereich',conditions.activity.status==='observed'),totalScore:spot.score+setup.score}
+    return{rank:index+1,spot,setup,inputCoverage:coverage,evidenceQuality:calculateEvidenceQuality([...spot.reasons,...setup.reasons]),colorGuidance:buildColorGuidance(setup.color,conditions,setup.lure),reasons:explained.map(explain),switchPlan:buildSwitchPlan(setup,alternative,eligibleSpots.find(item=>item.spot.id!==spot.spot.id)?.spot.label??'einen anderen bestätigten Bereich',conditions.activity.status==='observed'),totalScore:spot.score+setup.score}
   })
 }
 
@@ -98,13 +99,26 @@ export function isRecommendationAvailable(conditions:Conditions,inventory:Invent
   return inventory.some(item=>item.targetFish===conditions.targetFish&&item.lureTypeId===recommendation.setup.lure.id&&item.sizes.includes(recommendation.setup.size))
 }
 
+function isPracticalSpot(conditions:Conditions,spot:RankedSpot){
+  const id=spot.spot.id
+  if(conditions.observedStructure.includes(id as never))return true
+  if(id==='vegetation')return conditions.vegetation==='edgeOrGaps'||conditions.vegetation==='dense'
+  if(id==='shallow')return conditions.depth==='shallow'
+  return false
+}
+
 export function createRecommendationDecision(conditions:Conditions,inventory:InventoryItem[]):RecommendationDecision{
   const completeRanking=rankCandidates(conditions)
   const isAvailable=(recommendation:Recommendation)=>isRecommendationAvailable(conditions,inventory,recommendation)
-  const practicalPrimary=completeRanking.find(isAvailable)
-  const bestMissing=completeRanking.find(item=>!isAvailable(item))
+  const applicableRanking=rankCandidates(conditions,spot=>isPracticalSpot(conditions,spot))
+  const practicalRanking=applicableRanking.filter(isAvailable).slice(0,3)
+  const practicalPrimary=practicalRanking[0]
+  const practicalAlternatives=practicalRanking.slice(1)
+  const optionalLureTip=applicableRanking.find(item=>!isAvailable(item))
+  const optionalSpotTip=completeRanking.find(item=>!isPracticalSpot(conditions,item.spot))
+  const bestMissing=optionalLureTip
   const suitabilityGap=practicalPrimary?completeRanking[0].totalScore-practicalPrimary.totalScore:0
-  return{expertRanking:completeRanking.slice(0,3),practicalPrimary,bestMissing,suitabilityGap,suitabilityWarning:suitabilityGap>=8?`Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.`:undefined,hotWaterWarning:conditions.waterTemperature==='hot'?(conditions.targetFish==='pike'?'Sehr warmes Wasser kann Hechte zusätzlich belasten. Drill und Versorgung kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.':'Sehr warmes Wasser kann Temperatur- und Sauerstoffstress bedeuten. Drills kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.'):undefined}
+  return{expertRanking:completeRanking.slice(0,3),practicalPrimary,practicalAlternatives,optionalSpotTip,optionalLureTip,bestMissing,suitabilityGap,suitabilityWarning:suitabilityGap>=8?`Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.`:undefined,hotWaterWarning:conditions.waterTemperature==='hot'?(conditions.targetFish==='pike'?'Sehr warmes Wasser kann Hechte zusätzlich belasten. Drill und Versorgung kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.':'Sehr warmes Wasser kann Temperatur- und Sauerstoffstress bedeuten. Drills kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.'):undefined}
 }
 
 export const productiveRuleIds=(['perch','pike'] as const).flatMap(fish=>profileFor(fish).allRules.map(rule=>rule.id))

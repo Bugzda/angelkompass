@@ -28,6 +28,7 @@ describe('UX-Paket',()=>{
   })
 
   it('öffnet nur Rang 1 und macht weitere Karten per Akkordeon zugänglich',()=>{
+    const top=createRecommendations(conditions);localStorage.setItem('angelkompass.inventory.v1',JSON.stringify(top.map(item=>({lureTypeId:item.setup.lure.id}))))
     render(<MemoryRouter initialEntries={[{pathname:'/empfehlung',state:conditions}]}><RecommendationPage/></MemoryRouter>)
     const close=screen.getByRole('button',{name:/Details schließen/})
     const open=screen.getAllByRole('button',{name:/Details anzeigen/})

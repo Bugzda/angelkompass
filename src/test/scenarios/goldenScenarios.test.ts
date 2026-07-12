@@ -49,7 +49,8 @@ describe('Regelpipeline und Konfidenz',()=>{
 
 describe('Bestand und Scope',()=>{
  it('verändert der Bestand niemals das Fachranking',()=>{const item=(lureTypeId:(typeof lures)[number]['id'])=>({targetFish:'perch' as const,lureTypeId,sizes:['medium' as const]});const inventories=[[],[item('spinner')],[item('jig'),item('ned'),item('drop-shot'),item('twitchbait'),item('spinner')]];const expected=createRecommendationDecision(base,[]).expertRanking;for(const inventory of inventories)expect(createRecommendationDecision(base,inventory).expertRanking).toEqual(expected)})
- it('wählt beste vorhandene und fehlende Option erst nach dem Ranking',()=>{const decision=createRecommendationDecision({...base,turbidity:'clear'},[{targetFish:'perch',lureTypeId:'spinner',sizes:['medium']},{targetFish:'perch',lureTypeId:'drop-shot',sizes:['medium']}]);expect(decision.practicalPrimary?.setup.lure.id).toBe('drop-shot');expect(decision.bestMissing?.setup.lure.id).not.toBe('drop-shot')})
+ it('wählt vorhandene Köder nur an bestätigten oder ableitbaren Spots',()=>{const decision=createRecommendationDecision({...base,turbidity:'clear',observedStructure:['dropoff']},[{targetFish:'perch',lureTypeId:'spinner',sizes:['medium']},{targetFish:'perch',lureTypeId:'drop-shot',sizes:['medium']}]);expect(decision.practicalPrimary?.setup.lure.id).toBe('drop-shot');expect(decision.bestMissing?.setup.lure.id).not.toBe('drop-shot')})
+ it('führt nicht bestätigte Spots nur als optionalen Tipp',()=>{const conditions={...base,targetFish:'pike' as const,pikeSafetyConfirmed:true,depth:'medium' as const,observedStructure:[]};const inventory=[{targetFish:'pike' as const,lureTypeId:'spinnerbait' as const,sizes:['large' as const]}];const decision=createRecommendationDecision(conditions,inventory);expect(decision.practicalPrimary).toBeUndefined();expect(decision.optionalSpotTip).toBeDefined()})
 })
 
 describe('Farbanzeige ohne Rankingeinfluss',()=>{
