@@ -20,7 +20,7 @@ const router = createBrowserRouter([
       { path: 'verlauf', element: <SessionsPage /> },
     ],
   },
-])
+], { basename: import.meta.env.BASE_URL })
 
 export function App() {
   return <RouterProvider router={router} />
