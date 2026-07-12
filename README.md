@@ -1,5 +1,7 @@
 # Angelkompass
 
+Vollständiger Übergabestand für neue Chats: [`PROJECT_CHECKPOINT.md`](PROJECT_CHECKPOINT.md)
+
 Erster vertikaler MVP-Funktionsumfang einer mobilen Entscheidungshilfe für das Uferangeln auf Barsch am See.
 
 ## Entwicklung
