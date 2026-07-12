@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      idb:
-        specifier: ^8.0.3
-        version: 8.0.3
       react:
         specifier: ^19.1.1
         version: 19.2.7
@@ -1494,9 +1491,6 @@ packages:
 
   idb@7.1.1:
     resolution: {integrity: sha512-gchesWBzyvGHRO9W8tzUWFDycow5gwjvFKfyV9FF32Y7F50yZMp7mP+T2mJIWFx49zicqyC4uefHM17o6xKIVQ==}
-
-  idb@8.0.3:
-    resolution: {integrity: sha512-LtwtVyVYO5BqRvcsKuB2iUMnHwPVByPCXFXOpuU96IZPPoPN6xjOGxZQ74pgSVVLQWtUOYgyeL4GE98BY5D3wg==}
 
   indent-string@4.0.0:
     resolution: {integrity: sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==}
@@ -3920,8 +3914,6 @@ snapshots:
       safer-buffer: 2.1.2
 
   idb@7.1.1: {}
-
-  idb@8.0.3: {}
 
   indent-string@4.0.0: {}
 

@@ -1,5 +1,36 @@
-import { useState } from 'react'; import { useNavigate } from 'react-router-dom'; import type { Conditions,SpotFeature } from '../../domain/models/types'; import { createSession } from '../../domain/engine/scoring'; import { useApp } from '../../app/AppContext'
-const choices={waterType:[['lake','See'],['river','Fluss'],['canal','Kanal']],season:[['spring','Frühling'],['summer','Sommer'],['autumn','Herbst'],['winter','Winter']],timeOfDay:[['dawn','Morgen'],['day','Tag'],['dusk','Abend'],['night','Nacht'],['unknown','Unbekannt']],turbidity:[['clear','Klar'],['slightly_turbid','Leicht trüb'],['turbid','Trüb'],['unknown','Unbekannt']],current:[['none','Keine'],['weak','Schwach'],['medium','Mittel'],['strong','Stark'],['unknown','Unbekannt']],depth:[['shallow','Flach'],['medium','Mittel'],['deep','Tief'],['unknown','Unbekannt']]} as const
-const structures:Array<[SpotFeature,string]>=[['vegetation','Kraut/Schilf'],['rocks','Steine'],['vertical','Spundwand'],['bridge','Brücke'],['inflow','Einlauf'],['current_break','Kehrströmung'],['harbor','Hafen'],['shallow','Flachzone'],['dropoff','Kante'],['wood','Holz/Schatten']]
-const initial:Conditions={targetFish:'perch',waterType:'lake',season:'summer',timeOfDay:'day',turbidity:'slightly_turbid',current:'none',depth:'medium',observedStructure:[]}
-export function SituationPage(){const[c,setC]=useState(initial);const{inventory,storeSession}=useApp();const nav=useNavigate();const select=(key:keyof typeof choices,val:string)=>setC(x=>({...x,[key]:val}));const toggle=(v:SpotFeature)=>setC(x=>({...x,observedStructure:x.observedStructure.includes(v)?x.observedStructure.filter(y=>y!==v):[...x.observedStructure,v]}));const submit=async()=>{const session=createSession(c,inventory);await storeSession(session);sessionStorage.setItem('currentSession',session.id);nav(`/empfehlung/${session.id}`)};return <section><p className="eyebrow">SITUATION ERFASSEN</p><h1>Was siehst du am Wasser?</h1><p className="lead">Tippe an, was du sicher einschätzen kannst.</p><div className="form-grid">{Object.entries(choices).map(([key,vals])=><fieldset key={key}><legend>{({waterType:'Gewässer',season:'Jahreszeit',timeOfDay:'Tageszeit',turbidity:'Wassertrübung',current:'Strömung',depth:'Angeltiefe'} as Record<string,string>)[key]}</legend><div className="chips">{vals.map(([v,l])=><button type="button" key={v} className={(c[key as keyof Conditions]===v)?'selected':''} onClick={()=>select(key as keyof typeof choices,v)}>{l}</button>)}</div></fieldset>)}<fieldset><legend>Sichtbare Struktur <small>optional, mehrfach</small></legend><div className="chips">{structures.map(([v,l])=><button type="button" key={v} className={c.observedStructure.includes(v)?'selected':''} onClick={()=>toggle(v)}>{l}</button>)}</div></fieldset><details><summary>Empfehlung verfeinern</summary><div className="optional"><label>Licht<select onChange={e=>setC(x=>({...x,light:e.target.value as Conditions['light']}))}><option value="">Nicht angegeben</option><option value="bright">Hell</option><option value="diffuse">Diffus</option><option value="dark">Dunkel</option></select></label><label>Wassertemperatur<select onChange={e=>setC(x=>({...x,waterTemperature:e.target.value as Conditions['waterTemperature']}))}><option value="">Nicht angegeben</option><option value="cold">Kalt</option><option value="cool">Kühl</option><option value="mild">Mild</option><option value="warm">Warm</option></select></label><label>Angeldruck<select onChange={e=>setC(x=>({...x,fishingPressure:e.target.value as Conditions['fishingPressure']}))}><option value="unknown">Unbekannt</option><option value="low">Niedrig</option><option value="medium">Mittel</option><option value="high">Hoch</option></select></label></div></details></div><button className="primary sticky-action" onClick={submit}>Empfehlung berechnen →</button></section>}
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import type { Conditions, SpotFeature } from '../../domain/models/types'
+
+const choices = {
+  season: [['spring', 'Frühling'], ['summer', 'Sommer'], ['autumn', 'Herbst'], ['winter', 'Winter']],
+  timeOfDay: [['dawn', 'Morgen'], ['day', 'Tag'], ['dusk', 'Abend'], ['night', 'Nacht'], ['unknown', 'Unbekannt']],
+  turbidity: [['clear', 'Klar'], ['slightly_turbid', 'Leicht trüb'], ['turbid', 'Trüb'], ['unknown', 'Unbekannt']],
+  depth: [['shallow', 'Flach'], ['medium', 'Mittel'], ['deep', 'Tief'], ['unknown', 'Unbekannt']],
+} as const
+
+const structures: Array<[SpotFeature, string]> = [['vegetation', 'Kraut/Schilf'], ['shallow', 'Flachzone'], ['dropoff', 'Tiefenkante']]
+const initial: Conditions = { targetFish: 'perch', waterType: 'lake', season: 'summer', timeOfDay: 'day', turbidity: 'slightly_turbid', depth: 'medium', observedStructure: [] }
+
+export function SituationPage() {
+  const [conditions, setConditions] = useState(initial)
+  const navigate = useNavigate()
+  const select = (key: keyof typeof choices, value: string) => setConditions((current) => ({ ...current, [key]: value }))
+  const toggle = (value: SpotFeature) => setConditions((current) => ({ ...current, observedStructure: current.observedStructure.includes(value) ? current.observedStructure.filter((item) => item !== value) : [...current.observedStructure, value] }))
+  const submit = () => navigate('/empfehlung', { state: conditions })
+
+  return <section>
+    <p className="eyebrow">NEUE SEE-SESSION</p>
+    <h1>Was siehst du am Wasser?</h1>
+    <p className="lead">Barsch und See sind für diesen ersten Funktionsumfang fest eingestellt.</p>
+    <div className="fixed-context"><span>Zielfisch</span><strong>Barsch</strong><span>Gewässer</span><strong>See</strong></div>
+    <div className="form-grid">
+      {Object.entries(choices).map(([key, values]) => <fieldset key={key}>
+        <legend>{({ season: 'Jahreszeit', timeOfDay: 'Tageszeit', turbidity: 'Wassertrübung', depth: 'Angeltiefe' } as Record<string, string>)[key]}</legend>
+        <div className="chips">{values.map(([value, label]) => <button type="button" key={value} className={conditions[key as keyof Conditions] === value ? 'selected' : ''} onClick={() => select(key as keyof typeof choices, value)}>{label}</button>)}</div>
+      </fieldset>)}
+      <fieldset><legend>Sichtbare Struktur <small>optional, mehrfach</small></legend><div className="chips">{structures.map(([value, label]) => <button type="button" key={value} className={conditions.observedStructure.includes(value) ? 'selected' : ''} onClick={() => toggle(value)}>{label}</button>)}</div></fieldset>
+    </div>
+    <button className="primary sticky-action" onClick={submit}>Drei Empfehlungen berechnen →</button>
+  </section>
+}

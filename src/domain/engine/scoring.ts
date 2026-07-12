@@ -1,42 +1,110 @@
-import type { Conditions, RankedSpot, ReasonContribution, SetupRecommendation, SpotType, LureType, Confidence, InventoryItem, InventoryMatch, AttemptStep, FishingSession, Recommendation } from '../models/types'
-import { spots } from '../catalogs/spots'; import { lures } from '../catalogs/lures'; import { perchProfile } from '../catalogs/profile'; import { RULESET_VERSION } from '../models/types'
-const clamp=(n:number)=>Math.max(0,Math.min(100,n));
-const reason=(ruleId:string,reasonCode:string,scoreDelta:number,...evidence:string[]):ReasonContribution=>({ruleId,reasonCode,scoreDelta,evidence})
+import { lures } from '../catalogs/lures'
+import { spots } from '../catalogs/spots'
+import type {
+  Conditions,
+  Confidence,
+  RankedSetup,
+  RankedSpot,
+  ReasonContribution,
+  Recommendation,
+  RecommendationDecision,
+  InventoryItem,
+} from '../models/types'
+import { explain } from './explanations'
 
-export function evaluateSpots(c:Conditions, catalog=spots):RankedSpot[]{
- return catalog.filter(s=>s.waters.includes(c.waterType)).map(spot=>{
-  const r:ReasonContribution[]=[]
-  if(c.observedStructure.includes(spot.feature)) r.push(reason('spot.observed','OBSERVED_STRUCTURE',20,spot.feature))
-  if(spot.seasonalAffinity.includes(c.season)) r.push(reason('spot.season','SEASONAL_SPOT',8,c.season))
-  if(c.depth!=='unknown' && ((c.depth==='shallow'&&spot.feature==='shallow')||(c.depth==='deep'&&['dropoff','vertical','harbor'].includes(spot.feature)))) r.push(reason('spot.depth','DEPTH_MATCH',12,c.depth))
-  if(c.current!=='unknown'&&['medium','strong'].includes(c.current)&&['current_break','bridge','inflow'].includes(spot.feature)) r.push(reason('spot.current','CURRENT_SHELTER',15,c.current))
-  if(c.timeOfDay!=='unknown'&&['dawn','dusk'].includes(c.timeOfDay)&&['shallow','vegetation','inflow'].includes(spot.feature)) r.push(reason('spot.feeding-time','FEEDING_WINDOW',8,c.timeOfDay))
-  if(c.light==='bright'&&['wood','bridge','vertical'].includes(spot.feature)) r.push(reason('spot.shadow','SHADE_IN_BRIGHT_LIGHT',10))
-  return {spot,score:clamp(50+r.reduce((n,x)=>n+x.scoreDelta,0)),reasons:r}
- }).sort((a,b)=>b.score-a.score||a.spot.priority-b.spot.priority||a.spot.id.localeCompare(b.spot.id))
+const clamp = (value: number) => Math.max(0, Math.min(100, value))
+const contribution = (ruleId: string, reasonCode: string, scoreDelta: number): ReasonContribution => ({ ruleId, reasonCode, scoreDelta })
+
+export function evaluateSpots(conditions: Conditions): RankedSpot[] {
+  return spots.map((spot) => {
+    const reasons: ReasonContribution[] = []
+    if (conditions.observedStructure.includes(spot.id)) reasons.push(contribution('spot.observed', 'OBSERVED_STRUCTURE', 20))
+    if (spot.seasonalAffinity.includes(conditions.season)) reasons.push(contribution('spot.season', 'SEASONAL_SPOT', 10))
+    if (conditions.depth !== 'unknown' && spot.depthAffinity.includes(conditions.depth)) reasons.push(contribution('spot.depth', 'DEPTH_MATCH', 12))
+    if (['dawn', 'dusk'].includes(conditions.timeOfDay) && spot.id === 'shallow') reasons.push(contribution('spot.feeding-window', 'FEEDING_WINDOW_SHALLOW', 10))
+    if (conditions.season === 'winter' && spot.id === 'shallow') reasons.push(contribution('spot.winter-shallow', 'WINTER_SHALLOW_PENALTY', -12))
+    return { spot, score: clamp(50 + reasons.reduce((sum, item) => sum + item.scoreDelta, 0)), reasons }
+  }).sort((a, b) => b.score - a.score || a.spot.priority - b.spot.priority || a.spot.id.localeCompare(b.spot.id))
 }
-const chooseColor=(c:Conditions)=>c.turbidity==='turbid'?'contrast':c.turbidity==='clear'?(c.light==='bright'?'transparent':'natural'):(c.timeOfDay==='night'?'contrast':'natural') as SetupRecommendation['color']
-const chooseSize=(c:Conditions):SetupRecommendation['size']=>c.waterTemperature==='cold'||c.fishingPressure==='high'?'small':c.activitySigns?.includes('baitfish')?'medium':'medium'
-const chooseWeight=(c:Conditions):SetupRecommendation['weight']=>c.current==='strong'||c.depth==='deep'?'heavy':c.current==='medium'||c.depth==='medium'?'medium':c.depth==='shallow'?'light':'medium'
-export function evaluateSetups(c:Conditions,_spot:RankedSpot,catalog=lures):SetupRecommendation[]{
- return catalog.filter(l=>c.depth==='unknown'||l.depths.includes(c.depth)).filter(l=>c.current==='unknown'||l.currents.includes(c.current)).map(lure=>{
-  const r:ReasonContribution[]=[]
-  if(c.turbidity==='turbid'&&['spinner','chatterbait','crankbait'].includes(lure.id)) r.push(reason('lure.vibration','TURBID_WATER_VIBRATION',15))
-  if(c.turbidity==='clear'&&['ned','drop-shot','twitchbait'].includes(lure.id)) r.push(reason('lure.subtle','CLEAR_WATER_SUBTLE',14))
-  if(c.waterTemperature==='cold'&&['drop-shot','ned','blade-bait'].includes(lure.id)) r.push(reason('lure.cold','COLD_WATER_SLOW',16))
-  if(c.fishingPressure==='high'&&['ned','drop-shot','free','wacky'].includes(lure.id)) r.push(reason('lure.pressure','PRESSURE_FINESSE',14))
-  if(c.activitySigns?.some(x=>['baitfish','hunting'].includes(x))&&['twitchbait','spinner','chatterbait','crankbait'].includes(lure.id)) r.push(reason('lure.active','ACTIVE_FISH_SEARCH_BAIT',14))
-  if(c.observedStructure.some(x=>['vegetation','wood'].includes(x))&&['texas','jika','free'].includes(lure.id)) r.push(reason('lure.cover','COVER_WEEDLESS',15))
-  if(c.depth==='deep'&&['jig','drop-shot','blade-bait'].includes(lure.id)) r.push(reason('lure.deep','DEEP_WATER_CONTROL',12))
-  if(c.current==='strong'&&['jig','cheburashka','blade-bait'].includes(lure.id)) r.push(reason('lure.current','CURRENT_CONTROL',12))
-  const color=chooseColor(c),size=chooseSize(c),weight=chooseWeight(c)
-  if(color==='contrast') r.push(reason('color.contrast','TURBID_WATER_NEEDS_CONTRAST',12,c.turbidity))
-  return {lure,score:clamp(50+r.reduce((n,x)=>n+x.scoreDelta,0)),size:lure.sizes.includes(size)?size:lure.sizes[0],color:lure.colors.includes(color)?color:lure.colors[0],weight:lure.weights.includes(weight)?weight:lure.weights[lure.weights.length-1],mounting:lure.mounting,guidance:lure.guidance[0],reasons:r}
- }).sort((a,b)=>b.score-a.score||a.lure.priority-b.lure.priority||a.lure.id.localeCompare(b.lure.id))
+
+function setupProperties(conditions: Conditions, lure: (typeof lures)[number]) {
+  const color = conditions.turbidity === 'clear' ? 'natural' : conditions.turbidity === 'turbid' ? 'contrast' : 'transparent'
+  const size = conditions.season === 'winter' ? 'small' : 'medium'
+  const weight = conditions.depth === 'deep' ? 'heavy' : conditions.depth === 'shallow' ? 'light' : 'medium'
+  return {
+    color: lure.id === 'ned' && conditions.turbidity === 'clear' ? 'transparent' : color,
+    size: lure.sizes.includes(size) ? size : lure.sizes[0],
+    weight,
+  } as const
 }
-export function calculateConfidence(c:Conditions,scores:number[]):Confidence { const known=[c.timeOfDay,c.turbidity,c.current,c.depth].filter(x=>x!=='unknown').length+(c.observedStructure.length?1:0)+(c.light?1:0)+(c.waterTemperature?1:0)+(c.fishingPressure&&c.fishingPressure!=='unknown'?1:0); const coverage=known/8; const gap=(scores[0]??0)-(scores[1]??0); return coverage>=.8&&gap>=8?'high':coverage>=.5?'medium':'low' }
-export function applyInventoryPreference(setups:SetupRecommendation[],inventory:InventoryItem[]):InventoryMatch|undefined { const active=inventory.filter(i=>i.enabled&&i.quantityState!=='empty'); const top=setups[0]; const exact=active.find(i=>i.lureTypeId===top.lure.id); if(exact)return {item:exact,kind:'exact',explanation:'Dieser passende Köder ist in deiner Köderbox.'}; for(const replacementId of top.lure.replacementIds){const item=active.find(i=>i.lureTypeId===replacementId);if(item)return {item,kind:'replacement',explanation:'Verfügbarer Ersatz mit ähnlicher Präsentation.'}} return undefined }
-export function buildAttemptPlan(spot:RankedSpot,setups:SetupRecommendation[]):AttemptStep[]{ const selected=[setups[0],setups[1]??setups[0],setups.find(s=>['spinner','chatterbait','crankbait','twitchbait'].includes(s.lure.id))??setups[2]??setups[0]]; return selected.map((setup,i)=>({index:i+1,title:['Beste Übereinstimmung','Tiefe und Präsentation variieren','Aktiv nach Fischen suchen'][i],spotLabel:spot.spot.label,setup,limit:['12 Würfe oder 8 Minuten','10–15 Würfe ohne Kontakt','15 Würfe, dann Spot wechseln'][i],change:['Starte kontrolliert und beobachte Kontakte.','Ändere zunächst Tempo und Tiefe.','Nutze mehr Reiz und suche mehr Wasser ab.'][i],status:i===0?'active':'pending'})) }
-export function createRecommendation(c:Conditions,inventory:InventoryItem[]=[]):Recommendation { const rankedSpots=evaluateSpots(c); const rankedSetups=evaluateSetups(c,rankedSpots[0]); const primary=rankedSetups[0]; return {id:`${rankedSpots[0].spot.id}-${primary.lure.id}`,spot:rankedSpots[0],primarySetup:primary,inventoryMatch:applyInventoryPreference(rankedSetups,inventory),reasonCodes:[...rankedSpots[0].reasons,...primary.reasons].map(r=>r.reasonCode),confidence:calculateConfidence(c,[rankedSpots[0].score,rankedSpots[1]?.score??0]),alternatives:rankedSetups.slice(1,4),attemptPlan:buildAttemptPlan(rankedSpots[0],rankedSetups)} }
-export function createSession(c:Conditions,inventory:InventoryItem[]=[]):FishingSession { const recommendation=createRecommendation(c,inventory); return {id:crypto.randomUUID(),rulesetVersion:RULESET_VERSION,conditions:c,recommendations:[recommendation],feedback:[],createdAt:new Date().toISOString()} }
-export const fishProfile=perchProfile
+
+export function evaluateSetups(conditions: Conditions, spot: RankedSpot): RankedSetup[] {
+  return lures
+    .filter((lure) => conditions.depth === 'unknown' || lure.depths.includes(conditions.depth))
+    .map((lure) => {
+      const reasons: ReasonContribution[] = []
+      if (conditions.turbidity === 'clear' && lure.style === 'finesse') reasons.push(contribution('lure.clear', 'CLEAR_WATER_FINESSE', 16))
+      if (conditions.turbidity === 'turbid' && lure.style === 'search') reasons.push(contribution('lure.turbid', 'TURBID_WATER_SEARCH', 16))
+      if (conditions.season === 'winter' && lure.style === 'finesse') reasons.push(contribution('lure.winter', 'COLD_SEASON_SLOW', 16))
+      if (spot.spot.id === 'dropoff' && ['jig', 'drop-shot'].includes(lure.id)) reasons.push(contribution('lure.dropoff', 'DROPOFF_CONTROL', 14))
+      if (spot.spot.id === 'vegetation' && ['twitchbait', 'spinner'].includes(lure.id)) reasons.push(contribution('lure.vegetation', 'VEGETATION_EDGE_SEARCH', 12))
+      if (spot.spot.id === 'shallow' && lure.style === 'search') reasons.push(contribution('lure.shallow', 'SHALLOW_SEARCH', 12))
+      const properties = setupProperties(conditions, lure)
+      return { lure, score: clamp(50 + reasons.reduce((sum, item) => sum + item.scoreDelta, 0)), ...properties, reasons } as RankedSetup
+    })
+    .sort((a, b) => b.score - a.score || a.lure.priority - b.lure.priority || a.lure.id.localeCompare(b.lure.id))
+}
+
+function confidence(conditions: Conditions, scoreGap: number): Confidence {
+  const known = [conditions.timeOfDay, conditions.turbidity, conditions.depth].filter((value) => value !== 'unknown').length + (conditions.observedStructure.length ? 1 : 0)
+  if (known === 4 && scoreGap >= 8) return 'high'
+  if (known >= 2) return 'medium'
+  return 'low'
+}
+
+function alternativeFor(setup: RankedSetup): string {
+  if (setup.lure.style === 'search') return 'Nach 12–15 Würfen auf Ned Rig wechseln und deutlich langsamer führen.'
+  if (setup.lure.id === 'drop-shot') return 'Nach 8 Minuten ohne Kontakt einen Gummifisch am Jigkopf eine Gewichtsklasse schwerer anbieten.'
+  return 'Nach 10–12 Würfen Führung verlangsamen; bleibt der Kontakt aus, mit Twitchbait mehr Wasser absuchen.'
+}
+
+function rankCandidates(conditions: Conditions): Array<Recommendation & { totalScore: number }> {
+  const rankedSpots = evaluateSpots(conditions)
+  const candidates = rankedSpots.flatMap((spot) => evaluateSetups(conditions, spot).map((setup) => ({ spot, setup })))
+  const selected: typeof candidates = []
+  for (const candidate of candidates.sort((a, b) => (b.spot.score + b.setup.score) - (a.spot.score + a.setup.score) || a.spot.spot.priority - b.spot.spot.priority || a.setup.lure.priority - b.setup.lure.priority)) {
+    if (!selected.some((item) => item.setup.lure.id === candidate.setup.lure.id)) selected.push(candidate)
+    if (selected.length === lures.length) break
+  }
+  const topScore = selected[0].spot.score + selected[0].setup.score
+  const nextScore = selected[1].spot.score + selected[1].setup.score
+  return selected.map(({ spot, setup }, index) => ({
+    rank: index + 1,
+    spot,
+    setup,
+    confidence: confidence(conditions, topScore - nextScore),
+    reasons: [...spot.reasons, ...setup.reasons].filter((item) => item.scoreDelta > 0).sort((a, b) => b.scoreDelta - a.scoreDelta).slice(0, 3).map(explain),
+    attemptLimit: index === 0 ? '12 Würfe oder 8 Minuten' : index === 1 ? '10–12 Würfe' : '15 Würfe, dann Spot neu bewerten',
+    noBiteAlternative: alternativeFor(setup),
+    totalScore: spot.score + setup.score,
+  }))
+}
+
+export function createRecommendations(conditions: Conditions): Recommendation[] {
+  return rankCandidates(conditions).slice(0, 3)
+}
+
+export function createRecommendationDecision(conditions: Conditions, inventory: InventoryItem[]): RecommendationDecision {
+  const completeRanking = rankCandidates(conditions)
+  const available = new Set(inventory.map((item) => item.lureTypeId))
+  const practicalPrimary = completeRanking.find((item) => available.has(item.setup.lure.id))
+  const bestMissing = completeRanking.find((item) => !available.has(item.setup.lure.id))
+  const suitabilityGap = practicalPrimary ? completeRanking[0].totalScore - practicalPrimary.totalScore : 0
+  return {
+    expertRanking: completeRanking.slice(0, 3),
+    practicalPrimary,
+    bestMissing,
+    suitabilityGap,
+    suitabilityWarning: suitabilityGap >= 15 ? `Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.` : undefined,
+  }
+}

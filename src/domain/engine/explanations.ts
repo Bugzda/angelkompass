@@ -1,4 +1,17 @@
 import type { ReasonContribution } from '../models/types'
-const texts:Record<string,string>={OBSERVED_STRUCTURE:'Die sichtbare Struktur ist ein direkter Hinweis auf diesen Spot.',SEASONAL_SPOT:'Dieser Spot passt zum typischen saisonalen Verhalten von Barschen.',DEPTH_MATCH:'Spot und geschätzte Angeltiefe passen zusammen.',CURRENT_SHELTER:'Hier können Barsche energiesparend neben der Strömung stehen.',FEEDING_WINDOW:'In diesem Zeitfenster lohnt sich die Suche in nahrungsreichen Bereichen.',SHADE_IN_BRIGHT_LIGHT:'Schatten bietet bei hellem Licht Deckung.',TURBID_WATER_VIBRATION:'Druckwellen helfen Barschen, den Köder im trüben Wasser zu finden.',CLEAR_WATER_SUBTLE:'Im klaren Wasser wirkt eine feine Präsentation unauffälliger.',COLD_WATER_SLOW:'Bei kaltem Wasser ist eine langsame, kontrollierte Führung sinnvoll.',PRESSURE_FINESSE:'Bei hohem Angeldruck kann eine dezente Präsentation überzeugen.',ACTIVE_FISH_SEARCH_BAIT:'Aktivitätszeichen sprechen für einen Köder, der Wasser absucht.',COVER_WEEDLESS:'Die Montage lässt sich kontrolliert an Deckung präsentieren.',DEEP_WATER_CONTROL:'Dieses Setup hält guten Kontakt in tieferem Wasser.',CURRENT_CONTROL:'Das Setup lässt sich auch in stärkerer Strömung kontrollieren.',TURBID_WATER_NEEDS_CONTRAST:'Das trübe Wasser spricht für eine kontrastreiche Farbe.'}
-export const explain=(r:ReasonContribution)=>texts[r.reasonCode]??'Diese Kombination passt zu deinen Angaben.'
-export const topExplanations=(reasons:ReasonContribution[])=>reasons.filter(r=>r.scoreDelta>0).sort((a,b)=>b.scoreDelta-a.scoreDelta).slice(0,4).map(explain)
+
+const texts: Record<string, string> = {
+  OBSERVED_STRUCTURE: 'Die sichtbare Struktur ist ein direkter Hinweis auf diesen Spot.',
+  SEASONAL_SPOT: 'Der Spot passt zum typischen saisonalen Aufenthaltsbereich von Barschen.',
+  DEPTH_MATCH: 'Spot und geschätzte Angeltiefe passen zusammen.',
+  FEEDING_WINDOW_SHALLOW: 'In der Dämmerung lohnt sich die Suche nach jagenden Barschen im Flachen.',
+  WINTER_SHALLOW_PENALTY: 'Flaches Wasser ist im Winter oft nur kurzzeitig interessant.',
+  CLEAR_WATER_FINESSE: 'Im klaren Wasser wirkt eine feine Präsentation besonders natürlich.',
+  TURBID_WATER_SEARCH: 'Im trüben Wasser hilft ein aktiver Suchköder den Barschen bei der Ortung.',
+  COLD_SEASON_SLOW: 'Im Winter ist eine langsame Präsentation mit langen Pausen sinnvoll.',
+  DROPOFF_CONTROL: 'Dieses Setup hält kontrollierten Kontakt an der Tiefenkante.',
+  VEGETATION_EDGE_SEARCH: 'Der Köder lässt sich parallel an der Krautkante führen und sucht Strecke ab.',
+  SHALLOW_SEARCH: 'Ein bewegter Suchköder deckt die Flachwasserzone effizient ab.',
+}
+
+export const explain = (reason: ReasonContribution) => texts[reason.reasonCode] ?? 'Diese Kombination passt zu deinen Angaben.'
