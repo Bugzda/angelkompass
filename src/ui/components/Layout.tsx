@@ -31,7 +31,7 @@ export function Layout() {
     {updateAvailable&&<aside className="update-banner" aria-live="polite"><Icon name="update"/><span><strong>Neue Version verfügbar.</strong> Jetzt sicher aktualisieren.</span><div><button className="secondary" onClick={dismissUpdate}>Später</button><button className="primary" onClick={applyUpdate} disabled={Boolean(activeSession)} title={activeSession?'Beende zuerst die aktive Session.':undefined}>Jetzt aktualisieren</button></div>{activeSession&&<small>Während deiner aktiven Session wird nicht neu geladen.</small>}</aside>}
     <main className="app-main"><Outlet /></main>
     <nav className="bottom" aria-label="Hauptnavigation">
-      {navItems.map(item=>{const active=isSectionActive(item.section);return <Link key={item.section} to={item.to} className={active?'active':undefined} aria-current={active?'page':undefined}><Icon name={item.icon}/><span>{item.label}</span></Link>})}
+      {navItems.map(item=>{const active=isSectionActive(item.section);return <Link key={item.section} to={item.to} className={active?'active':undefined} aria-current={active?'page':undefined}>{item.section==='home'?<BrandMark/>:<Icon name={item.icon}/>}<span>{item.label}</span></Link>})}
     </nav>
   </div>
 }
