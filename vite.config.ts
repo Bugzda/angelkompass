@@ -9,7 +9,7 @@ export default defineConfig(({ command }) => {
   plugins: [react(), VitePWA({
     registerType: 'autoUpdate',
     includeAssets: ['icon.svg'],
-    manifest: { name: 'Angelkompass', short_name: 'Angelkompass', description: 'Barsch-Empfehlungen für das Uferangeln', theme_color: '#0a3d3f', background_color: '#f4f1e8', display: 'standalone', start_url: base, scope: base, lang: 'de', icons: [{src:'icon.svg',sizes:'any',type:'image/svg+xml',purpose:'any maskable'}] },
+    manifest: { name: 'Angelkompass', short_name: 'Angelkompass', description: 'Offline-Entscheidungshilfe für Barsch und Hecht vom Ufer', theme_color: '#0a3d3f', background_color: '#f4f1e8', display: 'standalone', start_url: base, scope: base, lang: 'de', icons: [{src:'icon.svg',sizes:'any',type:'image/svg+xml',purpose:'any maskable'}] },
     workbox: { navigateFallback: `${base}index.html`, globPatterns: ['**/*.{js,css,html,svg}'] }
   })],
   test: { environment: 'jsdom', setupFiles: './src/test/setup.ts' }
