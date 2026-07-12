@@ -28,7 +28,7 @@ describe('Terrain-Redesign',()=>{
 
   it('zeigt eine deaktivierte Zander-Artkarte neben Barsch und Hecht',()=>{
     render(<MemoryRouter><SpeciesPage/></MemoryRouter>)
-    expect(screen.getByText('3 Spots · 11 Ködertypen')).toBeInTheDocument()
+    expect(screen.getByText('3 Spots · 10 Ködertypen')).toBeInTheDocument()
     expect(screen.getByText('4 Spots · 9 Ködertypen')).toBeInTheDocument()
     expect(screen.getByRole('link',{name:/Barsch/})).toHaveAttribute('href','/neu/perch')
     expect(screen.getByRole('link',{name:/Hecht/})).toHaveAttribute('href','/neu/pike')

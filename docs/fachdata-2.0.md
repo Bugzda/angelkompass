@@ -4,7 +4,7 @@ Stand: 12. Juli 2026. Scope: Europäischer Barsch und Hecht, See, Uferangeln, Ku
 
 ## Datenverträge
 
-- Die sichtbaren Kataloge enthalten elf Barsch- und neun Hecht-Kategorien. Neu sind ausschließlich `tail-spinner` und `tailbait`.
+- Die sichtbaren Kataloge enthalten zehn Barsch- und neun Hecht-Kategorien. Drop Shot wurde aus dem aktiven Barsch-Katalog entfernt; neu in Fachdata 2.0 sind `tail-spinner` und `tailbait`.
 - `LureType` enthält artspezifische Zentimeterbereiche, Material und mehrere Präsentationsprofile. Texas/Offset und Carolina sind Profile des Barsch-Softbaits; Shallow Screw und weedless Offset sind Profile des Hecht-Softbaits.
 - Offene Hecht-Großköderbereiche werden ausdrücklich als `20–25+ cm` bei Softbait/Tailbait und `16–22+ cm` bei Hardbaits ausgegeben. Bei Metallködern steht das Ködergesamtgewicht vor der nur ergänzenden Längenangabe.
 - `ResolvedPresentation` friert Profil-ID, Montage, Größe, Beschwerungsart, Beschwerung und Führung in der Empfehlung ein. Alte Sessions ohne dieses Feld verwenden ausschließlich ihre gespeicherten Legacy-Texte.

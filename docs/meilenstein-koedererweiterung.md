@@ -21,7 +21,7 @@ Alle neuen Typen stehen über denselben statischen Katalog automatisch in der K�
 
 ## Wechselstrategie
 
-Alternativen werden aus dem vollständigen fachlichen Ranking am selben Spot gewählt, niemals aus dem persönlichen Bestand. Searchbaits wechseln zu bester Finesse-/Bottom-Option; Finesse/Bottom zu bestem Searchbait. Popper bevorzugt Twitchbait, Spinnerbait oder Crankbait als Folgeschritt, Blade Bait Jig oder Drop Shot.
+Alternativen werden aus dem vollständigen fachlichen Ranking am selben Spot gewählt, niemals aus dem persönlichen Bestand. Searchbaits wechseln zu bester Finesse-/Bottom-Option; Finesse/Bottom zu bestem Searchbait. Popper bevorzugt Twitchbait, Spinnerbait oder Crankbait als Folgeschritt, Blade Bait den Gummifisch am Jig.
 
 ## Nachweise
 

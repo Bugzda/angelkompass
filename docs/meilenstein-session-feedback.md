@@ -4,11 +4,11 @@ Stand: 12. Juli 2026
 
 ## Ziel
 
-Eine fachliche Top-3-Empfehlung kann als lokale Angelsession gestartet werden. Die App protokolliert Biss, Fang und ausbleibenden Erfolg und führt bei „Kein Erfolg“ kontrolliert durch den bestehenden Dreiphasenplan. Das Feedback verändert weder Ranking noch Regelgewichte.
+Eine der maximal drei vorhandenen Empfehlungen kann als lokale Angelsession gestartet werden. Die App protokolliert Biss, Fang und ausbleibenden Erfolg und führt bei „Kein Erfolg“ kontrolliert durch den bestehenden Dreiphasenplan. Das Feedback verändert weder Ranking noch Regelgewichte.
 
 ## Festgelegter Ablauf
 
-1. Bedingungen erfassen und unveränderte fachliche Top 3 berechnen.
+1. Bedingungen erfassen, fachliche Rangfolge berechnen und anschließend auf den persönlichen Bestand projizieren.
 2. Eine der drei Empfehlungen bewusst auswählen.
 3. In der aktiven Phase Biss, Fang oder keinen Erfolg protokollieren.
 4. Nur „Kein Erfolg“ schaltet von Ausgangsversuch über Präzisieren zu Spot wechseln.

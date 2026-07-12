@@ -15,7 +15,7 @@ Qualitätsprüfung: `pnpm lint`, `pnpm test` und `pnpm build`.
 
 Die Fachlogik liegt unabhängig von React unter `src/domain`. Der Umfang ist bewusst auf einen See, drei Spot-Typen und zehn Ködertypen begrenzt. Es gibt keine externe API und kein Backend.
 
-Die Engine berechnet zuerst eine unveränderte fachliche Rangfolge. Der lokal gespeicherte persönliche Bestand wird erst anschließend ausgewertet: Die beste vorhandene Option wird praktisch hervorgehoben, die beste fehlende Option separat gezeigt und ein evidenzkalibrierter Eignungsabstand ab 8 Punkten transparent gewarnt.
+Die Engine berechnet zuerst eine unveränderte fachliche Rangfolge. Der lokal gespeicherte persönliche Bestand wird erst anschließend ausgewertet: Sichtbar und startbar sind maximal drei tiefenkompatible, vorhandene Köder; abweichende vorhandene Größen werden transparent als Kompromiss verwendet. Die beste fehlende Option erscheint separat als fachliche Ergänzung.
 
 ## Fachliche Eingaben
 
@@ -27,7 +27,7 @@ Das vollständige Wissensarchiv unter `research/` bleibt Referenzmaterial und wi
 
 ## Lokale Sessions
 
-Eine der fachlichen Top-3-Empfehlungen kann als aktive Session gespeichert werden. Biss und Fang werden protokolliert; „Kein Erfolg“ schaltet durch den dreistufigen Wechselplan. Sessions und Verlauf bleiben ausschließlich auf dem Gerät und verändern weder Ranking noch Regelgewichte. Details stehen in [`docs/meilenstein-session-feedback.md`](docs/meilenstein-session-feedback.md).
+Eine der maximal drei vorhandenen Empfehlungen kann als aktive Session gespeichert werden. Biss und Fang werden protokolliert; „Kein Erfolg“ schaltet durch den dreistufigen Wechselplan. Sessions und Verlauf bleiben ausschließlich auf dem Gerät und verändern weder Ranking noch Regelgewichte. Details stehen in [`docs/meilenstein-session-feedback.md`](docs/meilenstein-session-feedback.md).
 
 ## Veröffentlichung
 

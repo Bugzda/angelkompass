@@ -17,7 +17,7 @@ Aktuell enthalten:
 - Gewässer ausschließlich See.
 - Schwerpunkt ausschließlich Uferangeln.
 - Drei Spot-Typen: Krautkante, Flachwasserzone und Tiefenkante.
-- Zehn Ködertypen: Jig, Ned Rig, Drop Shot, Twitchbait, Spinner, Crankbait, Chatterbait, Blade Bait, Spinnerbait und Popper.
+- Zehn aktive Barsch-Ködertypen ohne Drop Shot; der zusätzliche Spinnertail bleibt Teil des erweiterten Katalogs.
 - Hechtprofil mit vier Spots: Schilf-/Krautkante, Flachwasser/Bucht, Tiefenübergang und harte Deckung.
 - Hechtprofil mit acht Kernködern: Gummifisch, Jerkbait, Crankbait, Spinnerbait, Blinker, Spinner, Swimbait und Topwater.
 - Manuelle Eingaben für Jahreszeit, Tageszeit, Trübung, Tiefe, Wassertemperaturklasse, Licht, Aktivitätsanzeichen, Krautbild und weitere sichtbare Struktur.
@@ -105,12 +105,12 @@ Für Hecht gilt: Topwater ist nur im flachen, warmen Aktivitätsfenster fachlich
 1. Startseite → „Session starten“.
 2. Nutzer wählt Barsch oder Hecht.
 3. Nutzer erfasst die artspezifische See-Situation über Chips; bei Hecht muss zusätzlich die Sicherheitsbestätigung gesetzt werden.
-4. Ergebnis zeigt zunächst beste vorhandene und beste fehlende Option.
-5. Darunter erscheinen die fachlichen Top 3.
+4. Ergebnis zeigt maximal drei tiefenkompatible Köder aus dem persönlichen Bestand; vorhandene Nachbargrößen dürfen transparent als Kompromiss verwendet werden.
+5. Die beste fehlende Option und nicht bestätigte Spots erscheinen ausschließlich als separate optionale Hinweise.
 6. Jede Karte enthält Datenlage, Evidenz, Größe, Gewicht, Farbe, Montage, Führung, Gründe und drei Wechselphasen.
 7. Der Bestand wird unter `/bestand` artspezifisch in `angelkompass.inventory.v3` lokal gespeichert; v1/v2-Einträge werden verlustarm übernommen und bis zur Größenprüfung markiert. Alte Schlüssel bleiben erhalten.
 
-Die Bedingungen werden zur Berechnung als React-Router-State an `/empfehlung` übergeben. Erst nach bewusster Auswahl einer Top-3-Empfehlung werden Bedingungen und Empfehlung einschließlich der aufgelösten Präsentation als unveränderlicher Session-Snapshot lokal gespeichert. Neue Hecht-Sessions enthalten `pikeSafetyConfirmed: true` und `pike-lake-2.0.0`; alte v1-Snapshots bleiben lesbar, verwenden ihre gespeicherten Montage-/Führungstexte und werden nicht neu berechnet. Es darf nur eine aktive Session geben; abgeschlossene Sessions stehen unter `/verlauf` bereit.
+Die Bedingungen werden zur Berechnung als React-Router-State an `/empfehlung` übergeben. Erst nach bewusster Auswahl einer vorhandenen Empfehlung werden Bedingungen und Empfehlung einschließlich der aufgelösten Präsentation als unveränderlicher Session-Snapshot lokal gespeichert. Neue Hecht-Sessions enthalten `pikeSafetyConfirmed: true` und `pike-lake-2.0.0`; alte v1-Snapshots bleiben lesbar, verwenden ihre gespeicherten Montage-/Führungstexte und werden nicht neu berechnet. Es darf nur eine aktive Session geben; abgeschlossene Sessions stehen unter `/verlauf` bereit.
 
 ## 5. Wichtige Dateien
 
