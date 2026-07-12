@@ -95,12 +95,7 @@ function rankCandidates(conditions:Conditions):Array<Recommendation&{totalScore:
 export function createRecommendations(conditions:Conditions):Recommendation[]{return rankCandidates(conditions).slice(0,3)}
 
 export function isRecommendationAvailable(conditions:Conditions,inventory:InventoryItem[],recommendation:Recommendation){
-  return inventory.some(item=>{
-    if(item.lureTypeId!==recommendation.setup.lure.id)return false
-    if(item.targetFish)return item.targetFish===conditions.targetFish&&item.sizes?.includes(recommendation.setup.size)===true
-    if(conditions.targetFish==='perch'&&(!item.sizes||item.legacyPerch))return true
-    return item.sizes?.includes(recommendation.setup.size)===true
-  })
+  return inventory.some(item=>item.targetFish===conditions.targetFish&&item.lureTypeId===recommendation.setup.lure.id&&item.sizes.includes(recommendation.setup.size))
 }
 
 export function createRecommendationDecision(conditions:Conditions,inventory:InventoryItem[]):RecommendationDecision{

@@ -2,7 +2,8 @@ import type { Conditions, GuidanceMode, LureType, NumericRange, RankedSpot, Reso
 
 const rangeLabel=(range:NumericRange|undefined,unit:string)=>{
   if(!range)return undefined
-  return range.max===undefined?`ab ${range.min} ${unit}`:`${range.min}–${range.max} ${unit}`
+  if(range.max===undefined)return`ab ${range.min} ${unit}`
+  return`${range.min}–${range.max}${range.openEnded?'+':''} ${unit}`
 }
 
 export function sizeLabelFor(lure:LureType,size:SizeClass){

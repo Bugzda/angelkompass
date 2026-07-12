@@ -60,6 +60,7 @@ for(const ruleFile of ['src/domain/rules/perchLakeRules.ts','src/domain/rules/pi
     const ids=[...line.matchAll(/'([SP]\d+)'/g)].map(match=>match[1])
     for(const id of ids)if(!productSources.has(id))errors.push(`${ruleId}: unbekannte produktive Quelle ${id}`)
     if(evidenceClass==='science'&&!ids.some(id=>productSources.get(id)?.evidenceType==='science'))errors.push(`${ruleId}: Science-Regel ohne wissenschaftliche Quelle`)
+    if(evidenceClass==='science'&&ids.some(id=>productSources.get(id)?.evidenceType!=='science'))errors.push(`${ruleId}: Science-Regel referenziert eine nichtwissenschaftliche Quelle`)
   }
 }
 

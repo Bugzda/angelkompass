@@ -18,9 +18,8 @@ const supportedSizes=(fish:TargetFish,id:LureType['id'])=>lureFor(fish,id)?.size
 function mergeItems(items:InventoryItem[]){
   const merged=new Map<string,InventoryItem>()
   for(const item of items){
-    if(!item.targetFish)continue
     const supported=supportedSizes(item.targetFish,item.lureTypeId)
-    const valid=(item.sizes??[]).filter(size=>supported.includes(size))
+    const valid=item.sizes.filter(size=>supported.includes(size))
     if(!valid.length)continue
     const key=`${item.targetFish}:${item.lureTypeId}`
     const previous=merged.get(key)
@@ -91,13 +90,13 @@ export function useInventory(){
     if(!supported.includes(size))return current
     const found=current.find(item=>item.targetFish===targetFish&&item.lureTypeId===lureTypeId)
     if(!found)return[...current,{targetFish,lureTypeId,sizes:[size],migratedNeedsReview:false}]
-    const next=found.sizes?.includes(size)?found.sizes.filter(item=>item!==size):[...(found.sizes??[]),size]
+    const next=found.sizes.includes(size)?found.sizes.filter(item=>item!==size):[...found.sizes,size]
     return current.map(item=>item===found?{...item,sizes:next,migratedNeedsReview:false}:item).filter(item=>item!==found||next.length>0)
   })
   const toggleAllSizes=(targetFish:TargetFish,lureTypeId:LureType['id'])=>setInventory(current=>{
     const all=supportedSizes(targetFish,lureTypeId)
     const found=current.find(item=>item.targetFish===targetFish&&item.lureTypeId===lureTypeId)
-    const hasAll=Boolean(found)&&all.every(size=>found?.sizes?.includes(size))
+    const hasAll=Boolean(found)&&all.every(size=>found?.sizes.includes(size))
     if(hasAll)return current.filter(item=>item!==found)
     if(!found)return[...current,{targetFish,lureTypeId,sizes:[...all],migratedNeedsReview:false}]
     return current.map(item=>item===found?{...item,sizes:[...all],migratedNeedsReview:false}:item)

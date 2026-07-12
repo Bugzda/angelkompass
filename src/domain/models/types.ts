@@ -37,7 +37,7 @@ export interface Conditions {
 
 export interface SpotType { id: SpotFeature; label: string; description: string; seasonalAffinity: Season[]; depthAffinity: Array<Exclude<Depth, 'unknown'>>; priority: number }
 export type LureId = 'jig' | 'ned' | 'drop-shot' | 'twitchbait' | 'spinner' | 'crankbait' | 'chatterbait' | 'blade-bait' | 'spinnerbait' | 'popper' | 'tail-spinner' | 'jerkbait' | 'spoon' | 'swimbait' | 'tailbait'
-export interface NumericRange { min: number; max?: number }
+export interface NumericRange { min: number; max?: number; openEnded?: boolean }
 export interface GuidanceSet { slow: string; controlled: string; active: string }
 export interface PresentationProfile {
   id: string
@@ -93,7 +93,7 @@ export interface Recommendation {
   switchPlan: SwitchStep[]
 }
 
-export interface InventoryItem { targetFish?: TargetFish; lureTypeId: LureType['id']; sizes?: SizeClass[]; migratedNeedsReview?: boolean; legacyPerch?: boolean }
+export interface InventoryItem { targetFish: TargetFish; lureTypeId: LureType['id']; sizes: SizeClass[]; migratedNeedsReview?: boolean }
 export interface RecommendationDecision { expertRanking: Recommendation[]; practicalPrimary?: Recommendation; bestMissing?: Recommendation; suitabilityGap: number; suitabilityWarning?: string; hotWaterWarning?: string }
 
 export type SessionStatus = 'active' | 'completed'

@@ -6,6 +6,7 @@ Stand: 12. Juli 2026. Scope: Europäischer Barsch und Hecht, See, Uferangeln, Ku
 
 - Die sichtbaren Kataloge enthalten elf Barsch- und neun Hecht-Kategorien. Neu sind ausschließlich `tail-spinner` und `tailbait`.
 - `LureType` enthält artspezifische Zentimeterbereiche, Material und mehrere Präsentationsprofile. Texas/Offset und Carolina sind Profile des Barsch-Softbaits; Shallow Screw und weedless Offset sind Profile des Hecht-Softbaits.
+- Offene Hecht-Großköderbereiche werden ausdrücklich als `20–25+ cm` bei Softbait/Tailbait und `16–22+ cm` bei Hardbaits ausgegeben. Bei Metallködern steht das Ködergesamtgewicht vor der nur ergänzenden Längenangabe.
 - `ResolvedPresentation` friert Profil-ID, Montage, Größe, Beschwerungsart, Beschwerung und Führung in der Empfehlung ein. Alte Sessions ohne dieses Feld verwenden ausschließlich ihre gespeicherten Legacy-Texte.
 - Terminalgewicht, Ködergesamtgewicht und unbeschwerte Montage sind getrennte Begriffe. Wo keine belastbare Grammspanne vorliegt, wird keine Zahl erzeugt.
 - Farbe bleibt eine reine, material- und situationsabhängige Projektion. Sie verändert weder Spot- noch Köderscore.
@@ -20,7 +21,7 @@ Stand: 12. Juli 2026. Scope: Europäischer Barsch und Hecht, See, Uferangeln, Ku
 
 ## Bestandsmigration
 
-Aktueller Schlüssel ist `angelkompass.inventory.v3` mit `{ targetFish, lureTypeId, sizes, migratedNeedsReview? }`.
+Aktueller Schlüssel ist `angelkompass.inventory.v3` mit dem strikten Vertrag `{ targetFish, lureTypeId, sizes, migratedNeedsReview? }`. Die praktische Verfügbarkeit verlangt immer die passende Fischart, Köder-ID und Größe; artslose Altobjekte werden nicht direkt ausgewertet.
 
 - v1 wird als Barschbestand mit allen vom jeweiligen Köder unterstützten Größen übernommen.
 - v2 wird für passende Fischarten übernommen; Hecht nur bei explizitem `medium` oder `large`.

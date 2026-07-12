@@ -24,6 +24,8 @@ describe('lokaler Session-Zustandsautomat', () => {
     expect(created?.recommendation).toEqual(recommendation)
     expect(sessionStore.create(conditions, createRecommendations(conditions)[1])).toBeUndefined()
     expect(sessionStore.getSnapshot()).toHaveLength(1)
+    expect(created?.rulesetVersion).toBe('perch-lake-2.0.0')
+    expect(created?.recommendation.setup.resolvedPresentation).toBeDefined()
   })
 
   it('hält die Phase bei Biss und Fang', () => {
