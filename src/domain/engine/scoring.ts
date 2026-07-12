@@ -1,114 +1,38 @@
 import { lures } from '../catalogs/lures'
 import { spots } from '../catalogs/spots'
-import type {
-  Conditions,
-  Confidence,
-  RankedSetup,
-  RankedSpot,
-  ReasonContribution,
-  Recommendation,
-  RecommendationDecision,
-  InventoryItem,
-} from '../models/types'
+import type { Conditions, ConfidenceLevel, ConfidenceMetric, InventoryItem, RankedSetup, RankedSpot, ReasonContribution, Recommendation, RecommendationDecision, RuleGroup, SwitchStep } from '../models/types'
+import { allRules, evidencePoints, groupCaps, setupRules, spotRules, type ScoringContext, type ScoringRule } from '../rules/perchLakeRules'
 import { explain } from './explanations'
-import { evidencePoints, evidenceRules } from '../rules/perchLakeRules'
 
-const clamp = (value: number) => Math.max(0, Math.min(100, value))
-const contribution = (ruleId: string, reasonCode: string, scoreDelta: number): ReasonContribution => ({ ruleId, reasonCode, scoreDelta })
+const clamp = (value:number,min=0,max=100)=>Math.max(min,Math.min(max,value))
+const level=(value:number,high:number,medium:number):ConfidenceLevel=>value>=high?'high':value>=medium?'medium':'low'
 
-export function evaluateSpots(conditions: Conditions): RankedSpot[] {
-  return spots.map((spot) => {
-    const reasons: ReasonContribution[] = []
-    if (conditions.observedStructure.includes(spot.id)) reasons.push(contribution('spot.observed', 'OBSERVED_STRUCTURE', 20))
-    if (spot.id === 'vegetation' && ['spring', 'summer'].includes(conditions.season)) reasons.push(contribution(evidenceRules.springSummerVegetation.id, evidenceRules.springSummerVegetation.reasonCode, evidencePoints(evidenceRules.springSummerVegetation)))
-    if (spot.id === 'dropoff' && conditions.season === 'autumn') reasons.push(contribution(evidenceRules.autumnDropoff.id, evidenceRules.autumnDropoff.reasonCode, evidencePoints(evidenceRules.autumnDropoff)))
-    if (spot.id === 'dropoff' && conditions.season === 'winter') reasons.push(contribution(evidenceRules.winterDropoff.id, evidenceRules.winterDropoff.reasonCode, evidencePoints(evidenceRules.winterDropoff)))
-    if (conditions.depth !== 'unknown' && spot.depthAffinity.includes(conditions.depth)) reasons.push(contribution('spot.depth', 'DEPTH_MATCH', 12))
-    if (conditions.season !== 'summer' && ['dawn', 'dusk'].includes(conditions.timeOfDay) && spot.id === 'shallow') reasons.push(contribution(evidenceRules.twilightShallow.id, evidenceRules.twilightShallow.reasonCode, evidencePoints(evidenceRules.twilightShallow)))
-    if (conditions.turbidity === 'clear' && conditions.timeOfDay === 'day' && spot.id === 'dropoff') reasons.push(contribution(evidenceRules.clearBrightDepth.id, evidenceRules.clearBrightDepth.reasonCode, evidencePoints(evidenceRules.clearBrightDepth)))
-    if (conditions.season === 'winter' && spot.id === 'shallow') reasons.push(contribution('spot.winter-shallow', 'WINTER_SHALLOW_PENALTY', -12))
-    return { spot, score: clamp(50 + reasons.reduce((sum, item) => sum + item.scoreDelta, 0)), reasons }
-  }).sort((a, b) => b.score - a.score || a.spot.priority - b.spot.priority || a.spot.id.localeCompare(b.spot.id))
+export function applyRuleGroups(rules:ScoringRule[],context:ScoringContext,previous:ReasonContribution[]=[]):ReasonContribution[]{
+  const running = new Map<RuleGroup,number>()
+  for(const item of previous)running.set(item.group,(running.get(item.group)??0)+item.appliedDelta)
+  return rules.filter(rule=>rule.matches(context)).map(rule=>{
+    const rawDelta=evidencePoints(rule); const used=running.get(rule.group)??0; const cap=groupCaps[rule.group]
+    const appliedDelta=clamp(rawDelta,cap.min-used,cap.max-used); running.set(rule.group,used+appliedDelta)
+    return {ruleId:rule.id,reasonCode:rule.reasonCode,group:rule.group,evidenceClass:rule.evidenceClass,evidenceConfidence:rule.confidence,rawDelta,appliedDelta}
+  })
 }
 
-function setupProperties(conditions: Conditions, lure: (typeof lures)[number]) {
-  const color = conditions.turbidity === 'clear' ? 'natural' : conditions.turbidity === 'turbid' || conditions.timeOfDay === 'night' ? 'contrast' : 'transparent'
-  const size = conditions.season === 'winter' ? 'small' : 'medium'
-  const weight = conditions.depth === 'deep' ? 'heavy' : conditions.depth === 'shallow' ? 'light' : 'medium'
-  return {
-    color: lure.id === 'ned' && conditions.turbidity === 'clear' ? 'transparent' : color,
-    size: lure.sizes.includes(size) ? size : lure.sizes[0],
-    weight,
-  } as const
-}
+export function evaluateSpots(conditions:Conditions):RankedSpot[]{return spots.map(spot=>{const reasons=applyRuleGroups(spotRules,{conditions,candidateId:spot.id});return{spot,score:clamp(50+reasons.reduce((sum,item)=>sum+item.appliedDelta,0)),reasons}}).sort((a,b)=>b.score-a.score||a.spot.priority-b.spot.priority||a.spot.id.localeCompare(b.spot.id))}
 
-export function evaluateSetups(conditions: Conditions, spot: RankedSpot): RankedSetup[] {
-  return lures
-    .filter((lure) => conditions.depth === 'unknown' || lure.depths.includes(conditions.depth))
-    .map((lure) => {
-      const reasons: ReasonContribution[] = []
-      if (conditions.turbidity === 'clear' && lure.style === 'finesse') reasons.push(contribution('PL010', 'CLEAR_WATER_NATURAL', 4))
-      if (conditions.turbidity === 'turbid' && lure.style === 'search') reasons.push(contribution(evidenceRules.turbidSearch.id, evidenceRules.turbidSearch.reasonCode, evidencePoints(evidenceRules.turbidSearch)))
-      if (conditions.season === 'winter' && lure.style === 'finesse') reasons.push(contribution(evidenceRules.winterFinesse.id, evidenceRules.winterFinesse.reasonCode, evidencePoints(evidenceRules.winterFinesse)))
-      if (spot.spot.id === 'dropoff' && ['jig', 'drop-shot'].includes(lure.id)) reasons.push(contribution('lure.dropoff', 'DROPOFF_CONTROL', 14))
-      if (spot.spot.id === 'vegetation' && ['twitchbait', 'spinner'].includes(lure.id)) reasons.push(contribution(evidenceRules.vegetationEdge.id, evidenceRules.vegetationEdge.reasonCode, evidencePoints(evidenceRules.vegetationEdge)))
-      if (spot.spot.id === 'shallow' && lure.style === 'search') reasons.push(contribution('lure.shallow', 'SHALLOW_SEARCH', 12))
-      const properties = setupProperties(conditions, lure)
-      return { lure, score: clamp(50 + reasons.reduce((sum, item) => sum + item.scoreDelta, 0)), ...properties, reasons } as RankedSetup
-    })
-    .sort((a, b) => b.score - a.score || a.lure.priority - b.lure.priority || a.lure.id.localeCompare(b.lure.id))
-}
+function setupProperties(conditions:Conditions,lure:(typeof lures)[number]){const color=conditions.turbidity==='clear'?'natural':conditions.turbidity==='turbid'||conditions.light==='dark'||conditions.timeOfDay==='night'?'contrast':'transparent';const size=['cold','cool'].includes(conditions.waterTemperature)||conditions.season==='winter'?'small':'medium';const weight=conditions.depth==='deep'?'heavy':conditions.depth==='shallow'?'light':'medium';return{color:lure.id==='ned'&&conditions.turbidity==='clear'?'transparent':color,size:lure.sizes.includes(size)?size:lure.sizes[0],weight} as const}
+export function evaluateSetups(conditions:Conditions,spot:RankedSpot):RankedSetup[]{return lures.filter(lure=>conditions.depth==='unknown'||lure.depths.includes(conditions.depth)).map(lure=>{const reasons=applyRuleGroups(setupRules,{conditions,candidateId:lure.id,spotId:spot.spot.id},spot.reasons);return{lure,score:clamp(50+reasons.reduce((sum,item)=>sum+item.appliedDelta,0)),...setupProperties(conditions,lure),reasons} as RankedSetup}).sort((a,b)=>b.score-a.score||a.lure.priority-b.lure.priority||a.lure.id.localeCompare(b.lure.id))}
 
-function confidence(conditions: Conditions, scoreGap: number): Confidence {
-  const known = [conditions.timeOfDay, conditions.turbidity, conditions.depth].filter((value) => value !== 'unknown').length + (conditions.observedStructure.length ? 1 : 0)
-  if (known === 4 && scoreGap >= 8) return 'high'
-  if (known >= 2) return 'medium'
-  return 'low'
-}
+export function calculateInputCoverage(c:Conditions):ConfidenceMetric{const fields:Array<[string,boolean]>=[['Jahreszeit',true],['Tageszeit',c.timeOfDay!=='unknown'],['Wassertrübung',c.turbidity!=='unknown'],['Tiefe',c.depth!=='unknown'],['Wassertemperatur',c.waterTemperature!=='unknown'],['Licht',c.light!=='unknown'],['Aktivitätsanzeichen',c.activity.status!=='unknown'],['Krautbild',c.vegetation!=='unknown']];const missingFields=fields.filter(([,known])=>!known).map(([name])=>name);const value=Math.round(((fields.length-missingFields.length)/fields.length)*100);return{value,level:level(value,75,50),missingFields,explanation:missingFields.length?`Offen: ${missingFields.join(', ')}.`:'Alle relevanten Beobachtungen wurden eingeordnet.'}}
+export function calculateEvidenceQuality(contributions:ReasonContribution[]):ConfidenceMetric{const applied=contributions.filter(item=>item.appliedDelta!==0);const weight=applied.reduce((sum,item)=>sum+Math.abs(item.appliedDelta),0);if(!weight)return{value:50,level:'low',contributingRules:0,explanation:'Nur schwach differenziert: Keine bewertbare Regel trägt zum Ergebnis bei.'};const value=Math.round(applied.reduce((sum,item)=>sum+item.evidenceConfidence*Math.abs(item.appliedDelta),0)/weight*100);return{value,level:level(value,80,65),contributingRules:applied.length,explanation:`${applied.length} angewandte ${applied.length===1?'Regel':'Regeln'}; Evidenz und Beobachtungen gewichtet.`}}
 
-function alternativeFor(setup: RankedSetup): string {
-  if (setup.lure.style === 'search') return 'Nach 12–15 Würfen auf Ned Rig wechseln und deutlich langsamer führen.'
-  if (setup.lure.id === 'drop-shot') return 'Nach 8 Minuten ohne Kontakt einen Gummifisch am Jigkopf eine Gewichtsklasse schwerer anbieten.'
-  return 'Nach 10–12 Würfen Führung verlangsamen; bleibt der Kontakt aus, mit Twitchbait mehr Wasser absuchen.'
-}
+function buildSwitchPlan(setup:RankedSetup,nextSpot:string,active:boolean):SwitchStep[]{const refine=setup.lure.style==='search'?'Wechsle am selben Horizont auf Ned Rig oder Drop Shot und führe deutlich langsamer.':'Wechsle am selben Spot auf Twitchbait oder Spinner und suche den Horizont fächerförmig ab.';return[
+  {phase:'initial',title:'Ausgangsversuch',change:'Setup konstant halten; nur Winkel und Zielhorizont systematisch variieren.',limit:'15–25 gute Würfe oder 10–15 Minuten',reason:'So bleibt erkennbar, ob Spot und Tiefenband tragen.'},
+  {phase:'refine',title:'Präzisieren',change:active?`Aktivität bestätigt: ${refine}`:refine,limit:'Ein zweiter Präsentationsstil am selben Mikrospot',reason:'Führung zuerst ändern; danach Größe, Silhouette/Farbe und erst zuletzt Montage.'},
+  {phase:'move',title:'Spot wechseln',change:`Ohne Kontakt zum nächsten gerankten Strukturtyp wechseln: ${nextSpot}.`,limit:'Nach zwei Präsentationsstilen ohne Kontakt',reason:'Standort und Begegnung wiegen stärker als endlose Farbrotation.'},
+]}
 
-function rankCandidates(conditions: Conditions): Array<Recommendation & { totalScore: number }> {
-  const rankedSpots = evaluateSpots(conditions)
-  const candidates = rankedSpots.flatMap((spot) => evaluateSetups(conditions, spot).map((setup) => ({ spot, setup })))
-  const selected: typeof candidates = []
-  for (const candidate of candidates.sort((a, b) => (b.spot.score + b.setup.score) - (a.spot.score + a.setup.score) || a.spot.spot.priority - b.spot.spot.priority || a.setup.lure.priority - b.setup.lure.priority)) {
-    if (!selected.some((item) => item.setup.lure.id === candidate.setup.lure.id)) selected.push(candidate)
-    if (selected.length === lures.length) break
-  }
-  const topScore = selected[0].spot.score + selected[0].setup.score
-  const nextScore = selected[1].spot.score + selected[1].setup.score
-  return selected.map(({ spot, setup }, index) => ({
-    rank: index + 1,
-    spot,
-    setup,
-    confidence: confidence(conditions, topScore - nextScore),
-    reasons: [...spot.reasons, ...setup.reasons].filter((item) => item.scoreDelta > 0).sort((a, b) => b.scoreDelta - a.scoreDelta).slice(0, 3).map(explain),
-    attemptLimit: index === 0 ? '12 Würfe oder 8 Minuten' : index === 1 ? '10–12 Würfe' : '15 Würfe, dann Spot neu bewerten',
-    noBiteAlternative: alternativeFor(setup),
-    totalScore: spot.score + setup.score,
-  }))
-}
+function rankCandidates(conditions:Conditions):Array<Recommendation&{totalScore:number}>{const rankedSpots=evaluateSpots(conditions);const candidates=rankedSpots.flatMap(spot=>evaluateSetups(conditions,spot).map(setup=>({spot,setup})));const selected:typeof candidates=[];for(const candidate of candidates.sort((a,b)=>(b.spot.score+b.setup.score)-(a.spot.score+a.setup.score)||a.spot.spot.priority-b.spot.spot.priority||a.setup.lure.priority-b.setup.lure.priority)){if(!selected.some(item=>item.setup.lure.id===candidate.setup.lure.id))selected.push(candidate);if(selected.length===lures.length)break}const coverage=calculateInputCoverage(conditions);return selected.map(({spot,setup},index)=>{const allApplied=[...spot.reasons,...setup.reasons].filter(item=>item.appliedDelta!==0);const positive=allApplied.filter(item=>item.appliedDelta>0).sort((a,b)=>b.appliedDelta-a.appliedDelta);const explained=(positive.length?positive:allApplied.sort((a,b)=>Math.abs(b.appliedDelta)-Math.abs(a.appliedDelta))).slice(0,4);return{rank:index+1,spot,setup,inputCoverage:coverage,evidenceQuality:calculateEvidenceQuality([...spot.reasons,...setup.reasons]),reasons:explained.map(explain),switchPlan:buildSwitchPlan(setup,rankedSpots.find(item=>item.spot.id!==spot.spot.id)?.spot.label??'nächster erreichbarer Bereich',conditions.activity.status==='observed'),totalScore:spot.score+setup.score}})}
 
-export function createRecommendations(conditions: Conditions): Recommendation[] {
-  return rankCandidates(conditions).slice(0, 3)
-}
-
-export function createRecommendationDecision(conditions: Conditions, inventory: InventoryItem[]): RecommendationDecision {
-  const completeRanking = rankCandidates(conditions)
-  const available = new Set(inventory.map((item) => item.lureTypeId))
-  const practicalPrimary = completeRanking.find((item) => available.has(item.setup.lure.id))
-  const bestMissing = completeRanking.find((item) => !available.has(item.setup.lure.id))
-  const suitabilityGap = practicalPrimary ? completeRanking[0].totalScore - practicalPrimary.totalScore : 0
-  return {
-    expertRanking: completeRanking.slice(0, 3),
-    practicalPrimary,
-    bestMissing,
-    suitabilityGap,
-    suitabilityWarning: suitabilityGap >= 8 ? `Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.` : undefined,
-  }
-}
+export function createRecommendations(conditions:Conditions):Recommendation[]{return rankCandidates(conditions).slice(0,3)}
+export function createRecommendationDecision(conditions:Conditions,inventory:InventoryItem[]):RecommendationDecision{const completeRanking=rankCandidates(conditions);const available=new Set(inventory.map(item=>item.lureTypeId));const practicalPrimary=completeRanking.find(item=>available.has(item.setup.lure.id));const bestMissing=completeRanking.find(item=>!available.has(item.setup.lure.id));const suitabilityGap=practicalPrimary?completeRanking[0].totalScore-practicalPrimary.totalScore:0;return{expertRanking:completeRanking.slice(0,3),practicalPrimary,bestMissing,suitabilityGap,suitabilityWarning:suitabilityGap>=8?`Dein bester vorhandener Köder liegt ${suitabilityGap} Eignungspunkte hinter der fachlich besten Option.`:undefined,hotWaterWarning:conditions.waterTemperature==='hot'?'Sehr warmes Wasser kann Temperatur- und Sauerstoffstress bedeuten. Drills kurz halten und bei erkennbar gestressten Fischen nicht gezielt weiterangeln.':undefined}}
+export const productiveRuleIds=allRules.map(rule=>rule.id)

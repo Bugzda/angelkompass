@@ -1,20 +1,10 @@
 import type { ReasonContribution } from '../models/types'
 
-const texts: Record<string, string> = {
-  OBSERVED_STRUCTURE: 'Die sichtbare Struktur ist ein direkter Hinweis auf diesen Spot.',
-  SEASONAL_VEGETATION: 'Im Frühjahr und Frühsommer nutzen Barsche strukturreiche Uferbereiche besonders häufig.',
-  AUTUMN_DROPOFF: 'Im abkühlenden Herbst gewinnen Flach-Tief-Übergänge an Bedeutung.',
-  WINTER_DROPOFF: 'In kalten Phasen verteilen sich Barsche häufig tiefer.',
-  DEPTH_MATCH: 'Spot und geschätzte Angeltiefe passen zusammen.',
-  TWILIGHT_SHALLOW: 'Außerhalb des Hochsommers kann die Dämmerung flache Jagdzonen begünstigen.',
-  CLEAR_DAY_DEPTH: 'Bei klarer Sicht am Tag bietet die Tiefenkante erreichbare Deckung.',
-  WINTER_SHALLOW_PENALTY: 'Flaches Wasser ist im Winter oft nur kurzzeitig interessant.',
-  CLEAR_WATER_NATURAL: 'Im klaren Wasser wird eine natürliche, unaufdringliche Präsentation leicht bevorzugt.',
-  TURBID_SEARCH: 'Bei starker Trübung kann ein deutlicher Suchköder die Begegnungsrate erhöhen.',
-  WINTER_FINESSE: 'Im Winter verlängert eine langsame Präsentation die Zeit im Sichtfeld.',
-  DROPOFF_CONTROL: 'Dieses Setup hält kontrollierten Kontakt an der Tiefenkante.',
-  VEGETATION_EDGE: 'Krautkanten und Lücken verbinden Deckung mit guter Jagdmöglichkeit.',
-  SHALLOW_SEARCH: 'Ein bewegter Suchköder deckt die Flachwasserzone effizient ab.',
+const texts:Record<string,string>={
+  OBSERVED_STRUCTURE:'Die sichtbare Struktur ist ein direktes Signal für diesen Spot.',VEGETATION_EDGE_OBSERVED:'Lockere Krautkanten und Lücken verbinden Deckung mit gutem Jagdraum.',DENSE_VEGETATION_HABITAT:'Dichtes Kraut bietet Habitat; befischt werden vor allem Außenkante, Taschen und freie Bahnen.',DEPTH_MATCH:'Spot und geschätzte Angeltiefe passen zusammen.',
+  COLD_DROPOFF:'Kaltes Wasser spricht häufiger für erreichbare Tiefenkanten.',COLD_SHALLOW_PENALTY:'Flaches Wasser wird bei sehr kaltem Wasser vorsichtiger bewertet.',COOL_DROPOFF:'Kühles Wasser stärkt den Übergang zum tieferen Bereich.',MILD_VEGETATION:'Milde Wassertemperatur begünstigt strukturreiche Uferbereiche.',WARM_LITTORAL:'Warmes Wasser kann Kraut- und Flachzonen interessant machen.',HOT_SHALLOW_CAUTION:'Sehr warmes Flachwasser wird wegen möglichem Temperatur- und Sauerstoffstress abgewertet.',HOT_GENERAL_CAUTION:'Sehr warmes Wasser begrenzt die Sicherheit der Empfehlung, weil keine Sauerstoffdaten vorliegen.',SEASONAL_VEGETATION:'Ohne Temperaturangabe spricht die Jahreszeit für strukturreiche Uferbereiche.',AUTUMN_DROPOFF:'Im abkühlenden Herbst gewinnen Flach-Tief-Übergänge an Bedeutung.',WINTER_DROPOFF:'Ohne Temperaturangabe dient die winterliche Tiefenverteilung als Fallback.',
+  TWILIGHT_SHALLOW:'Außerhalb des Hochsommers kann die Dämmerung flache Jagdzonen begünstigen.',CLEAR_BRIGHT_DEPTH:'Bei klarem, hellem Wasser bietet die Tiefenkante erreichbare Deckung.',DIFFUSE_SHALLOW_NEUTRAL:'Diffuses Licht nimmt dem Flachwasser einen Teil des Sichtdrucks.',BAITFISH_NEAR_COVER:'Sichtbarer Kleinfisch stärkt erreichbare Kraut- und Flachzonen.',HUNTING_FISH_SHALLOW:'Direkte Jagd- oder Oberflächenaktivität überstimmt pauschale Modellannahmen.',
+  COLD_FINESSE:'Bei kaltem oder kühlem Wasser bleibt eine langsame Präsentation länger im Sichtfeld.',WINTER_FINESSE:'Im Winter wird ohne Temperaturangabe eine langsame Finesse-Präsentation bevorzugt.',HOT_SEARCH_PENALTY:'Bei sehr warmem Wasser wird aggressive Dauersuche vorsichtiger bewertet.',TURBID_SEARCH:'Bei starker Trübung kann ein deutlicher Suchköder die Begegnungsrate erhöhen.',CLEAR_NATURAL:'Im klaren Wasser wird eine natürliche, unaufdringliche Präsentation leicht bevorzugt.',DARK_CONTROL:'Bei wenig Licht wird eine kontrollierte, kontrastreiche Präsentation bevorzugt.',ACTIVE_SEARCH:'Sichtbare Jagd spricht für einen Köder, der den bestätigten Horizont aktiv absucht.',BAITFISH_PROFILE:'Der Ködertyp passt zur beobachteten Beutefischsituation.',VEGETATION_EDGE_SEARCH:'Der Köder lässt sich parallel an einer lockeren Krautkante führen.',DENSE_EDGE_FINESSE:'Eine präzise Finesse-Präsentation lässt sich außen am dichten Kraut kontrollieren.',DENSE_CORE_SNAG_RISK:'Im dichten Krautkern steigt mit offenen Suchködern das Hängerrisiko.',DROPOFF_CONTROL:'Dieses Setup hält kontrollierten Kontakt an der Tiefenkante.',SHALLOW_SEARCH:'Ein bewegter Suchköder deckt die Flachwasserzone effizient ab.',DEEP_CONTROL:'Das Setup ermöglicht reproduzierbaren Kontakt in tieferem Wasser.',
 }
-
-export const explain = (reason: ReasonContribution) => texts[reason.reasonCode] ?? 'Diese Kombination passt zu deinen Angaben.'
+export const explain=(reason:ReasonContribution)=>texts[reason.reasonCode]??'Diese Kombination passt zu den eingegebenen Bedingungen.'
+export const knownReasonCodes=new Set(Object.keys(texts))
