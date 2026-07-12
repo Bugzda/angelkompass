@@ -3,6 +3,7 @@ import type { InventoryItem, LureType, SizeClass } from '../../domain/models/typ
 
 const STORAGE_KEY = 'angelkompass.inventory.v2'
 const LEGACY_KEY = 'angelkompass.inventory.v1'
+const ALL_SIZES: SizeClass[] = ['small', 'medium', 'large']
 
 function readInventory(): InventoryItem[] {
   try {
@@ -20,5 +21,6 @@ export function useInventory() {
   useEffect(() => localStorage.setItem(STORAGE_KEY, JSON.stringify({schemaVersion:2,items:inventory})), [inventory])
   const toggle = (lureTypeId: LureType['id']) => setInventory((current) => current.some((item) => item.lureTypeId === lureTypeId) ? current.filter((item) => item.lureTypeId !== lureTypeId) : [...current, { lureTypeId }])
   const toggleSize=(lureTypeId:LureType['id'],size:SizeClass)=>setInventory(current=>{const found=current.find(item=>item.lureTypeId===lureTypeId);if(!found)return[...current,{lureTypeId,sizes:[size]}];const sizes=found.sizes?.includes(size)?found.sizes.filter(item=>item!==size):[...(found.sizes??[]),size];return current.map(item=>item.lureTypeId===lureTypeId?{...item,sizes,legacyPerch:false}:item).filter(item=>item.lureTypeId!==lureTypeId||item.legacyPerch||item.sizes?.length)})
-  return { inventory, toggle, toggleSize }
+  const toggleAllSizes=(lureTypeId:LureType['id'])=>setInventory(current=>{const found=current.find(item=>item.lureTypeId===lureTypeId);const hasAll=found?.sizes?.length===ALL_SIZES.length&&ALL_SIZES.every(size=>found.sizes?.includes(size));if(hasAll)return current.filter(item=>item.lureTypeId!==lureTypeId);if(!found)return[...current,{lureTypeId,sizes:[...ALL_SIZES]}];return current.map(item=>item.lureTypeId===lureTypeId?{...item,sizes:[...ALL_SIZES],legacyPerch:false}:item)})
+  return { inventory, toggle, toggleSize, toggleAllSizes }
 }
