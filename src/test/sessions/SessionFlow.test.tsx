@@ -19,6 +19,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks() })
 describe('Session-Nutzerablauf', () => {
   it('startet eine bewusst gewählte Top-3-Empfehlung und öffnet ihre Session', () => {
     render(<MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}><Routes><Route path="/empfehlung" element={<RecommendationPage />} /><Route path="/session/:id" element={<SessionPage />} /></Routes></MemoryRouter>)
+    fireEvent.click(screen.getAllByRole('button', { name: /Details anzeigen/ })[0])
     fireEvent.click(screen.getAllByRole('button', { name: 'Session mit dieser Empfehlung starten' })[1])
     expect(screen.getByText('Dein Versuch am Wasser.')).toBeInTheDocument()
     expect(sessionStore.getSnapshot()[0].recommendation.rank).toBe(2)

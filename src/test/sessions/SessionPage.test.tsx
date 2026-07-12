@@ -32,4 +32,10 @@ describe('Sessionansicht', () => {
     expect(screen.getByText('Abgeschlossen')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Biss' })).not.toBeInTheDocument()
   })
+
+  it('zeigt für eine fehlende Session einen klaren Rückweg',()=>{
+    render(<MemoryRouter initialEntries={['/session/fehlt']}><Routes><Route path="/session/:id" element={<SessionPage/>}/></Routes></MemoryRouter>)
+    expect(screen.getByRole('heading',{name:'Session nicht gefunden'})).toBeInTheDocument()
+    expect(screen.getByRole('link',{name:'Zum Verlauf'})).toHaveAttribute('href','/verlauf')
+  })
 })

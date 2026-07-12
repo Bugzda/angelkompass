@@ -30,7 +30,7 @@ Aktuell enthalten:
 - PWA-Manifest, Service Worker und Offline-Precache.
 - Lokale Sessionhistorie mit gewähltem Empfehlungssnapshot, Biss-/Fangfeedback und kontrollierter Fortschaltung des Dreiphasenplans.
 - Hecht-Sicherheitsgate vor der Berechnung: hechtsicheres Vorfach, Kescher, Lösezange/Abhakmöglichkeit und lokale Regeln bestätigen.
-- Automatische PWA-Aktualisierung, damit neue Deployments nicht dauerhaft an einer alten Service-Worker-Version hängen.
+- Kontrollierte PWA-Aktualisierung mit sichtbarem Hinweis; während einer aktiven Session wird niemals ungefragt neu geladen.
 
 Nicht enthalten:
 
@@ -165,7 +165,7 @@ Zuletzt erfolgreich geprüft nach Commit `7c8b599` (`main`):
 - Keine externen Laufzeitaufrufe im Produktcode.
 - Öffentlicher GitHub-Pages-Smoke-Test: Deployment erfolgreich, Fischart-Auswahl und Hecht-Sicherheitsgate live geprüft, keine Browserfehler.
 - Öffentlicher Bestand-Smoke-Test: 13 Köderkarten und Button „Alle Größen“ im Release enthalten.
-- PWA-Updateverhalten: `registerType: 'autoUpdate'`; alte Service-Worker-Versionen werden bei neuen Releases automatisch ersetzt.
+- PWA-Updateverhalten: `registerType: 'prompt'`; neue Versionen werden sichtbar angeboten und erst nach bewusster Bestätigung aktiviert.
 
 Standardbefehle:
 
