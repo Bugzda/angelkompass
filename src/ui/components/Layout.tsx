@@ -11,6 +11,7 @@ export function Layout() {
       <NavLink to="/">⌂<span>Start</span></NavLink>
       <NavLink to="/neu">⌁<span>Neue Session</span></NavLink>
       <NavLink to="/bestand">▣<span>Bestand</span></NavLink>
+      <NavLink to="/verlauf">≡<span>Verlauf</span></NavLink>
     </nav>
   </div>
 }

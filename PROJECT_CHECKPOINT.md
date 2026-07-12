@@ -2,7 +2,7 @@
 
 Stand: 12. Juli 2026  
 Ausgangsreferenz der Ködererweiterung: `4034cf7` (`main`)
-Produktstatus: lokal lauffähiger, installierbarer See-/Barsch-Vertikalschnitt
+Produktstatus: lokal lauffähiger, installierbarer See-/Barsch-Vertikalschnitt mit Sessionprotokoll
 
 Dieses Dokument ist der Einstiegspunkt für einen neuen Codex-Chat. Es beschreibt ausschließlich den vorhandenen Projektstand; es erweitert oder verändert keine Fachregeln.
 
@@ -24,11 +24,12 @@ Aktuell enthalten:
 - Farbfamilie, vier generische Farbbeispiele und situationsbezogene Farbbegründung pro Empfehlung.
 - Heißwasserhinweis ohne Behauptung nicht gemessener Sauerstoffwerte.
 - PWA-Manifest, Service Worker und Offline-Precache.
+- Lokale Sessionhistorie mit gewähltem Empfehlungssnapshot, Biss-/Fangfeedback und kontrollierter Fortschaltung des Dreiphasenplans.
 
 Nicht enthalten:
 
 - Fluss, Kanal, Boot oder weitere Fischarten.
-- Sessionhistorie, Biss-/Fangfeedback oder automatische Fortschaltung der Wechselstrategie.
+- Export, Cloud-Synchronisation oder automatische fachliche Auswertung des Sessionfeedbacks.
 - Wetter-, GPS-, Karten-, Tiefenkarten- oder sonstige externe APIs.
 - Backend, Konto, Cloud-Synchronisation oder automatische Regelanpassung.
 
@@ -98,7 +99,7 @@ Für die fünf zusätzlichen Suchköder gelten folgende harte Grenzen: Popper is
 5. Jede Karte enthält Datenlage, Evidenz, Größe, Gewicht, Farbe, Montage, Führung, Gründe und drei Wechselphasen.
 6. Der Bestand wird unter `/bestand` lokal in `localStorage` gespeichert.
 
-Die Bedingungen selbst werden nur als React-Router-State an `/empfehlung` übergeben. Es existiert noch keine Sessionpersistenz oder Datenmigration dafür.
+Die Bedingungen werden zur Berechnung als React-Router-State an `/empfehlung` übergeben. Erst nach bewusster Auswahl einer Top-3-Empfehlung werden Bedingungen und Empfehlung als unveränderlicher Session-Snapshot lokal gespeichert. Es darf nur eine aktive Session geben; abgeschlossene Sessions stehen unter `/verlauf` bereit.
 
 ## 5. Wichtige Dateien
 
@@ -109,7 +110,8 @@ Die Bedingungen selbst werden nur als React-Router-State an `/empfehlung` überg
 - `src/domain/engine/colorGuidance.ts`: Farbfamilien, Beispiele und Farbbegründungen.
 - `src/domain/engine/explanations.ts`: deutsche Reason-Code-Texte.
 - `src/domain/catalogs/spots.ts`: drei Spot-Typen.
-- `src/domain/catalogs/lures.ts`: fünf Ködertypen.
+- `src/domain/catalogs/lures.ts`: zehn Ködertypen.
+- `src/features/sessions/`: versionierte Persistenz, Zustandsautomat, aktive Session und Verlauf.
 - `src/features/situation/SituationPage.tsx`: mobile Eingabemaske.
 - `src/features/recommendations/RecommendationPage.tsx`: Ergebnisdarstellung.
 - `src/features/inventory/`: lokaler Bestand.
@@ -136,13 +138,15 @@ Die 2026 referenzierte Studie zu fluoreszierenden Ködern konnte beim Audit tech
 Zuletzt erfolgreich geprüft nach Commit `9f56af6`:
 
 - TypeScript: erfolgreich.
-- 51 automatisierte Tests: erfolgreich.
+- 64 automatisierte Tests: erfolgreich.
 - Davon 24 fachliche See-/Ufer-Golden-Szenarien.
+- Davon 13 Session-, Persistenz- und UI-Ablauftests.
 - Produktions- und PWA-Build: erfolgreich.
 - Research-Validator: 53 Regeln, 32 Szenarien und 23 Quellen valide.
 - Research-Archiv nicht im Produktions-Bundle.
 - Keine externen Laufzeitaufrufe im Produktcode.
 - Lokaler HTTP-Smoke-Test: `200 OK`.
+- Mobiler Session-Smoke-Test bei 390 × 844 px: Start, Feedback, Fortschaltung, Reload-Persistenz, Abschluss, Verlauf und Löschen erfolgreich; keine Konsolenfehler.
 
 Standardbefehle:
 
@@ -179,8 +183,7 @@ Noch nicht entschieden oder nachgewiesen:
 - Fachliche Freigabe der Regeln durch einen erfahrenen Barschangler.
 - Ergebnisse eines realen Feldtests am Wasser.
 - Ob und wann weitere Spot-, Köder- oder Gewässertypen produktiv aktiviert werden.
-- Genaues Datenmodell für Sessions, Versuchsschritte und Feedback.
-- Ob Sessiondaten exportiert oder nur lokal gespeichert werden sollen.
+- Ob Sessiondaten künftig zusätzlich exportiert werden sollen.
 - Hostinganbieter und Deploymentprozess.
 - Native Verpackung mit Capacitor oder einer anderen Lösung.
 - Separate manuelle Abnahme auf aktuellem iOS Safari und Android Chromium.
@@ -197,15 +200,7 @@ Noch nicht entschieden oder nachgewiesen:
 
 ### Nächster größerer Planungsmeilenstein
 
-Ein lokales Session- und Feedbacksystem ist der derzeit empfohlene nächste Kandidat:
-
-- Session starten und aktiven Versuch markieren.
-- Biss, Fang oder kein Erfolg erfassen.
-- Bestehenden Dreiphasenplan kontrolliert fortschalten.
-- Ergebnis und Feedback lokal speichern.
-- Keine automatische Änderung globaler Regelgewichte.
-
-Vor der Implementierung ist ein neuer `/plan` erforderlich, weil Persistenzschema, Zustandsautomat, UI-Ablauf und Migrationen gemeinsam festgelegt werden müssen. Erst nach Freigabe dieses Plans sollte ein neues `/goal` mit konkreten Abnahmekriterien gestartet werden.
+Nach technischer und fachlicher Abnahme des Sessionprotokolls sollte entschieden werden, ob ein lokaler Datenexport sinnvoll ist. Eine automatische Anpassung fachlicher Regelgewichte bleibt ausdrücklich außerhalb des Umfangs.
 
 ## 11. Startprompt für einen neuen Codex-Chat
 

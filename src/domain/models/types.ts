@@ -63,3 +63,28 @@ export interface Recommendation {
 
 export interface InventoryItem { lureTypeId: LureType['id'] }
 export interface RecommendationDecision { expertRanking: Recommendation[]; practicalPrimary?: Recommendation; bestMissing?: Recommendation; suitabilityGap: number; suitabilityWarning?: string; hotWaterWarning?: string }
+
+export type SessionStatus = 'active' | 'completed'
+export type SessionProgress = SwitchStep['phase'] | 'exhausted'
+export type FeedbackOutcome = 'bite' | 'catch' | 'no_success'
+
+export interface SessionFeedback {
+  id: string
+  outcome: FeedbackOutcome
+  phase: Exclude<SessionProgress, 'exhausted'>
+  createdAt: string
+}
+
+export interface FishingSession {
+  id: string
+  schemaVersion: 1
+  rulesetVersion: string
+  conditions: Conditions
+  recommendation: Recommendation
+  progress: SessionProgress
+  feedback: SessionFeedback[]
+  status: SessionStatus
+  createdAt: string
+  updatedAt: string
+  completedAt?: string
+}
