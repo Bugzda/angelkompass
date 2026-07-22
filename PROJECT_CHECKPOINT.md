@@ -2,7 +2,7 @@
 
 Stand: 12. Juli 2026  
 Ausgangsreferenz der Ködererweiterung: `4034cf7` (`main`)
-Aktueller Hauptstand: `7c8b599` (`main`, GitHub Pages veröffentlicht)
+Aktueller Hauptstand: `07d34af` (`main` und `codex/fachdata-2`, GitHub-Pages-Deployment ausgelöst)
 Produktstatus: veröffentlichte, installierbare See-/Ufer-PWA für Barsch und Hecht mit Sessionprotokoll
 
 Dieses Dokument ist der Einstiegspunkt für einen neuen Codex-Chat. Es beschreibt ausschließlich den vorhandenen Projektstand; es erweitert oder verändert keine Fachregeln.
@@ -19,11 +19,13 @@ Aktuell enthalten:
 - Drei Spot-Typen: Krautkante, Flachwasserzone und Tiefenkante.
 - Zehn aktive Barsch-Ködertypen ohne Drop Shot; der zusätzliche Spinnertail bleibt Teil des erweiterten Katalogs.
 - Hechtprofil mit vier Spots: Schilf-/Krautkante, Flachwasser/Bucht, Tiefenübergang und harte Deckung.
-- Hechtprofil mit acht Kernködern: Gummifisch, Jerkbait, Crankbait, Spinnerbait, Blinker, Spinner, Swimbait und Topwater.
+- Hechtprofil mit neun Ködertypen: Gummifisch, Jerkbait, Crankbait, Spinnerbait, Blinker, Spinner, Swimbait, Topwater und Tailbait.
 - Manuelle Eingaben für Jahreszeit, Tageszeit, Trübung, Tiefe, Wassertemperaturklasse, Licht, Aktivitätsanzeichen, Krautbild und weitere sichtbare Struktur.
-- Drei fachlich priorisierte Empfehlungen mit Spot, Köder, Größe, Gewicht, Montage, Führung, Begründungen und Wechselstrategie.
+- Vollständiges fachliches Ranking, aus dem höchstens drei tatsächlich vorhandene, tiefenkompatible und startbare Empfehlungen abgeleitet werden.
 - Getrennte Anzeigen für Eingabeabdeckung und Regel-Evidenz.
-- Lokaler persönlicher Köderbestand mit bester vorhandener und bester fehlender Option sowie Größenklassen Klein/Mittel/Groß.
+- Lokaler persönlicher Köderbestand mit Größenklassen Klein/Mittel/Groß; fehlende Köder werden niemals in die startbare Hauptliste gemischt.
+- Höchstens eine fachlich interessante, aber fehlende Köderoption und nicht bestätigte Spots erscheinen separat als optionale Hinweise.
+- Ist die bevorzugte Größe nicht vorhanden, wird transparent die nächstgelegene vorhandene Größe verwendet und Montage, Gewicht sowie Führung dafür neu aufgelöst.
 - Separater Button „Alle Größen“ je Köder; markiert oder entfernt alle drei Größen gesammelt.
 - Farbfamilie, vier generische Farbbeispiele und situationsbezogene Farbbegründung pro Empfehlung.
 - Heißwasserhinweis ohne Behauptung nicht gemessener Sauerstoffwerte.
@@ -31,6 +33,7 @@ Aktuell enthalten:
 - Lokale Sessionhistorie mit gewähltem Empfehlungssnapshot, Biss-/Fangfeedback und kontrollierter Fortschaltung des Dreiphasenplans.
 - Hecht-Sicherheitsgate vor der Berechnung: hechtsicheres Vorfach, Kescher, Lösezange/Abhakmöglichkeit und lokale Regeln bestätigen.
 - Kontrollierte PWA-Aktualisierung mit sichtbarem Hinweis; während einer aktiven Session wird niemals ungefragt neu geladen.
+- GitHub-Pages-Routingfallback für direkte Aufrufe und Neuladen verschachtelter Routen.
 
 Nicht enthalten:
 
@@ -55,6 +58,8 @@ Diese Entscheidungen dürfen nicht beiläufig geändert werden:
 10. Bei Farbe werden generische Beispiele verwendet, keine Marken oder konkreten Produkte. Fluoreszenz erhält keinen pauschalen Bonus.
 11. Das Research-Archiv ist Referenzmaterial und keine Laufzeitkonfiguration. Produktive Regeln werden einzeln kuratiert und getestet.
 12. Sehr warmes Wasser löst einen Vorsichtshinweis aus; ohne Sauerstoffmessung wird keine sichere Wasserschicht behauptet.
+13. Physikalisch ungeeignete Köder werden auch zum Auffüllen einer unvollständigen Top-Liste nicht verwendet. Weniger als drei echte Bestandsoptionen bleiben bewusst weniger als drei.
+14. Eine vorhandene Nachbargröße ist als transparenter Kompromiss erlaubt; die bevorzugte Reihenfolge lautet für `medium`: small, large; für `small`: medium, large; für `large`: medium, small.
 
 ## 3. Datenmodell und Engine
 
@@ -110,6 +115,8 @@ Für Hecht gilt: Topwater ist nur im flachen, warmen Aktivitätsfenster fachlich
 6. Jede Karte enthält Datenlage, Evidenz, Größe, Gewicht, Farbe, Montage, Führung, Gründe und drei Wechselphasen.
 7. Der Bestand wird unter `/bestand` artspezifisch in `angelkompass.inventory.v3` lokal gespeichert; v1/v2-Einträge werden verlustarm übernommen und bis zur Größenprüfung markiert. Alte Schlüssel bleiben erhalten.
 
+Ohne passende Bestandsoption zeigt die Ergebnisansicht eine klare Bestandsmeldung statt einer falschen Empfehlung. Eine optionale fehlende Köderergänzung ist nicht startbar. Wenn der Nutzer ausdrücklich bestätigt, dass keine Struktur vorhanden ist, wird kein spekulativer Spot-Tipp angezeigt.
+
 Die Bedingungen werden zur Berechnung als React-Router-State an `/empfehlung` übergeben. Erst nach bewusster Auswahl einer vorhandenen Empfehlung werden Bedingungen und Empfehlung einschließlich der aufgelösten Präsentation als unveränderlicher Session-Snapshot lokal gespeichert. Neue Hecht-Sessions enthalten `pikeSafetyConfirmed: true` und `pike-lake-2.0.0`; alte v1-Snapshots bleiben lesbar, verwenden ihre gespeicherten Montage-/Führungstexte und werden nicht neu berechnet. Es darf nur eine aktive Session geben; abgeschlossene Sessions stehen unter `/verlauf` bereit.
 
 ## 5. Wichtige Dateien
@@ -135,6 +142,8 @@ Die Bedingungen werden zur Berechnung als React-Router-State an `/empfehlung` ü
 - `docs/meilenstein-fachliche-praezisierung.md`: dokumentierter Fachmeilenstein.
 - `research/perch/v1.0.0/`: vollständiges, nicht produktives Wissensarchiv.
 - `scripts/validate-research.mjs`: Strukturvalidator für das Research-JSON.
+- `scripts/validate-routing.mjs`: prüft den GitHub-Pages-Fallback für direkte Routen.
+- `public/404.html` und `index.html`: erhalten und restaurieren direkte SPA-Routen auf GitHub Pages.
 - `docs/hecht-research-v1.0.0.md`: Hecht-Quellen, Ableitungen und Regelgrenzen.
 
 ## 6. Quellen und Herkunft
@@ -153,17 +162,19 @@ Die 2026 referenzierte Studie zu fluoreszierenden Ködern konnte beim Audit tech
 
 ## 7. Prüfstatus
 
-Zuletzt erfolgreich geprüft nach Commit `7c8b599` (`main`):
+Zuletzt vollständig erfolgreich geprüft vor Commit `07d34af` und anschließend unverändert auf `main` gepusht:
 
 - TypeScript: erfolgreich.
-- 99 automatisierte Tests: erfolgreich.
-- Davon 24 Barsch-Golden-Szenarien und 24 Hecht-Golden-Szenarien.
-- Davon Session-, Persistenz-, Migrations- und UI-Ablauftests.
+- 179 automatisierte Tests in 11 Testdateien: erfolgreich.
+- Darunter Bestandsmatrizen für Barsch und Hecht, Größenkompromisse, neutrale Wasserbereiche sowie Session-, Persistenz-, Migrations- und UI-Ablauftests.
 - Produktions- und PWA-Build: erfolgreich.
 - Research-Validator für das Barsch-Archiv: 53 Regeln, 32 Szenarien und 23 Quellen valide.
+- Produktives Quellenregister: 20 Quellen; alle Regelreferenzen aufgelöst.
+- Routing-Validator für den GitHub-Pages-Fallback: erfolgreich.
 - Research-Archiv nicht im Produktions-Bundle.
+- Produktions-JavaScript nach Altlastenbereinigung: 395,17 kB beziehungsweise 120,16 kB gzip; rund 7 kB roh und 2,6 kB gzip kleiner als zuvor.
 - Keine externen Laufzeitaufrufe im Produktcode.
-- Öffentlicher GitHub-Pages-Smoke-Test: Deployment erfolgreich, Fischart-Auswahl und Hecht-Sicherheitsgate live geprüft, keine Browserfehler.
+- Frühere öffentliche GitHub-Pages-Smoke-Tests waren erfolgreich; das Deployment von `07d34af` wurde durch den Push auf `main` ausgelöst, aber in diesem Arbeitsschritt nicht nochmals im Browser abgenommen.
 - Öffentlicher Bestand-Smoke-Test: 13 Köderkarten und Button „Alle Größen“ im Release enthalten.
 - PWA-Updateverhalten: `registerType: 'prompt'`; neue Versionen werden sichtbar angeboten und erst nach bewusster Bestätigung aktiviert.
 
@@ -174,6 +185,7 @@ pnpm dev
 pnpm test
 pnpm build
 pnpm research:validate
+pnpm routing:validate
 ```
 
 Auf der zuletzt verwendeten Codex-Umgebung war kein systemweites Node vorhanden. Die gebündelten Pfade waren:
@@ -196,6 +208,10 @@ PATH=/Users/chriz/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/
 - `82061a5`: Scroll-Fix; Berechnungsbutton bleibt im Seitenfluss, nur die Hauptnavigation ist fixiert.
 - `a9b23c5`: PWA-Service-Worker auf automatische Aktualisierung umgestellt.
 - `7c8b599`: Button „Alle Größen“ je Köder veröffentlicht.
+- `cbd0fae`: praktische Empfehlungen klar vom theoretischen Ranking getrennt.
+- `b607b87`: Empfehlungen ohne bestätigte Struktur über einen neutralen Wasserbereich abgesichert.
+- `ef51cdb`: sichtbare Top-Liste konsequent auf tatsächlich vorhandene Köder und Größen beschränkt.
+- `07d34af`: Bestands- und Spot-Hinweise korrigiert, Sessionspeicher validiert, GitHub-Pages-Routing abgesichert und alte Laufzeitreste entfernt.
 
 Vor größeren Änderungen soll erneut ein Git-Checkpoint erstellt werden. Änderungen an Fachregeln und Research-Archiv sollten getrennte Commits bleiben.
 
@@ -216,10 +232,12 @@ Noch nicht entschieden oder nachgewiesen:
 
 ### Unmittelbar
 
-1. Die öffentliche App auf iOS Safari und Android Chromium mit Fischartwahl, artspezifischem Bestand v3 und Sessionverlauf manuell testen.
-2. Die 24 Hecht-Referenzsituationen fachlich mit einem erfahrenen Hechtangler prüfen.
-3. Verständlichkeit von Größenbutton, Sicherheitsgate, Farbe, Datenlage, Evidenz und Wechselstrategie bewerten.
-4. Beobachtete Probleme dokumentieren, ohne Regeln anhand einzelner Eindrücke automatisch umzubauen.
+1. Prüfen, ob das GitHub-Pages-Deployment für `07d34af` erfolgreich abgeschlossen ist, und direkte Aufrufe von `/neu`, `/bestand`, `/verlauf` sowie einer Sessionroute testen.
+2. Die öffentliche App auf iOS Safari und Android Chromium mit Fischartwahl, artspezifischem Bestand v3, Beständen mit 0–3 Ködern, Größenkompromissen und Sessionverlauf manuell testen.
+3. Besonders den zuvor gemeldeten warmen, trüben, tiefen Barschfall ohne Fischsichtung prüfen: vorhandener Jig muss als startbare Option erscheinen; fehlende Köder nur optional.
+4. Die Hecht-Referenzsituationen fachlich mit einem erfahrenen Hechtangler prüfen.
+5. Verständlichkeit von Größenkompromiss, optionaler Ergänzung, Sicherheitsgate, Farbe, Datenlage, Evidenz und Wechselstrategie bewerten.
+6. Beobachtete Probleme dokumentieren, ohne Regeln anhand einzelner Eindrücke automatisch umzubauen.
 
 ### Nächster größerer Planungsmeilenstein
 
@@ -228,5 +246,5 @@ Nach technischer und fachlicher Abnahme des Sessionprotokolls sollte entschieden
 ## 11. Startprompt für einen neuen Codex-Chat
 
 ```text
-Arbeite am Projekt Angelkompass im aktuellen Repository weiter. Lies zuerst PROJECT_CHECKPOINT.md vollständig und prüfe anschließend Git-Status, README.md, docs/meilenstein-fachliche-praezisierung.md, docs/hecht-research-v1.0.0.md sowie die produktiven Regeln unter src/domain/rules/perchLakeRules.ts und src/domain/rules/pikeLakeRules.ts. Behandle research/perch/v1.0.0 ausschließlich als nicht produktives Referenzarchiv. Verändere keine Fachregeln, Artenprofile oder den vereinbarten Scope ohne ausdrückliche Freigabe. Der persönliche Bestand darf das fachliche Ranking niemals beeinflussen. Führe vor Änderungen die zum Auftrag passenden bestehenden Tests aus und erstelle vor größeren Änderungen einen Git-Checkpoint.
+Arbeite am Projekt Angelkompass im aktuellen Repository ab Commit 07d34af weiter. Lies zuerst PROJECT_CHECKPOINT.md vollständig und prüfe anschließend Git-Status, README.md, docs/meilenstein-fachliche-praezisierung.md, docs/hecht-research-v1.0.0.md sowie die produktiven Regeln unter src/domain/rules/perchLakeRules.ts und src/domain/rules/pikeLakeRules.ts. Prüfe zuerst den Status des GitHub-Pages-Deployments und die direkten SPA-Routen. Behandle research/perch/v1.0.0 ausschließlich als nicht produktives Referenzarchiv. Verändere keine Fachregeln, Artenprofile oder den vereinbarten Scope ohne ausdrückliche Freigabe. Der persönliche Bestand darf das fachliche Ranking niemals beeinflussen; die sichtbare Hauptliste darf nur tatsächlich vorhandene, tiefenkompatible und startbare Köder enthalten. Fehlende Köder und nicht bestätigte Spots bleiben optionale, nicht startbare Hinweise. Führe vor Änderungen die zum Auftrag passenden bestehenden Tests aus und erstelle vor größeren Änderungen einen Git-Checkpoint.
 ```
