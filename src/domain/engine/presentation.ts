@@ -24,7 +24,7 @@ function selectProfile(conditions:Conditions,lure:LureType,spot:RankedSpot){
 }
 
 function guidanceMode(conditions:Conditions):GuidanceMode{
-  if(['cold','cool'].includes(conditions.waterTemperature)||conditions.season==='winter'||conditions.activity.status==='none')return'slow'
+  if(['cold','cool'].includes(conditions.waterTemperature)||(conditions.waterTemperature==='unknown'&&conditions.season==='winter')||conditions.activity.status==='none')return'slow'
   if(conditions.activity.status==='observed'&&['mild','warm'].includes(conditions.waterTemperature))return'active'
   return'controlled'
 }

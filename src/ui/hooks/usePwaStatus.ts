@@ -8,7 +8,8 @@ export interface PwaStatus {
 
 let state: PwaStatus = {
   online: typeof navigator === 'undefined' ? true : navigator.onLine,
-  offlineReady: typeof localStorage !== 'undefined' && localStorage.getItem('angelkompass.offlineReady.v1') === 'true',
+  // A historical storage flag does not prove that this installation is cached.
+  offlineReady: false,
   updateAvailable: false,
 }
 let updateServiceWorker: ((reloadPage?: boolean) => Promise<void>) | undefined
@@ -24,7 +25,7 @@ if (typeof window !== 'undefined') {
 export const pwaStatusStore = {
   subscribe(listener: () => void) { listeners.add(listener); return () => listeners.delete(listener) },
   getSnapshot: () => state,
-  offlineReady() { localStorage.setItem('angelkompass.offlineReady.v1', 'true'); setState({ offlineReady: true }) },
+  offlineReady() { setState({ offlineReady: true }) },
   updateReady(update: (reloadPage?: boolean) => Promise<void>) { updateServiceWorker = update; setState({ updateAvailable: true }) },
   dismissUpdate() { setState({ updateAvailable: false }) },
   async applyUpdate() { if (updateServiceWorker) await updateServiceWorker(true) },

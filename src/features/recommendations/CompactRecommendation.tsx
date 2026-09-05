@@ -1,7 +1,7 @@
 import type { Recommendation, SessionProgress, TargetFish } from '../../domain/models/types'
 import { presentationForDisplay } from '../../domain/engine/presentation'
 
-export function CompactRecommendation({ recommendation, fish, progress = 'initial' }: { recommendation: Recommendation; fish: TargetFish; progress?: SessionProgress }) {
+export function CompactRecommendation({ recommendation, fish, progress = 'initial', completed = false }: { recommendation: Recommendation; fish: TargetFish; progress?: SessionProgress; completed?: boolean }) {
   const current = recommendation.switchPlan.find(step => step.phase === progress)
   const presentation=presentationForDisplay(recommendation.setup)
   const measurements=recommendation.setup.lure.material==='metal'
@@ -13,6 +13,7 @@ export function CompactRecommendation({ recommendation, fish, progress = 'initia
     <div className="water-specs">{measurements.map(item=><span key={item.label}><small>{item.label}</small>{item.value}</span>)}<span><small>Farbe</small>{recommendation.colorGuidance.baseLabel??recommendation.colorGuidance.familyLabel}</span></div>
     <section><h2>Montage</h2><p>{presentation.mounting}</p></section>
     <section><h2>Führung</h2><p>{presentation.guidance}</p></section>
-    <section className="current-step"><span className="overline">{current?'JETZT':'PLAN BEENDET'}</span><h2>{current?.title??'Alle Schritte ausgeschöpft'}</h2><p>{current?.change??'Session beenden oder neue Bedingungen erfassen.'}</p>{current&&<small>{current.limit}</small>}</section>
+    <ol className="water-progress" aria-label="Wechselplan">{recommendation.switchPlan.map((step,index)=><li key={step.phase} className={step.phase===progress?'current':''} aria-current={!completed&&step.phase===progress?'step':undefined}><span>0{index+1}</span>{step.title}</li>)}</ol>
+    <section className="current-step"><span className="overline">{completed?'SESSION ABGESCHLOSSEN':current?'JETZT':'PLAN BEENDET'}</span><h2>{current?.title??'Alle Schritte ausgeschöpft'}</h2><p>{current?.change??(completed?'Dein Angelplan bleibt hier als Rückblick gespeichert.':'Session beenden oder neue Bedingungen erfassen.')}</p>{current&&<small>{current.limit}</small>}</section>
   </article>
 }

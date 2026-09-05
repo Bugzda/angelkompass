@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react'
 export type ThemePreference = 'system' | 'light' | 'dark'
 const KEY = 'angelkompass.theme.v1'
 const read = (): ThemePreference => {
-  const value = localStorage.getItem(KEY)
-  return value === 'light' || value === 'dark' ? value : 'system'
+  try {
+    const value = localStorage.getItem(KEY)
+    return value === 'light' || value === 'dark' ? value : 'system'
+  } catch { return 'system' }
 }
 
 export function useTheme() {
@@ -16,6 +18,9 @@ export function useTheme() {
     media.addEventListener('change', apply)
     return () => media.removeEventListener('change', apply)
   }, [preference])
-  const setPreference = (value: ThemePreference) => { localStorage.setItem(KEY, value); setPreferenceState(value) }
+  const setPreference = (value: ThemePreference) => {
+    try { localStorage.setItem(KEY, value) } catch { /* The current visit still supports theme switching. */ }
+    setPreferenceState(value)
+  }
   return { preference, setPreference }
 }

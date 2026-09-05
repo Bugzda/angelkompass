@@ -6,7 +6,6 @@ import type { InventoryItem, LureType, SizeClass, TargetFish } from '../../domai
 const STORAGE_KEY='angelkompass.inventory.v3'
 const V2_KEY='angelkompass.inventory.v2'
 const V1_KEY='angelkompass.inventory.v1'
-const sizes:SizeClass[]=['small','medium','large']
 const catalogs:Record<TargetFish,LureType[]>={perch:lures,pike:pikeLures}
 
 const isRecord=(value:unknown):value is Record<string,unknown>=>typeof value==='object'&&value!==null
@@ -85,17 +84,47 @@ export function readInventory():InventoryItem[]{
 export function useInventory(){
   const[inventory,setInventory]=useState<InventoryItem[]>(readInventory)
   const[error,setError]=useState<string>()
-  useEffect(()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify({schemaVersion:3,items:inventory}));setError(undefined)}catch{setError('Der Bestand konnte nicht lokal gespeichert werden. Prüfe den verfügbaren Browser-Speicher.')}},[inventory])
-  const toggleSize=(targetFish:TargetFish,lureTypeId:LureType['id'],size:SizeClass)=>setInventory(current=>{
+  useEffect(()=>{
+    const sync=()=>setInventory(readInventory())
+    const onStorage=(event:StorageEvent)=>{if(event.key===null||[STORAGE_KEY,V2_KEY,V1_KEY].includes(event.key))sync()}
+    window.addEventListener('storage',onStorage)
+    window.addEventListener('angelkompass:inventory',sync)
+    try{
+      const raw=localStorage.getItem(STORAGE_KEY)
+      if(raw===null)localStorage.setItem(STORAGE_KEY,JSON.stringify({schemaVersion:3,items:readInventory()}))
+      else{
+        const parsed:unknown=JSON.parse(raw)
+        if(!isRecord(parsed)||parsed.schemaVersion!==3||!Array.isArray(parsed.items))throw new Error('Ungültiger Bestand')
+      }
+    }catch{setError('Der Bestand konnte nicht lokal gespeichert werden oder ist nicht lesbar. Prüfe den verfügbaren Browser-Speicher. Bestehende Daten bleiben erhalten.')}
+    return()=>{window.removeEventListener('storage',onStorage);window.removeEventListener('angelkompass:inventory',sync)}
+  },[])
+  const update=(change:(current:InventoryItem[])=>InventoryItem[])=>{
+    try{
+      const raw=localStorage.getItem(STORAGE_KEY)
+      if(raw!==null){
+        const parsed:unknown=JSON.parse(raw)
+        if(!isRecord(parsed)||parsed.schemaVersion!==3||!Array.isArray(parsed.items))throw new Error('Ungültiger Bestand')
+      }
+      // Read at mutation time so another tab's latest selection is preserved.
+      const next=change(readInventory())
+      localStorage.setItem(STORAGE_KEY,JSON.stringify({schemaVersion:3,items:next}))
+      setInventory(next)
+      setError(undefined)
+      window.dispatchEvent(new Event('angelkompass:inventory'))
+    }catch{setError('Der Bestand konnte nicht lokal gespeichert werden. Deine Änderung wurde nicht übernommen; bestehende Daten bleiben erhalten.')}
+  }
+  const toggleSize=(targetFish:TargetFish,lureTypeId:LureType['id'],size:SizeClass)=>update(current=>{
     const supported=supportedSizes(targetFish,lureTypeId)
     if(!supported.includes(size))return current
     const found=current.find(item=>item.targetFish===targetFish&&item.lureTypeId===lureTypeId)
     if(!found)return[...current,{targetFish,lureTypeId,sizes:[size],migratedNeedsReview:false}]
     const next=found.sizes.includes(size)?found.sizes.filter(item=>item!==size):[...found.sizes,size]
-    return current.map(item=>item===found?{...item,sizes:next,migratedNeedsReview:false}:item).filter(item=>item!==found||next.length>0)
+    return current.flatMap(item=>item!==found?[item]:next.length?[{...item,sizes:next,migratedNeedsReview:false}]:[])
   })
-  const toggleAllSizes=(targetFish:TargetFish,lureTypeId:LureType['id'])=>setInventory(current=>{
+  const toggleAllSizes=(targetFish:TargetFish,lureTypeId:LureType['id'])=>update(current=>{
     const all=supportedSizes(targetFish,lureTypeId)
+    if(!all.length)return current
     const found=current.find(item=>item.targetFish===targetFish&&item.lureTypeId===lureTypeId)
     const hasAll=Boolean(found)&&all.every(size=>found?.sizes.includes(size))
     if(hasAll)return current.filter(item=>item!==found)

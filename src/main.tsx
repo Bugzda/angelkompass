@@ -2,6 +2,7 @@ import { StrictMode } from 'react'; import { createRoot } from 'react-dom/client
 const updateSW = registerSW({
   immediate: true,
   onOfflineReady(){pwaStatusStore.offlineReady()},
+  onRegisteredSW(_url,registration){if(registration?.active?.state==='activated')pwaStatusStore.offlineReady()},
   onNeedRefresh(){pwaStatusStore.updateReady(updateSW)},
 })
 createRoot(document.getElementById('root')!).render(<StrictMode><App/></StrictMode>)

@@ -17,6 +17,8 @@ export type IconName =
   | 'check'
   | 'close'
   | 'update'
+  | 'download'
+  | 'search'
 
 type SvgComponentProps = Omit<
   SVGProps<SVGSVGElement>,
@@ -31,6 +33,10 @@ export type IconProps = SvgComponentProps & {
 
 function IconGlyph({ name }: Pick<IconProps, 'name'>) {
   switch (name) {
+    case 'download':
+      return <><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" /></>
+    case 'search':
+      return <><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></>
     case 'home':
       return <>
         <path d="m4 10.8 8-6.5 8 6.5" />

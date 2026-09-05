@@ -8,11 +8,13 @@ import { SessionPage } from '../features/sessions/SessionPage'
 import { SessionsPage } from '../features/sessions/SessionsPage'
 import { SpeciesPage } from '../features/situation/SpeciesPage'
 import { WaterCardPage } from '../features/sessions/WaterCardPage'
+import { NotFoundPage, RouteError } from '../ui/components/RouteError'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    errorElement: <RouteError />,
     children: [
       { index: true, element: <HomePage /> },
       { path: 'neu', element: <SpeciesPage /> },
@@ -22,6 +24,7 @@ const router = createBrowserRouter([
       { path: 'session/:id', element: <SessionPage /> },
       { path: 'session/:id/karte', element: <WaterCardPage /> },
       { path: 'verlauf', element: <SessionsPage /> },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ], { basename: import.meta.env.BASE_URL })

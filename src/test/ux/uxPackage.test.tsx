@@ -45,7 +45,7 @@ describe('UX-Paket',()=>{
     expect(screen.getByRole('group',{name:'Rückmeldung erfassen'})).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button',{name:'Kein Erfolg →'}))
     expect(sessionStore.getSnapshot()[0].progress).toBe('refine')
-    expect(screen.getByText(session.recommendation.switchPlan[1].title)).toBeInTheDocument()
+    expect(screen.getByRole('heading',{name:session.recommendation.switchPlan[1].title})).toBeInTheDocument()
   })
 
   it('führt auch aus einer fehlenden Am-Wasser-Karte verständlich zurück',()=>{

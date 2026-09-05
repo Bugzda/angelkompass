@@ -1,5 +1,7 @@
 # Projekt-Checkpoint Angelkompass
 
+> Ergänzung vom 5. September 2026: Der lokale Arbeitsstand wurde technisch und optisch überarbeitet. Aktuelle Änderungen und Prüfungen stehen in [`docs/review-2026-09-05.md`](docs/review-2026-09-05.md). Neue Hecht-Sessions verwenden `pike-lake-2.0.1`; das Logbuch unterstützt jetzt JSON-Export. Die folgenden Abschnitte dokumentieren den bisherigen veröffentlichten Juli-Stand. Die September-Änderungen sind noch nicht veröffentlicht.
+
 Stand: 12. Juli 2026  
 Ausgangsreferenz der Ködererweiterung: `4034cf7` (`main`)
 Aktueller Hauptstand: `07d34af` (`main` und `codex/fachdata-2`, GitHub-Pages-Deployment ausgelöst)

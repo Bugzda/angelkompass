@@ -31,7 +31,7 @@ export function evaluateSpots(conditions:Conditions):RankedSpot[]{
 }
 
 function preferredSizeFor(conditions:Conditions){
-  return conditions.targetFish==='pike'?(['cold','cool'].includes(conditions.waterTemperature)?'medium':'large'):((['cold','cool'].includes(conditions.waterTemperature)||conditions.season==='winter')?'small':'medium')
+  return conditions.targetFish==='pike'?(['cold','cool'].includes(conditions.waterTemperature)?'medium':'large'):((['cold','cool'].includes(conditions.waterTemperature)||(conditions.waterTemperature==='unknown'&&conditions.season==='winter'))?'small':'medium')
 }
 
 function setupProperties(conditions:Conditions,lure:LureType,spot:RankedSpot,requestedSize?:RankedSetup['size']){

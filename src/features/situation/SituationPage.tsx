@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { ActivitySign, Conditions, ObservableStructure, TargetFish } from '../../domain/models/types'
 import { Icon } from '../../ui/components/Icon'
+import { isConditions } from '../../domain/models/validation'
 
 const choices={
   season:[['spring','Frühling'],['summer','Sommer'],['autumn','Herbst'],['winter','Winter']],
@@ -14,7 +15,7 @@ const choices={
 } as const
 const structures=(fish:TargetFish):Array<[ObservableStructure,string]>=>[['shallow','Flachzone'],['dropoff','Tiefenkante'],...(fish==='pike'?[['hardCover','Holz, Steg oder harte Deckung'] as [ObservableStructure,string]]:[])]
 const activityOptions=(fish:TargetFish):Array<[ActivitySign,string]>=>[['baitfish','Kleinfisch sichtbar'],[fish==='pike'?'pikeContact':'huntingPerch',fish==='pike'?'Hecht/Raubfischkontakt':'Jagende Barsche'],['surfaceActivity','Oberflächenaktivität']]
-const initial=(fish:TargetFish):Conditions=>({targetFish:fish,waterType:'lake',season:'summer',timeOfDay:'day',turbidity:'slightly_turbid',depth:'medium',waterTemperature:'unknown',light:'unknown',activity:{status:'unknown',signs:[]},vegetation:'unknown',observedStructure:[],structureStatus:'unknown',pikeSafetyConfirmed:fish==='pike'?false:undefined})
+const initial=(fish:TargetFish):Conditions=>({targetFish:fish,waterType:'lake',season:(['winter','spring','summer','autumn'] as const)[Math.floor(((new Date().getMonth()+1)%12)/3)],timeOfDay:'unknown',turbidity:'unknown',depth:'unknown',waterTemperature:'unknown',light:'unknown',activity:{status:'unknown',signs:[]},vegetation:'unknown',observedStructure:[],structureStatus:'unknown',pikeSafetyConfirmed:fish==='pike'?false:undefined})
 const labels={season:'Jahreszeit',timeOfDay:'Tageszeit',turbidity:'Wassertrübung',depth:'Angeltiefe',waterTemperature:'Wassertemperatur',light:'Lichtverhältnis',vegetation:'Krautbild'} as const
 const groups:Array<{number:string;title:string;description:string;keys:Array<keyof typeof choices>}>= [
   {number:'01',title:'Rahmenbedingungen',description:'Was den Angeltag zeitlich und thermisch einordnet.',keys:['season','timeOfDay','waterTemperature']},
@@ -22,7 +23,12 @@ const groups:Array<{number:string;title:string;description:string;keys:Array<key
 ]
 
 export function SituationPage(){const params=useParams();const fish=params.fish as TargetFish;if(fish!=='perch'&&fish!=='pike')return <Navigate to="/neu" replace/>;return <SituationForm key={fish} fish={fish}/>}
-function SituationForm({fish}:{fish:TargetFish}){const[conditions,setConditions]=useState(()=>initial(fish));const navigate=useNavigate();const select=(key:keyof typeof choices,value:string)=>setConditions(current=>({...current,[key]:value}));const toggleStructure=(value:ObservableStructure)=>setConditions(current=>{const observedStructure=current.observedStructure.includes(value)?current.observedStructure.filter(item=>item!==value):[...current.observedStructure,value];return{...current,observedStructure,structureStatus:observedStructure.length?'observed':'unknown'}});const setNoStructure=()=>setConditions(current=>({...current,observedStructure:[],structureStatus:current.structureStatus==='none'?'unknown':'none'}));const setActivityStatus=(status:'unknown'|'none')=>setConditions(current=>({...current,activity:{status,signs:[]}}));const toggleActivity=(value:ActivitySign)=>setConditions(current=>{const signs=current.activity.signs.includes(value)?current.activity.signs.filter(item=>item!==value):[...current.activity.signs,value];return{...current,activity:{status:signs.length?'observed':'none',signs}}});return <section className="page-shell situation-page">
+function SituationForm({fish}:{fish:TargetFish}){
+  const location=useLocation()
+  const[conditions,setConditions]=useState(()=>isConditions(location.state)&&location.state.targetFish===fish?location.state:initial(fish))
+  const navigate=useNavigate()
+  useEffect(()=>{navigate(location.pathname,{replace:true,state:conditions})},[conditions,location.pathname,navigate])
+  const select=(key:keyof typeof choices,value:string)=>setConditions(current=>({...current,[key]:value}));const toggleStructure=(value:ObservableStructure)=>setConditions(current=>{const observedStructure=current.observedStructure.includes(value)?current.observedStructure.filter(item=>item!==value):[...current.observedStructure,value];return{...current,observedStructure,structureStatus:observedStructure.length?'observed':'unknown'}});const setNoStructure=()=>setConditions(current=>({...current,observedStructure:[],structureStatus:current.structureStatus==='none'?'unknown':'none'}));const setActivityStatus=(status:'unknown'|'none')=>setConditions(current=>({...current,activity:{status,signs:[]}}));const toggleActivity=(value:ActivitySign)=>setConditions(current=>{const signs=current.activity.signs.includes(value)?current.activity.signs.filter(item=>item!==value):[...current.activity.signs,value];return{...current,activity:{status:signs.length?'observed':'unknown',signs}}});return <section className="page-shell situation-page">
   <p className="eyebrow">NEUE SEE-SESSION</p><h1>Was siehst du am Wasser?</h1><p className="lead">{fish==='pike'?'Hecht':'Barsch'} und See sind fest eingestellt. Unbekannte Angaben bleiben fachlich neutral.</p>
   <div className="fixed-context"><img src={`${import.meta.env.BASE_URL}assets/terrain/${fish==='pike'?'pike':'perch'}.webp`} alt=""/><div><span>Zielfisch</span><strong>{fish==='pike'?'Hecht':'Barsch'}</strong></div><div><span>Gewässer</span><strong>See · vom Ufer</strong></div></div>
   <div className="form-grid">
