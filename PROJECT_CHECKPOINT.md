@@ -1,3 +1,11 @@
+## Ergänzung 5. September 2026: Zander
+
+Zander ist jetzt als dritte Fischart durchgehend verfügbar: Start, Fischwahl, Bedingungen, Bestand, Empfehlungen, Sessions, Am-Wasser-Karte, Logbuchfilter und Export. Eigenes Profil `zander-lake-1.0.0` mit vier Spots, vier Köderkategorien, fünf Montageprofilen und 13 Regeln. Quellen und fachliche Grenzen: `docs/zander-research-v1.0.0.md`.
+
+Die bestehende lokale Speicherung (Bestand v3, Sessions v1) akzeptiert Zander und `zanderContact`; vorhandene Daten bleiben erhalten. Keine externe Datenbank oder Migration nötig. 235 Tests, TypeScript-Prüfung, Produktionsbuild, Quellen- und Routingvalidierung erfolgreich. Browserprüfung der Fischwahl und Zandereingaben durchgeführt. Änderungen lokal, noch nicht veröffentlicht.
+
+---
+
 # Projekt-Checkpoint Angelkompass
 
 > Ergänzung vom 5. September 2026: Der lokale Arbeitsstand wurde technisch und optisch überarbeitet. Aktuelle Änderungen und Prüfungen stehen in [`docs/review-2026-09-05.md`](docs/review-2026-09-05.md). Neue Hecht-Sessions verwenden `pike-lake-2.0.1`; das Logbuch unterstützt jetzt JSON-Export. Die folgenden Abschnitte dokumentieren den bisherigen veröffentlichten Juli-Stand. Die September-Änderungen sind noch nicht veröffentlicht.

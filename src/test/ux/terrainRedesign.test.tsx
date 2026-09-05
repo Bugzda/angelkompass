@@ -19,26 +19,25 @@ beforeEach(()=>{
 afterEach(()=>{cleanup();vi.restoreAllMocks()})
 
 describe('Terrain-Redesign',()=>{
-  it('kündigt Zander auf der Startseite an, ohne ihn zu verlinken',()=>{
+  it('verlinkt Zander auf der Startseite',()=>{
     render(<MemoryRouter><HomePage/></MemoryRouter>)
     expect(screen.getByText('Zander')).toBeInTheDocument()
-    expect(screen.getByText('Bald verfügbar')).toBeInTheDocument()
-    expect(screen.queryByRole('link',{name:/Zander/})).not.toBeInTheDocument()
+    expect(screen.queryByText('Bald verfügbar')).not.toBeInTheDocument()
+    expect(screen.getByRole('link',{name:/Zander/})).toHaveAttribute('href','/neu/zander')
   })
 
-  it('zeigt eine deaktivierte Zander-Artkarte neben Barsch und Hecht',()=>{
+  it('zeigt Zander neben Barsch und Hecht',()=>{
     render(<MemoryRouter><SpeciesPage/></MemoryRouter>)
     expect(screen.getByText('3 Spots · 10 Ködertypen')).toBeInTheDocument()
     expect(screen.getByText('4 Spots · 9 Ködertypen')).toBeInTheDocument()
     expect(screen.getByRole('link',{name:/Barsch/})).toHaveAttribute('href','/neu/perch')
     expect(screen.getByRole('link',{name:/Hecht/})).toHaveAttribute('href','/neu/pike')
-    const zander=screen.getByText('Zander').closest('article')
-    expect(zander).toHaveAttribute('aria-disabled','true')
-    expect(screen.queryByRole('link',{name:/Zander/})).not.toBeInTheDocument()
+    expect(screen.getByText('4 Spots · 4 Ködertypen')).toBeInTheDocument()
+    expect(screen.getByRole('link',{name:/Zander/})).toHaveAttribute('href','/neu/zander')
   })
 
-  it('leitet eine manipulierte Zander-URL zurück zur Fischwahl',()=>{
-    render(<MemoryRouter initialEntries={['/neu/zander']}><Routes><Route path="/neu" element={<SpeciesPage/>}/><Route path="/neu/:fish" element={<SituationPage/>}/></Routes></MemoryRouter>)
+  it('leitet eine unbekannte Fisch-URL zurück zur Fischwahl',()=>{
+    render(<MemoryRouter initialEntries={['/neu/unknown']}><Routes><Route path="/neu" element={<SpeciesPage/>}/><Route path="/neu/:fish" element={<SituationPage/>}/></Routes></MemoryRouter>)
     expect(screen.getByRole('heading',{name:'Welchen Räuber suchst du?'})).toBeInTheDocument()
   })
 

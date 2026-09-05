@@ -2,7 +2,7 @@
 
 Vollständiger Übergabestand für neue Chats: [`PROJECT_CHECKPOINT.md`](PROJECT_CHECKPOINT.md)
 
-Mobile, lokal speichernde Entscheidungshilfe für das Uferangeln auf Barsch und Hecht am See.
+Mobile, lokal speichernde Entscheidungshilfe für das Uferangeln auf Barsch, Hecht und Zander am See.
 
 Aktuelles Code- und UI-Review: [`docs/review-2026-09-05.md`](docs/review-2026-09-05.md).
 
@@ -15,7 +15,7 @@ pnpm dev
 
 Qualitätsprüfung: `pnpm lint`, `pnpm test` und `pnpm build`.
 
-Die Fachlogik liegt unabhängig von React unter `src/domain`. Das Barschprofil umfasst drei Spot-Typen und zehn Ködertypen, das Hechtprofil vier Spot-Typen und neun Ködertypen. Es gibt keine externe API und kein Backend. `pnpm lint` prüft beide TypeScript-Projekte.
+Die Fachlogik liegt unabhängig von React unter `src/domain`. Das Barschprofil umfasst drei Spot-Typen und zehn Ködertypen, das Hechtprofil vier Spot-Typen und neun Ködertypen, das Zanderprofil vier Spot-Typen und vier Ködertypen. Das Zander-Regelwerk und seine Quellen sind in [`docs/zander-research-v1.0.0.md`](docs/zander-research-v1.0.0.md) dokumentiert. Es gibt keine externe API und kein Backend. `pnpm lint` prüft beide TypeScript-Projekte.
 
 Die Engine berechnet zuerst eine unveränderte fachliche Rangfolge. Der lokal gespeicherte persönliche Bestand wird erst anschließend ausgewertet: Sichtbar und startbar sind maximal drei tiefenkompatible, vorhandene Köder; abweichende vorhandene Größen werden transparent als Kompromiss verwendet. Die beste fehlende Option erscheint separat als fachliche Ergänzung.
 

@@ -14,6 +14,11 @@ export interface ProductSource {
 
 const verified='2026-07-12'
 const entries:ProductSource[]=[
+  {id:'Z01',title:'Sandart',authors:'DTU Aqua / Fiskepleje',year:2026,url:'https://www.fiskepleje.dk/fiskebiologi/sandart',evidenceType:'official-guidance',scope:'Artenübersicht: Licht, Freiwasser und Sauerstoff; keine direkten Köderranglisten',lastVerifiedAt:'2026-09-05'},
+  {id:'Z02',title:'Locate the big zander',authors:'Jörgen Larsson / Westin Fishing',year:2026,url:'https://www.westin-fishing.com/en/articles-videos/articles/locate-the-big-zander',evidenceType:'experience',scope:'Praxisbericht vom Boot; Struktur und Beutefisch nur vorsichtig auf erreichbare Uferbereiche übertragen; Jahr bezeichnet Abrufjahr',lastVerifiedAt:'2026-09-05'},
+  {id:'Z03',title:'Zander Box Dropshot + Texas & Carolina',authors:'Westin Fishing',year:2026,url:'https://www.westin-fishing.com/de/kits-b2c_spring-kits/zander-box-dropshot--plus--texas--carolina',evidenceType:'experience',scope:'Herstellerpraxis zu Zanderrigs vom Ufer; kein Beleg für exakte Gewichte oder Fangvorteile; Abrufjahr',lastVerifiedAt:'2026-09-05'},
+  {id:'Z04',title:'Tournament Tightwave Shad',authors:'DAIWA',year:2026,url:'https://en.daiwa.de/tournament_tightwave_shad--9216m1.html',evidenceType:'experience',scope:'Herstellerempfehlung für flache Zander-Nachtfischerei mit Wobbler; Abrufjahr',lastVerifiedAt:'2026-09-05'},
+
   {id:'S01',title:'A global review of the biology and ecology of the European perch',authors:'Ning et al.',year:2025,url:'https://researchoutput.csu.edu.au/ws/portalfiles/portal/609914679/579873124_published_article.pdf',evidenceType:'science',scope:'Biologie und Ökologie des Europäischen Barschs',lastVerifiedAt:verified},
   {id:'S02',title:'Habitat use and preference of adult perch in a deep reservoir',authors:'Westrelin et al.',year:2018,url:'https://hal.science/hal-01832981v1/document',evidenceType:'science',scope:'Habitatwahl adulter Barsche in einem tiefen Reservoir',lastVerifiedAt:verified},
   {id:'S03',title:'Quantifying activity and movement of perch',authors:'Zamora & Moreno-Amich',year:2002,url:'https://link.springer.com/article/10.1023/A%3A1021396016424',evidenceType:'science',scope:'Aktivität und Bewegung des Europäischen Barschs',lastVerifiedAt:verified},

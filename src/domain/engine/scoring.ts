@@ -31,6 +31,7 @@ export function evaluateSpots(conditions:Conditions):RankedSpot[]{
 }
 
 function preferredSizeFor(conditions:Conditions){
+  if(conditions.targetFish==='zander')return 'medium'
   return conditions.targetFish==='pike'?(['cold','cool'].includes(conditions.waterTemperature)?'medium':'large'):((['cold','cool'].includes(conditions.waterTemperature)||(conditions.waterTemperature==='unknown'&&conditions.season==='winter'))?'small':'medium')
 }
 
@@ -95,12 +96,12 @@ function rankCandidates(conditions:Conditions,spotAllowed:((spot:RankedSpot)=>bo
   const coverage=calculateInputCoverage(conditions)
   return selected.map(({spot,setup},index)=>{
     const specialIds=setup.lure.id==='popper'?(conditions.targetFish==='pike'?['jerkbait','spinnerbait','crankbait']:['twitchbait','spinnerbait','crankbait']):setup.lure.id==='blade-bait'||setup.lure.id==='tail-spinner'?['jig']:setup.lure.id==='tailbait'?['jig','jerkbait']:[]
-    const alternative=candidates.find(item=>item.spot.spot.id===spot.spot.id&&item.setup.lure.id!==setup.lure.id&&(specialIds.length?specialIds.includes(item.setup.lure.id):setup.lure.style==='search'?item.setup.lure.style!=='search':item.setup.lure.style==='search'))?.setup.lure.label??(conditions.targetFish==='pike'?'Hecht-Softbait / Gummifisch':setup.lure.style==='search'?'Ned Rig':'Twitchbait')
+    const alternative=candidates.find(item=>item.spot.spot.id===spot.spot.id&&item.setup.lure.id!==setup.lure.id&&(specialIds.length?specialIds.includes(item.setup.lure.id):setup.lure.style==='search'?item.setup.lure.style!=='search':item.setup.lure.style==='search'))?.setup.lure.label??(conditions.targetFish==='zander'?(setup.lure.id==='dropshot'?'Zander-Gummifisch':'Drop Shot'):conditions.targetFish==='pike'?'Hecht-Softbait / Gummifisch':setup.lure.style==='search'?'Ned Rig':'Twitchbait')
     const allApplied=[...spot.reasons,...setup.reasons].filter(item=>item.appliedDelta!==0)
     const positive=allApplied.filter(item=>item.appliedDelta>0).sort((a,b)=>b.appliedDelta-a.appliedDelta)
     const explained=(positive.length?positive:allApplied.sort((a,b)=>Math.abs(b.appliedDelta)-Math.abs(a.appliedDelta))).slice(0,4)
     const reasons=explained.map(explain)
-    if(spot.spot.id==='openWater')reasons.unshift('Keine konkrete Struktur bestätigt: Der Plan nutzt deshalb einen neutralen, zur gewählten Tiefe passenden Wasser- oder Grundbereich.')
+    if(spot.spot.id==='openWater'&&spot.spot.priority===99)reasons.unshift('Keine konkrete Struktur bestätigt: Der Plan nutzt deshalb einen neutralen, zur gewählten Tiefe passenden Wasser- oder Grundbereich.')
     return{rank:index+1,spot,setup,inputCoverage:coverage,evidenceQuality:calculateEvidenceQuality([...spot.reasons,...setup.reasons]),colorGuidance:buildColorGuidance(setup.color,conditions,setup.lure),reasons:reasons.slice(0,4),switchPlan:buildSwitchPlan(setup,alternative,eligibleSpots.find(item=>item.spot.id!==spot.spot.id)?.spot.label??'einen anderen erreichbaren Wasserbereich',conditions.activity.status==='observed'),totalScore:spot.score+setup.score}
   })
 }

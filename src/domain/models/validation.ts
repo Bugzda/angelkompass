@@ -8,7 +8,7 @@ export const oneOf = (value: unknown, values: readonly string[]) =>
 /** Validate persisted and router-provided observations before invoking the engine. */
 export function isConditions(value: unknown): value is Conditions {
   if (!isRecord(value) || !isRecord(value.activity)) return false
-  return oneOf(value.targetFish, ['perch', 'pike']) && value.waterType === 'lake' &&
+  return oneOf(value.targetFish, ['perch', 'pike', 'zander']) && value.waterType === 'lake' &&
     oneOf(value.season, ['spring', 'summer', 'autumn', 'winter']) &&
     oneOf(value.timeOfDay, ['dawn', 'day', 'dusk', 'night', 'unknown']) &&
     oneOf(value.turbidity, ['clear', 'slightly_turbid', 'turbid', 'unknown']) &&
@@ -19,7 +19,7 @@ export function isConditions(value: unknown): value is Conditions {
     Array.isArray(value.observedStructure) && value.observedStructure.every(item => oneOf(item, ['shallow', 'dropoff', 'hardCover'])) &&
     (value.structureStatus === undefined || oneOf(value.structureStatus, ['unknown', 'none', 'observed'])) &&
     oneOf(value.activity.status, ['unknown', 'none', 'observed']) &&
-    Array.isArray(value.activity.signs) && value.activity.signs.every(item => oneOf(item, ['baitfish', 'huntingPerch', 'surfaceActivity', 'pikeContact'])) &&
+    Array.isArray(value.activity.signs) && value.activity.signs.every(item => oneOf(item, ['baitfish', 'huntingPerch', 'surfaceActivity', 'pikeContact', 'zanderContact'])) &&
     (value.pikeSafetyConfirmed === undefined || typeof value.pikeSafetyConfirmed === 'boolean')
 }
 

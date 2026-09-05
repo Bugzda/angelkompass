@@ -52,12 +52,12 @@ for(const line of sourceLines){
   productSources.set(id,{evidenceType,url})
 }
 
-for(const ruleFile of ['src/domain/rules/perchLakeRules.ts','src/domain/rules/pikeLakeRules.ts']){
+for(const ruleFile of ['src/domain/rules/perchLakeRules.ts','src/domain/rules/pikeLakeRules.ts','src/domain/rules/zanderLakeRules.ts']){
   const text=await readFile(resolve(ruleFile),'utf8')
   for(const line of text.split('\n').filter(value=>value.includes('sourceIds:['))){
     const ruleId=line.match(/\bid:'([^']+)'/)?.[1]
     const evidenceClass=line.match(/\bevidenceClass:'([^']+)'/)?.[1]
-    const ids=[...line.matchAll(/'([SP]\d+)'/g)].map(match=>match[1])
+    const ids=[...line.matchAll(/'([SPZ]\d+)'/g)].map(match=>match[1])
     for(const id of ids)if(!productSources.has(id))errors.push(`${ruleId}: unbekannte produktive Quelle ${id}`)
     if(evidenceClass==='science'&&!ids.some(id=>productSources.get(id)?.evidenceType==='science'))errors.push(`${ruleId}: Science-Regel ohne wissenschaftliche Quelle`)
     if(evidenceClass==='science'&&ids.some(id=>productSources.get(id)?.evidenceType!=='science'))errors.push(`${ruleId}: Science-Regel referenziert eine nichtwissenschaftliche Quelle`)

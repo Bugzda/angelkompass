@@ -16,6 +16,7 @@ function selectProfile(conditions:Conditions,lure:LureType,spot:RankedSpot){
     if(['edgeOrGaps','dense'].includes(conditions.vegetation))return profiles.find(item=>item.id==='texas-offset')??profiles[0]
     if(spot.spot.id==='dropoff'&&conditions.vegetation==='none')return profiles.find(item=>item.id==='carolina')??profiles[0]
   }
+  if(lure.id==='jig'&&conditions.targetFish==='zander'&&conditions.vegetation==='dense')return profiles.find(item=>item.id==='zander-texas')??profiles[0]
   if(lure.id==='jig'&&conditions.targetFish==='pike'){
     if(conditions.vegetation==='dense')return profiles.find(item=>item.id==='pike-weedless-offset')??profiles[0]
     if(conditions.depth==='shallow')return profiles.find(item=>item.id==='pike-shallow-screw')??profiles[0]

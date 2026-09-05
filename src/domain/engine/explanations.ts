@@ -1,6 +1,20 @@
 import type { ReasonContribution } from '../models/types'
 
 const texts:Record<string,string>={
+  ZANDER_STRUCTURE:'Die bestätigte Struktur stärkt diesen Zander-Suchbereich.',
+  ZANDER_DEPTH:'Die beobachtete Angeltiefe passt zum Strukturtyp.',
+  ZANDER_LOW_LIGHT:'Wenig Licht macht die erreichbare Flachzone zu einer möglichen Suchoption.',
+  ZANDER_BRIGHT_DEPTH:'Bei hellem, klarem Wasser lohnt es sich, den erreichbaren Tiefenübergang zu prüfen.',
+  ZANDER_COLD_TRANSITION:'Bei kalten Bedingungen ist ein Tiefenübergang ein vorsichtiger Suchansatz.',
+  ZANDER_PREY:'Sichtbarer Kleinfisch spricht dafür, auch den freien Wasserhorizont abzusuchen.',
+  ZANDER_DEPTH_CONTROL:'Die Montage lässt sich auf die gewählte Tiefe abstimmen; nur so schwer wie für Kontrolle nötig.',
+  ZANDER_BOTTOM:'Am harten Grund oder Tiefenübergang lässt sich diese Montage kontrolliert präsentieren.',
+  ZANDER_NIGHT_WOBBLER:'Ein flach laufender Wobbler ist bei wenig Licht eine praktische Suchoption vom Ufer.',
+  ZANDER_SLOW:'Längere Pausen sind ein vorsichtiger Versuch bei Kälte oder fehlender sichtbarer Aktivität.',
+  ZANDER_CONTACT:'Nach bestätigtem Zanderkontakt lohnt sich eine gezielte Präsentation im Kontaktbereich.',
+  ZANDER_SNAGS:'Dichtes Kraut erschwert die Kontrolle dieser Montage und erhöht das Hängerrisiko.',
+  ZANDER_OFFSET:'Ein krautgeschützter Offsethaken erleichtert das Fischen in freien Krautbahnen.',
+
   PIKE_OBSERVED_STRUCTURE:'Die direkt beobachtete Struktur ist das stärkste Signal für diesen Hecht-Spot.',PIKE_VEGETATION_EDGE:'Kraut- und Schilfkanten bieten Deckung und eine freie Angriffszone.',PIKE_DENSE_COVER:'Dichtes Kraut bietet Deckung; sinnvoll befischbar sind vor allem Kante, Taschen und freie Bahnen.',PIKE_DEPTH_MATCH:'Spot und erreichbare Angeltiefe passen zusammen.',PIKE_SPRING_SHALLOW:'Im Frühjahr sind erreichbare Flach- und Vegetationsbereiche wichtige Hechthabitate.',PIKE_COLD_TRANSITION:'Bei kühlem Wasser wird ein kontrollierbarer Übergang zu tieferem Wasser bevorzugt.',PIKE_HOT_SHALLOW_CAUTION:'Sehr warmes Flachwasser wird aus Vorsicht zurückgestuft.',PIKE_BAITFISH_COVER:'Sichtbarer Beutefisch stärkt erreichbare Deckung und Flachzonen.',PIKE_CONTACT_ZONE:'Ein bestätigter Hecht- oder Raubfischkontakt überstimmt pauschale Annahmen.',
   PIKE_EDGE_CONTROL:'Der Köder lässt sich kontrolliert entlang der Vegetationskante führen.',PIKE_DENSE_SNAG_RISK:'Im dichten Kraut steigt bei diesem Köder das Hänger- und Laufstörungsrisiko.',PIKE_DEEP_CONTROL:'Der Köder hält kontrolliert Kontakt im tieferen Zielhorizont.',PIKE_COLD_PAUSE:'Bei kühlem Wasser ermöglicht dieser Köder eine langsamere Präsentation mit Pausen.',PIKE_TURBID_VIBRATION:'Im trüben Wasser erzeugt dieser Köder eine deutliche Silhouette oder Druckwelle.',PIKE_CLEAR_NATURAL:'Im klaren Wasser passt eine kontrollierte, natürliche Beutefischpräsentation.',PIKE_ACTIVE_SEARCH:'Bestätigte Aktivität spricht für das zügige Absuchen des beobachteten Horizonts.',PIKE_PREY_PROFILE:'Das Profil passt zur sichtbaren Beutefischsituation.',PIKE_HARD_COVER:'Dieses Setup lässt sich präzise an Holz, Steg oder harter Deckung präsentieren.',PIKE_SHALLOW_SEARCH:'Der Köder deckt die erreichbare Flachzone effizient ab.',PIKE_TOPWATER_WINDOW:'Ohne warmes, flaches Fenster wird Topwater deutlich zurückgestuft.',PIKE_TOPWATER_ACTIVITY:'Bestätigte Oberflächenaktivität öffnet ein klares Topwater-Fenster.',PIKE_TAILBAIT_COLD:'Der Tailbait lässt sich bei kühlem Wasser besonders langsam mit langen Pausen präsentieren.',
   OBSERVED_STRUCTURE:'Die sichtbare Struktur ist ein direktes Signal für diesen Spot.',VEGETATION_EDGE_OBSERVED:'Lockere Krautkanten und Lücken verbinden Deckung mit gutem Jagdraum.',DENSE_VEGETATION_HABITAT:'Dichtes Kraut bietet Habitat; befischt werden vor allem Außenkante, Taschen und freie Bahnen.',DEPTH_MATCH:'Spot und geschätzte Angeltiefe passen zusammen.',

@@ -14,7 +14,7 @@ const inventoryFor=(fish:TargetFish,depth:Conditions['depth'],count:number):Inve
   .map(lure=>({targetFish:fish,lureTypeId:lure.id,sizes:[...lure.sizes]}))
 
 describe('bestandsbasierte Top-Empfehlungen',()=>{
-  for(const fish of ['perch','pike'] as const)for(const depth of ['shallow','medium','deep','unknown'] as const)for(const count of [0,1,2,3]){
+  for(const fish of ['perch','pike','zander'] as const)for(const depth of ['shallow','medium','deep','unknown'] as const)for(const count of [0,1,2,3]){
     it(`${fish} ${depth}: zeigt ${count} vorhandene Optionen`,()=>{
       const conditions=conditionsFor(fish,depth)
       const decision=createRecommendationDecision(conditions,inventoryFor(fish,depth,count))

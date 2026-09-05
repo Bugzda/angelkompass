@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { zanderLures } from '../../domain/catalogs/zanderLures'
 import { lures } from '../../domain/catalogs/lures'
 import { pikeLures } from '../../domain/catalogs/pikeLures'
 import type { InventoryItem, LureType, SizeClass, TargetFish } from '../../domain/models/types'
@@ -6,10 +7,10 @@ import type { InventoryItem, LureType, SizeClass, TargetFish } from '../../domai
 const STORAGE_KEY='angelkompass.inventory.v3'
 const V2_KEY='angelkompass.inventory.v2'
 const V1_KEY='angelkompass.inventory.v1'
-const catalogs:Record<TargetFish,LureType[]>={perch:lures,pike:pikeLures}
+const catalogs:Record<TargetFish,LureType[]>={perch:lures,pike:pikeLures,zander:zanderLures}
 
 const isRecord=(value:unknown):value is Record<string,unknown>=>typeof value==='object'&&value!==null
-const isFish=(value:unknown):value is TargetFish=>value==='perch'||value==='pike'
+const isFish=(value:unknown):value is TargetFish=>value==='perch'||value==='pike'||value==='zander'
 const isSize=(value:unknown):value is SizeClass=>value==='small'||value==='medium'||value==='large'
 const lureFor=(fish:TargetFish,id:unknown)=>catalogs[fish].find(lure=>lure.id===id)
 const supportedSizes=(fish:TargetFish,id:LureType['id'])=>lureFor(fish,id)?.sizes??[]

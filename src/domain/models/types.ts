@@ -4,8 +4,8 @@ export type Turbidity = 'clear' | 'slightly_turbid' | 'turbid' | 'unknown'
 export type Depth = 'shallow' | 'medium' | 'deep' | 'unknown'
 export type WaterTemperature = 'cold' | 'cool' | 'mild' | 'warm' | 'hot' | 'unknown'
 export type Light = 'bright' | 'diffuse' | 'dark' | 'unknown'
-export type TargetFish = 'perch' | 'pike'
-export type ActivitySign = 'baitfish' | 'huntingPerch' | 'surfaceActivity' | 'pikeContact'
+export type TargetFish = 'perch' | 'pike' | 'zander'
+export type ActivitySign = 'baitfish' | 'huntingPerch' | 'surfaceActivity' | 'pikeContact' | 'zanderContact'
 export type ActivityObservation = { status: 'unknown' | 'none' | 'observed'; signs: ActivitySign[] }
 export type Vegetation = 'none' | 'edgeOrGaps' | 'dense' | 'unknown'
 export type SpotFeature = 'vegetation' | 'shallow' | 'dropoff' | 'hardCover' | 'openWater'
@@ -37,7 +37,7 @@ export interface Conditions {
 }
 
 export interface SpotType { id: SpotFeature; label: string; description: string; seasonalAffinity: Season[]; depthAffinity: Array<Exclude<Depth, 'unknown'>>; priority: number }
-export type LureId = 'jig' | 'ned' | 'twitchbait' | 'spinner' | 'crankbait' | 'chatterbait' | 'blade-bait' | 'spinnerbait' | 'popper' | 'tail-spinner' | 'jerkbait' | 'spoon' | 'swimbait' | 'tailbait'
+export type LureId = 'dropshot' | 'carolina' | 'jig' | 'ned' | 'twitchbait' | 'spinner' | 'crankbait' | 'chatterbait' | 'blade-bait' | 'spinnerbait' | 'popper' | 'tail-spinner' | 'jerkbait' | 'spoon' | 'swimbait' | 'tailbait'
 export interface NumericRange { min: number; max?: number; openEnded?: boolean }
 export interface GuidanceSet { slow: string; controlled: string; active: string }
 export interface PresentationProfile {
