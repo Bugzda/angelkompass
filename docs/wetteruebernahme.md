@@ -25,3 +25,9 @@ Open-Meteos kostenloser gehosteter Dienst ist für nicht kommerzielle Nutzung vo
 Bestehende Ablauf- und Zustandstests vorab erfolgreich. Neue Tests prüfen Tag/Nacht/Dämmerung, fehlende und veraltete Daten, expliziten Abruf, gerundete Koordinaten, Erhalt manueller Werte, manuelle Korrektur, Netzfehler und verweigerte Standortfreigabe. Die aktuelle Gesamtprüfung umfasst 251 Tests.
 
 TypeScript-Prüfung, Produktionsbuild, Routing- und Research-Validierung erfolgreich. Browserprüfung mit echten Open-Meteo-Daten für Potsdam: Suche, Auswahl, Vorschau und Übernahme erfolgreich. Auf 390 und 320 Pixeln geprüft; 320 Pixel ohne horizontales Überlaufen, Darstellung im dunklen Farbschema visuell geprüft. Keine Browserfehler im geprüften Ablauf. Standortfehler und Netzausfall sind automatisiert geprüft; keine echte Standortfreigabe für den Test erforderlich. Da der pnpm-Start in dieser Umgebung hing, wurden die Skriptprogramme direkt aus den vorhandenen lokalen Abhängigkeiten ausgeführt. Nicht veröffentlicht.
+
+## Ergänzung: automatische Zeitangaben
+
+Neue Pläne wählen Jahreszeit und Tageszeit ohne Netz oder Standortfreigabe anhand der lokalen Gerätezeit vor. Jahreszeiten folgen dem mitteleuropäischen Kalender (März–Mai Frühling, Juni–August Sommer, September–November Herbst, Dezember–Februar Winter). Die Uhrzeit dient als Näherung: 05–09 Uhr Morgen, 09–18 Uhr Tag, 18–22 Uhr Abend, sonst Nacht. Diese Zeitfenster sind keine astronomischen Dämmerungszeiten. Ein Hinweis erklärt die Vorauswahl; alle Optionen bleiben korrigierbar.
+
+Bei einer Wetterübernahme im neu geöffneten Formular kann der Sonnenzeiten-Vorschlag die noch unberührte Uhrzeit-Vorauswahl präzisieren. Manuell gewählte Tageszeiten und wiederhergestellte Entwürfe bleiben erhalten. Unbekannte Wetterwerte löschen keine Vorauswahl. Bestehende Sessions bleiben unverändert.

@@ -25,6 +25,8 @@ Die Engine berechnet zuerst eine unveränderte fachliche Rangfolge. Der lokal ge
 
 ## Fachliche Eingaben
 
+Jahreszeit und Tageszeit sind bei neuen Plänen automatisch aus der Gerätezeit vorausgewählt und bleiben änderbar. Die Tageszeit ist ohne Standort eine Näherung.
+
 Neben Jahreszeit, Tageszeit, Trübung und Tiefe verarbeitet das See-MVP manuell gewählte Wassertemperaturklassen, Licht, beobachtete Aktivität und das Krautbild. Unbekannte Angaben bleiben neutral.
 
 Produktive Regeln sind deklarativ nach Evidenzklasse und Ursache gruppiert. Gruppen-Caps verhindern, dass korrelierte Angaben wie Saison und Temperatur mehrfach dominieren. Jede Empfehlung weist Eingabeabdeckung und Evidenzgüte getrennt aus und enthält eine dreistufige Wechselstrategie.
