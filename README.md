@@ -1,5 +1,7 @@
 # Angelkompass
 
+Zentrale Arbeitsanleitung für Coding-Agenten: [`AGENTS.md`](AGENTS.md)
+
 Vollständiger Übergabestand für neue Chats: [`PROJECT_CHECKPOINT.md`](PROJECT_CHECKPOINT.md)
 
 Mobile, lokal speichernde Entscheidungshilfe für das Uferangeln auf Barsch, Hecht und Zander am See.
