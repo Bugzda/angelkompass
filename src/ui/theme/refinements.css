@@ -43,6 +43,11 @@ a.species-chip:hover { background: #fff; transform: translateY(-2px); }
 .inventory-species > header > img { width: 100px; height: 65px; object-fit: contain; filter: grayscale(1); }
 :root[data-theme="dark"] .inventory-species > header > img { filter: grayscale(1) invert(1); mix-blend-mode: screen; }
 .inventory-options > article.selected { border-color: var(--forest); box-shadow: inset 0 0 0 1px var(--forest); background: var(--surface-raised); }
+.inventory-size-choices button[aria-pressed="false"] { background: var(--surface); border-color: var(--line); color: var(--ink-soft); }
+.inventory-size-choices button[aria-pressed="true"] { background: var(--lime); border-color: var(--lime); color: var(--lime-ink); }
+.inventory-size-choices button[aria-pressed="true"] svg { color: currentColor; flex-shrink: 0; }
+.inventory-size-choices button:hover { border-color: var(--forest); }
+.inventory-title .inventory-size-summary { color: var(--ink); line-height: 1.5; }
 .filter-empty { padding: 22px; color: var(--ink-soft); border: 1px dashed var(--line); border-radius: var(--radius); }
 .logbook-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid #28534e; border-radius: var(--radius); background: var(--forest-deep); color: #eef8f5; overflow: hidden; }
 .logbook-stats > div { display: flex; flex-direction: column-reverse; gap: 8px; padding: 25px; }
