@@ -9,7 +9,7 @@ import { SessionsPage } from '../features/sessions/SessionsPage'
 import { SpeciesPage } from '../features/situation/SpeciesPage'
 import { WaterCardPage } from '../features/sessions/WaterCardPage'
 import { NotFoundPage, RouteError } from '../ui/components/RouteError'
-import { PhotoAnalysisPage } from '../features/photo/PhotoAnalysisPage'
+import { RetiredPhotoRoute } from './RetiredPhotoRoute'
 
 const router = createBrowserRouter([
   {
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'neu', element: <SpeciesPage /> },
       { path: 'neu/:fish', element: <SituationPage /> },
-      { path: 'neu/:fish/foto', element: <PhotoAnalysisPage /> },
+      { path: 'neu/:fish/foto', element: <RetiredPhotoRoute /> },
       { path: 'empfehlung', element: <RecommendationPage /> },
       { path: 'bestand', element: <InventoryPage /> },
       { path: 'session/:id', element: <SessionPage /> },

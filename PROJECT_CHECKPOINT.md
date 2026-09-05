@@ -1,3 +1,7 @@
+## Aktueller Stand: Fotofunktion entfernt
+
+Auf Nutzerwunsch aus Oberfläche und Laufzeit entfernt. Keine KI-Downloads mehr. Details: `docs/fotoanalyse-lokal.md`. Die folgenden Fotoanalyse-Ergänzungen sind historische Stände.
+
 ## Ergänzung 05.09.2026: lokale Fotoanalyse
 
 Ufer-Scanner unter `/neu/:fish/foto` implementiert, siehe `docs/fotoanalyse-lokal.md`. Echte lokale FP32-Bilderkennung im Web Worker, ungefähr 200 MB Erstdownload, keine Fotos auf Servern und keine Datenbankänderung. Explizite Bestätigung vor Übernahme. Browserprüfung mit Uferbild und mobilem Zander-Rückweg erfolgreich. Änderungen sind lokal und noch nicht veröffentlicht.
