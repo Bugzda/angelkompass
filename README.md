@@ -19,7 +19,7 @@ pnpm dev
 
 Qualitätsprüfung: `pnpm lint`, `pnpm test` und `pnpm build`.
 
-Die Fachlogik liegt unabhängig von React unter `src/domain`. Das Barschprofil umfasst drei Spot-Typen und zehn Ködertypen, das Hechtprofil vier Spot-Typen und neun Ködertypen, das Zanderprofil vier Spot-Typen und vier Ködertypen. Das Zander-Regelwerk und seine Quellen sind in [`docs/zander-research-v1.0.0.md`](docs/zander-research-v1.0.0.md) dokumentiert. Es gibt keine externe API und kein Backend. `pnpm lint` prüft beide TypeScript-Projekte.
+Die Fachlogik liegt unabhängig von React unter `src/domain`. Das Barschprofil umfasst drei Spot-Typen und zehn Ködertypen, das Hechtprofil vier Spot-Typen und neun Ködertypen, das Zanderprofil vier Spot-Typen und vier Ködertypen. Das Zander-Regelwerk und seine Quellen sind in [`docs/zander-research-v1.0.0.md`](docs/zander-research-v1.0.0.md) dokumentiert. Optional ergänzt Open-Meteo aktuelle Wettervorschläge; es gibt kein Backend. `pnpm lint` prüft beide TypeScript-Projekte.
 
 Die Engine berechnet zuerst eine unveränderte fachliche Rangfolge. Der lokal gespeicherte persönliche Bestand wird erst anschließend ausgewertet: Sichtbar und startbar sind maximal drei tiefenkompatible, vorhandene Köder; abweichende vorhandene Größen werden transparent als Kompromiss verwendet. Die beste fehlende Option erscheint separat als fachliche Ergänzung.
 
@@ -30,6 +30,10 @@ Neben Jahreszeit, Tageszeit, Trübung und Tiefe verarbeitet das See-MVP manuell 
 Produktive Regeln sind deklarativ nach Evidenzklasse und Ursache gruppiert. Gruppen-Caps verhindern, dass korrelierte Angaben wie Saison und Temperatur mehrfach dominieren. Jede Empfehlung weist Eingabeabdeckung und Evidenzgüte getrennt aus und enthält eine dreistufige Wechselstrategie.
 
 Das vollständige Wissensarchiv unter `research/` bleibt Referenzmaterial und wird nicht zur Laufzeit geladen.
+
+## Optionale Wetterübernahme
+
+Auf der Bedingungsseite lassen sich über Standortfreigabe oder Ortssuche aktuelle Wetterdaten abrufen. Nach einer Vorschau ergänzt „Offene Angaben ergänzen“ unbekannte Tageszeit- und Lichtangaben. Eigene Angaben bleiben erhalten und jederzeit änderbar. Lufttemperatur ersetzt keine Wassertemperatur. Ohne Netz bleibt die manuelle Eingabe verfügbar. Details und Grenzen: [`docs/wetteruebernahme.md`](docs/wetteruebernahme.md).
 
 ## Lokale Sessions
 

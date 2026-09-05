@@ -1,3 +1,5 @@
+import { WeatherAssist } from './WeatherAssist'
+import { applyWeather } from './weather'
 import { PlanProgress } from '../../ui/components/PlanProgress'
 import { useInventory } from '../inventory/useInventory'
 import { fishLabel } from '../../domain/species/profiles'
@@ -38,6 +40,7 @@ function SituationForm({fish}:{fish:TargetFish}){
   <div className="fixed-context"><img src={`${import.meta.env.BASE_URL}assets/terrain/${fish}.webp`} alt=""/><div><span>Zielfisch</span><strong>{fishLabel[fish]}</strong></div><div><span>Gewässer</span><strong>See · vom Ufer</strong></div></div>
   <aside className="inventory-context"><div><strong>{fishInventory.length?`${fishInventory.length} ${fishInventory.length===1?'Köderprofil':'Köderprofile'} für ${fishLabel[fish]} bereit`:`Noch keine Köder für ${fishLabel[fish]} ausgewählt`}</strong><p>{fishInventory.length?'Prüfe kurz, ob diese Köder heute dabei sind.':'Markiere deine Köder, damit dein Plan direkt nutzbar ist. Deine bisherigen Angaben bleiben erhalten.'}</p></div><Link className="secondary" to="/bestand" state={{draftConditions:conditions}}>{fishInventory.length?'Köder prüfen':'Köder auswählen'} <Icon name="arrow-right"/></Link></aside>
   {inventoryError&&<p className="storage-error" role="alert">{inventoryError}</p>}
+  <WeatherAssist onApply={suggestion => setConditions(current => applyWeather(current, suggestion))}/>
   <p className="form-hint">Wähle nur, was du beurteilen kannst. „Unbekannt“ ist eine gültige Antwort.</p>
   <div className="form-grid">
     {groups.map(group=><section className="observation-group" key={group.number}><header><span>{group.number}</span><div><h2>{group.title}</h2><p>{group.description}</p></div></header>{group.keys.map(key=><fieldset key={key}><legend>{labels[key]}</legend><div className="chips">{choices[key].map(([value,label])=>{const selected=conditions[key as keyof Conditions]===value;return <button type="button" key={value} aria-pressed={selected} className={selected?'selected':''} onClick={()=>select(key,value)}>{selected&&<Icon name="check" size={15}/>}<span>{label}</span></button>})}</div></fieldset>)}</section>)}

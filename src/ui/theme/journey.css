@@ -74,3 +74,17 @@ html { scroll-padding-block:110px 190px; }
 .water-view .water-feedback { margin:0; padding:0; border:0; }
 .water-view .undo-feedback { margin-top:4px; padding-bottom:0; }
 .water-view .water-card { scroll-margin-bottom:290px; }
+
+.weather-assist { margin-block: 1.25rem; padding: 1rem; border: 1px solid var(--line); border-radius: 1rem; background: var(--surface); overflow-wrap: anywhere; }
+.weather-assist h2 { margin-top: 0; }
+.weather-assist h2 small { font-size: .75rem; font-weight: 500; }
+.weather-assist p { margin-block: .7rem; }
+.weather-privacy { font-size: .8rem; line-height: 1.5; }
+.weather-search { margin-top: 1rem; }
+.weather-search label { display: block; margin-bottom: .4rem; }
+.weather-search > div { display: flex; gap: .5rem; flex-wrap: wrap; }
+.weather-search input { min-width: 0; flex: 1 1 10rem; width: 100%; padding: .75rem; border: 1px solid var(--line); border-radius: .5rem; font: inherit; }
+.weather-assist button { min-height: 44px; white-space: normal; }
+.weather-places { list-style: none; padding: 0; display: grid; gap: .5rem; }
+.weather-places button { width: 100%; text-align: left; }
+.weather-result { margin-top: 1rem; padding-top: .75rem; border-top: 1px solid var(--line); }
