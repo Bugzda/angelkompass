@@ -1,7 +1,7 @@
 import { env, pipeline, RawImage } from '@huggingface/transformers'
 import wasmUrl from '../../../node_modules/@huggingface/transformers/dist/ort-wasm-simd-threaded.jsep.wasm?url'
 import runtimeUrl from '../../../node_modules/@huggingface/transformers/dist/ort-wasm-simd-threaded.jsep.mjs?url'
-import { collectRegions, PHOTO_MODEL, PHOTO_REVISION, type WorkerReply } from './photoAnalysis'
+import { collectRegions, maskSize, PHOTO_MODEL, PHOTO_REVISION, type WorkerReply } from './photoAnalysis'
 
 const send = (message: WorkerReply) => self.postMessage(message)
 // A dedicated worker keeps the form responsive and permits immediate cancellation.
@@ -30,10 +30,11 @@ self.onmessage = async (event: MessageEvent<{ data: Uint8ClampedArray; width: nu
       },
     })
     if (!segmenter.processor.image_processor) throw new Error('Image processor unavailable')
-    segmenter.processor.image_processor.size = { shortest_edge:640, longest_edge:960 }
+    // Limit intermediate tensors on iPhone Safari as well as the final masks.
+    segmenter.processor.image_processor.size = { shortest_edge:384, longest_edge:512 }
     send({ type:'progress', progress:{ phase:'analyzing' } })
     const { data, width, height } = event.data
-    const result = await segmenter(new RawImage(data, width, height, 4), { threshold: 0.7 })
+    const result = await segmenter(new RawImage(data, width, height, 4), { threshold: 0.7, target_sizes:[maskSize(width,height)] })
     send({ type:'result', result:collectRegions(result) })
     await segmenter.dispose()
   } catch {

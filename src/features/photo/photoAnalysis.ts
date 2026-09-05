@@ -2,6 +2,11 @@ import type { Conditions } from '../../domain/models/types'
 
 export const PHOTO_MODEL = 'Xenova/detr-resnet-50-panoptic'
 export const PHOTO_REVISION = 'ea24b2d4e0bfae31f0a1299ba3fb892a2df064de'
+// Bound dense per-pixel postprocessing separately from the preview resolution.
+export function maskSize(width: number, height: number): [number, number] {
+  const scale = Math.min(1, 384 / Math.max(width, height))
+  return [Math.max(1, Math.round(height*scale)), Math.max(1, Math.round(width*scale))]
+}
 export type RegionKind = 'water' | 'plants' | 'rocks' | 'wood' | 'structure'
 export const regionInfo: Record<RegionKind, { label: string; color: string; hint: string }> = {
   water: { label: 'Wasserfläche', color: '#36b8ed', hint: 'Prüfe die Übergänge zum Ufer. Spiegelungen können die Erkennung täuschen.' },

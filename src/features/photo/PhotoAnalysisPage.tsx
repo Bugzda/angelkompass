@@ -6,15 +6,18 @@ import { Icon } from '../../ui/components/Icon'
 import { analyzePhoto } from './photoClient'
 import { applyPhotoReview, preparePhoto, regionInfo, type PhotoProgress, type PhotoResult, type PhotoReview, type RegionKind } from './photoAnalysis'
 import './photo.css'
+import { beginPhotoAttempt, clearPhotoAttempt, readPhotoAttempt } from './photoRecovery'
 
 export function PhotoAnalysisPage() {
   const { fish } = useParams()
   const { state } = useLocation()
-  if (!isConditions(state) || state.targetFish !== fish) return <Navigate to={['perch','pike','zander'].includes(fish ?? '') ? `/neu/${fish}` : '/neu'} replace/>
-  return <PhotoAnalysis conditions={state}/>
+  const [interrupted] = useState(readPhotoAttempt)
+  const conditions = isConditions(state) && state.targetFish === fish ? state : interrupted?.targetFish === fish ? interrupted : undefined
+  if (!conditions) return <Navigate to={['perch','pike','zander'].includes(fish ?? '') ? `/neu/${fish}` : '/neu'} replace/>
+  return <PhotoAnalysis conditions={conditions} interrupted={interrupted?.targetFish === fish}/>
 }
 
-function PhotoAnalysis({ conditions }: { conditions: Conditions }) {
+function PhotoAnalysis({ conditions, interrupted }: { conditions: Conditions; interrupted: boolean }) {
   const navigate = useNavigate()
   const [photo, setPhoto] = useState<Awaited<ReturnType<typeof preparePhoto>>>()
   const [preparing, setPreparing] = useState(false)
@@ -32,7 +35,7 @@ function PhotoAnalysis({ conditions }: { conditions: Conditions }) {
   const back = `/neu/${conditions.targetFish}`
   const busy = preparing || !!progress
 
-  useEffect(() => () => { generation.current++; operation.current?.cancel() }, [])
+  useEffect(() => () => { generation.current++; operation.current?.cancel(); clearPhotoAttempt() }, [])
   useEffect(() => () => { if (photo) URL.revokeObjectURL(photo.url) }, [photo])
   useEffect(() => {
     const canvas = overlay.current
@@ -60,6 +63,7 @@ function PhotoAnalysis({ conditions }: { conditions: Conditions }) {
     if (!file) return
     const id = ++generation.current
     operation.current?.cancel()
+    clearPhotoAttempt()
     setPhoto(undefined); setResult(undefined); setProgress(undefined); setError(''); setPreparing(true)
     setReview({ vegetation:'keep', hardCover:false })
     try {
@@ -77,6 +81,7 @@ function PhotoAnalysis({ conditions }: { conditions: Conditions }) {
     setError(''); setResult(undefined); setProgress({ phase:'loading' })
     setReview({ vegetation:'keep', hardCover:false })
     try {
+      beginPhotoAttempt(conditions)
       operation.current = analyzePhoto(photo.data, update => { if (id === generation.current) setProgress(update) })
       const output = await operation.current.result
       if (id !== generation.current) return
@@ -85,11 +90,12 @@ function PhotoAnalysis({ conditions }: { conditions: Conditions }) {
       if (id === generation.current && !(cause instanceof DOMException && cause.name === 'AbortError')) {
         setError(cause instanceof Error ? cause.message : 'Die lokale Analyse ist auf diesem Gerät nicht verfügbar.')
       }
-    } finally { if (id === generation.current) { setProgress(undefined); operation.current = undefined } }
+    } finally { if (id === generation.current) { clearPhotoAttempt(); setProgress(undefined); operation.current = undefined } }
   }
 
   function cancel() {
     generation.current++; operation.current?.cancel(); operation.current = undefined
+    clearPhotoAttempt()
     setProgress(undefined); setPreparing(false)
   }
   const kinds = result?.regions.map(region => region.kind) ?? []
@@ -101,6 +107,7 @@ function PhotoAnalysis({ conditions }: { conditions: Conditions }) {
     <p className="eyebrow">UFER-SCANNER · LOKALE KI · BETA</p>
     <h1>Dein Foto. Ein neuer Blick aufs Wasser.</h1>
     <p className="lead">Lass sichtbare Bereiche markieren und prüfe, was davon für deinen Angelplatz zählt.</p>
+    {interrupted && <aside className="notice" role="status"><strong>Die letzte Fotoanalyse wurde unterbrochen.</strong><p>Deine Angaben sind wieder da. Der Browser wurde möglicherweise wegen hohen Speicherbedarfs neu geladen. Wähle dein Foto erneut; es wurde nicht gespeichert. Die Analyse startet erst auf deinen Klick.</p><Link className="photo-back" to={back} state={conditions} onClick={clearPhotoAttempt}>Mit meinen Angaben ohne Fotoanalyse weiter</Link></aside>}
     <div className="photo-privacy"><Icon name="check" size={19}/><span>Dein Foto bleibt auf deinem Gerät. Kein Konto. Keine API-Gebühren.</span></div>
     <div className="photo-workspace">
       <div>

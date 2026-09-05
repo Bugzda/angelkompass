@@ -6,6 +6,7 @@ import { SituationPage } from '../../features/situation/SituationPage'
 import { analyzePhoto } from '../../features/photo/photoClient'
 import { preparePhoto, type PhotoResult } from '../../features/photo/photoAnalysis'
 import type { Conditions } from '../../domain/models/types'
+import { beginPhotoAttempt, readPhotoAttempt } from '../../features/photo/photoRecovery'
 
 vi.mock('../../features/photo/photoClient', () => ({ analyzePhoto:vi.fn() }))
 vi.mock('../../features/photo/photoAnalysis', async importOriginal => ({ ...await importOriginal<object>(), preparePhoto:vi.fn() }))
@@ -22,6 +23,7 @@ async function upload() {
 }
 beforeEach(() => {
   localStorage.clear()
+  sessionStorage.clear()
   vi.stubGlobal('URL',Object.assign(URL,{revokeObjectURL:vi.fn()}))
   vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue({createImageData:() => ({data:new Uint8ClampedArray(4)}),putImageData:vi.fn()} as unknown as CanvasRenderingContext2D)
   vi.mocked(preparePhoto).mockResolvedValue({url:'blob:test',data:{data:new Uint8ClampedArray(4),width:1,height:1} as ImageData})
@@ -47,7 +49,9 @@ describe('Fotoanalyse im Angelplan', () => {
   it('ignoriert verspätete Ergebnisse nach Abbruch und kann erneut starten', async () => {
     renderPhoto();await upload()
     fireEvent.click(screen.getByRole('button',{name:'Lokal analysieren'}))
+    expect(readPhotoAttempt()).toEqual(conditions)
     fireEvent.click(screen.getByRole('button',{name:'Abbrechen'}))
+    expect(readPhotoAttempt()).toBeUndefined()
     expect(cancel).toHaveBeenCalledOnce()
     await act(async () => {complete(photoResult)})
     expect(screen.queryByRole('heading',{name:'Was trifft vor Ort zu?'})).not.toBeInTheDocument()
@@ -78,5 +82,15 @@ describe('Fotoanalyse im Angelplan', () => {
     renderPhoto(null)
     expect(screen.getByRole('heading',{name:'Was siehst du am Wasser?'})).toBeInTheDocument()
     expect(analyzePhoto).not.toHaveBeenCalled()
+  })
+  it('stellt nach Verlust des Router-Status die Angaben wieder her, ohne erneut zu analysieren', () => {
+    beginPhotoAttempt(conditions)
+    renderPhoto(null)
+    expect(screen.getByText('Die letzte Fotoanalyse wurde unterbrochen.')).toBeInTheDocument()
+    expect(screen.getByRole('heading',{name:'Dein Foto. Ein neuer Blick aufs Wasser.'})).toBeInTheDocument()
+    expect(analyzePhoto).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('link',{name:'Mit meinen Angaben ohne Fotoanalyse weiter'}))
+    expect(screen.getByRole('button',{name:'Tief'})).toHaveAttribute('aria-pressed','true')
+    expect(readPhotoAttempt()).toBeUndefined()
   })
 })

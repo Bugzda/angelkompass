@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Icon } from '../../ui/components/Icon'
 import { useSessions } from '../sessions/useSessions'
 import { useInventory } from '../inventory/useInventory'
+import { readPhotoAttempt } from '../photo/photoRecovery'
 
 const species=[
   {id:'perch',label:'Barsch',image:`${import.meta.env.BASE_URL}assets/terrain/perch.webp`,to:'/neu/perch'},
@@ -15,10 +16,12 @@ export function HomePage() {
   const { activeSession, latestSession } = useSessions()
   const { inventory, error:inventoryError } = useInventory()
   const featured = activeSession ?? latestSession
+  const interruptedPhoto = readPhotoAttempt()
   const bites = featured?.feedback.filter(item=>item.outcome==='bite').length ?? 0
   const catches = featured?.feedback.filter(item=>item.outcome==='catch').length ?? 0
   const phase=featured&&activeSession?featured.recommendation.switchPlan.find(step=>step.phase===featured.progress)?.title??'Plan ausgeschöpft':undefined
   return <section className="home page-wide">
+    {interruptedPhoto && <aside className="notice" role="status"><strong>Deine Fotoanalyse wurde unterbrochen.</strong><p>Du kannst mit deinen bisherigen Angaben weitermachen. Das Foto wurde nicht gespeichert.</p><Link className="secondary" to={`/neu/${interruptedPhoto.targetFish}/foto`} state={interruptedPhoto}>Zur Fotoanalyse zurück</Link></aside>}
     <article className="terrain-hero">
       <picture className="hero-media" aria-hidden="true"><source srcSet={`${import.meta.env.BASE_URL}assets/terrain/lake-morning.avif`} type="image/avif"/><img src={`${import.meta.env.BASE_URL}assets/terrain/lake-morning.webp`} alt=""/></picture>
       <div className="hero-shade" aria-hidden="true"/>
