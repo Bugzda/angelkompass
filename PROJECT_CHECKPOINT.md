@@ -1,3 +1,13 @@
+## Ergänzung 05.09.2026: lokale Fotoanalyse
+
+Ufer-Scanner unter `/neu/:fish/foto` implementiert, siehe `docs/fotoanalyse-lokal.md`. Echte lokale FP32-Bilderkennung im Web Worker, ungefähr 200 MB Erstdownload, keine Fotos auf Servern und keine Datenbankänderung. Explizite Bestätigung vor Übernahme. Browserprüfung mit Uferbild und mobilem Zander-Rückweg erfolgreich. Änderungen sind lokal und noch nicht veröffentlicht.
+
+## UX-Durchgang 5. September 2026
+
+Geführter Einstieg, Fortschrittsanzeige, frühe Bestandsprüfung, Köderauswahl mit Zielfischfilter und erhaltenen Bedingungen, direkter Startknopf auf die Am-Wasser-Karte, sichtbarer Offline-Status, erreichbare Rückmeldungen und Abschluss mit Wiederholungsstart umgesetzt. Neue Komponenten: `PlanProgress`, `SessionCompletion`; Styles: `journey.css`. Keine Änderung an Datenformaten oder Fachregeln. 243 Tests, TypeScript-Prüfung und Build erfolgreich. Details: `docs/ux-angelplan-2026-09-05.md`. Dieser UX-Stand ist lokal, noch nicht veröffentlicht.
+
+---
+
 ## Ergänzung 5. September 2026: Zander
 
 Zander ist jetzt als dritte Fischart durchgehend verfügbar: Start, Fischwahl, Bedingungen, Bestand, Empfehlungen, Sessions, Am-Wasser-Karte, Logbuchfilter und Export. Eigenes Profil `zander-lake-1.0.0` mit vier Spots, vier Köderkategorien, fünf Montageprofilen und 13 Regeln. Quellen und fachliche Grenzen: `docs/zander-research-v1.0.0.md`.

@@ -12,7 +12,7 @@ export function Layout() {
   const { activeSession } = useSessions()
   const { online, offlineReady, updateAvailable, applyUpdate, dismissUpdate } = usePwaStatus()
   const { preference, setPreference } = useTheme()
-  const status = online ? (offlineReady ? 'Online · offline nutzbar' : 'Online') : 'Offline'
+  const status = offlineReady ? (online?'Offline bereit':'Offline verfügbar') : (online?'Online':'Offline')
   const isSectionActive = (section: 'home'|'new'|'inventory'|'history') => {
     const path = location.pathname
     return section === 'home' ? path === '/' : section === 'new' ? path.startsWith('/neu') || path === '/empfehlung' : section === 'inventory' ? path.startsWith('/bestand') : path.startsWith('/verlauf') || path.startsWith('/session')
@@ -30,8 +30,9 @@ export function Layout() {
     <a className="skip-link" href="#main-content">Zum Inhalt springen</a>
     <header className="app-header">
       <NavLink to="/" className="brand" aria-label="Angelkompass Start"><BrandMark className="brand-mark"/><span>ANGELKOMPASS</span></NavLink>
-      <div className="header-tools"><span className={`connection ${online?'online':'offline-state'}`} aria-live="polite"><Icon name={online?'status-online':'status-offline'} size={17}/>{status}</span><label className="theme-control"><span className="sr-only">Farbschema</span><Icon name={themeIcon} size={18}/><select value={preference} onChange={event=>setPreference(event.target.value as ThemePreference)} aria-label="Farbschema"><option value="system">System</option><option value="light">Hell</option><option value="dark">Dunkel</option></select></label></div>
+      <div className="header-tools"><label className="theme-control"><span className="sr-only">Farbschema</span><Icon name={themeIcon} size={18}/><select value={preference} onChange={event=>setPreference(event.target.value as ThemePreference)} aria-label="Farbschema"><option value="system">System</option><option value="light">Hell</option><option value="dark">Dunkel</option></select></label></div>
     </header>
+    <div className="app-status"><span className={`connection ${online?'online':'offline-state'}`} role="status"><Icon name={online?'status-online':'status-offline'} size={17}/>{status}</span>{activeSession&&location.pathname!==`/session/${activeSession.id}/karte`?<Link to={`/session/${activeSession.id}/karte`}>Aktiven Angelplan öffnen <Icon name="arrow-right" size={16}/></Link>:<span className="offline-detail">{offlineReady?'Angelpläne auch ohne Internet nutzen.':online?'Für unterwegs: App vorab online öffnen.':'Offline-Bereitschaft noch nicht bestätigt.'}</span>}</div>
     {updateAvailable&&<aside className="update-banner" aria-live="polite"><Icon name="update"/><span><strong>Neue Version verfügbar.</strong> Jetzt sicher aktualisieren.</span><div><button className="secondary" onClick={dismissUpdate}>Später</button><button className="primary" onClick={update} disabled={Boolean(activeSession)} title={activeSession?'Beende zuerst die aktive Session.':undefined}>Jetzt aktualisieren</button></div>{activeSession&&<small>Während deiner aktiven Session wird nicht neu geladen.</small>}{updateError&&<small role="alert">{updateError}</small>}</aside>}
     <main className="app-main" id="main-content" tabIndex={-1} ref={mainRef}><Outlet /></main>
     <nav className="bottom" aria-label="Hauptnavigation">

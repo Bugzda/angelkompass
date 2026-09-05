@@ -1,3 +1,4 @@
+import { SessionCompletion } from './SessionCompletion'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { FeedbackOutcome, FishingSession } from '../../domain/models/types'
 import { sessionStore } from './sessionStore'
@@ -20,6 +21,7 @@ function SessionDetails({ session }: { session: FishingSession }) {
   }
   const presentation=presentationForDisplay(session.recommendation.setup)
   return <>
+    {!active&&<SessionCompletion session={session}/>}
     <div className="session-head"><div><span className="overline">GEWÄHLTE EMPFEHLUNG</span><h2>{session.recommendation.setup.lure.label}</h2><p>{session.recommendation.spot.spot.label} · Rang {session.recommendation.rank}</p></div><span className={`session-status ${session.status}`}>{active ? 'Aktiv' : 'Abgeschlossen'}</span></div>
     <Link className="primary water-card-link" to={`/session/${session.id}/karte`}>Am-Wasser-Karte öffnen <Icon name="arrow-right"/></Link>
     <div className="session-presentation"><div><span>Größe</span><strong>{presentation.sizeLabel}</strong></div><div><span>{presentation.weightKind==='lure-total'?'Ködergewicht':'Beschwerung'}</span><strong>{presentation.weightLabel}</strong></div><div><span>Montage</span><strong>{presentation.mounting}</strong></div><div><span>Führung</span><strong>{presentation.guidance}</strong></div></div>

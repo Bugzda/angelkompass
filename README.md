@@ -4,7 +4,13 @@ Vollständiger Übergabestand für neue Chats: [`PROJECT_CHECKPOINT.md`](PROJECT
 
 Mobile, lokal speichernde Entscheidungshilfe für das Uferangeln auf Barsch, Hecht und Zander am See.
 
+Neuer UX-Durchgang: [`docs/ux-angelplan-2026-09-05.md`](docs/ux-angelplan-2026-09-05.md). Geführter Einstieg, passende Köderauswahl, direkter Start auf die Am-Wasser-Karte und Abschluss mit Wiederholungsstart.
+
 Aktuelles Code- und UI-Review: [`docs/review-2026-09-05.md`](docs/review-2026-09-05.md).
+
+## Lokale Fotoanalyse
+
+Der neue Ufer-Scanner markiert sichtbare Bildbereiche direkt auf dem Gerät. Keine API-Gebühren, kein Foto-Upload. Beim ersten Start werden ungefähr 200 MB für das Modell und die Laufzeit geladen. Nur selbst bestätigte Beobachtungen gehen in den Angelplan ein. Details, Offline-Voraussetzungen und Grenzen: [`docs/fotoanalyse-lokal.md`](docs/fotoanalyse-lokal.md).
 
 ## Entwicklung
 

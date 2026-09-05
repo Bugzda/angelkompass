@@ -14,7 +14,7 @@ export function CompactRecommendation({ recommendation, fish, progress = 'initia
     <div className="water-specs">{measurements.map(item=><span key={item.label}><small>{item.label}</small>{item.value}</span>)}<span><small>Farbe</small>{recommendation.colorGuidance.baseLabel??recommendation.colorGuidance.familyLabel}</span></div>
     <section><h2>Montage</h2><p>{presentation.mounting}</p></section>
     <section><h2>Führung</h2><p>{presentation.guidance}</p></section>
-    <ol className="water-progress" aria-label="Wechselplan">{recommendation.switchPlan.map((step,index)=><li key={step.phase} className={step.phase===progress?'current':''} aria-current={!completed&&step.phase===progress?'step':undefined}><span>0{index+1}</span>{step.title}</li>)}</ol>
-    <section className="current-step"><span className="overline">{completed?'SESSION ABGESCHLOSSEN':current?'JETZT':'PLAN BEENDET'}</span><h2>{current?.title??'Alle Schritte ausgeschöpft'}</h2><p>{current?.change??(completed?'Dein Angelplan bleibt hier als Rückblick gespeichert.':'Session beenden oder neue Bedingungen erfassen.')}</p>{current&&<small>{current.limit}</small>}</section>
+    <ol role="list" className="water-progress" aria-label="Wechselplan">{recommendation.switchPlan.map((step,index)=><li key={step.phase} className={!completed&&step.phase===progress?'current':''} aria-current={!completed&&step.phase===progress?'step':undefined}><span>0{index+1}</span>{step.title}</li>)}</ol>
+    <section className="current-step" aria-live="polite" aria-atomic="true"><span className="overline">{completed?'SESSION ABGESCHLOSSEN':current?'JETZT':'PLAN BEENDET'}</span><h2>{completed?'Dein gespeicherter Angelplan':current?.title??'Alle Schritte ausgeschöpft'}</h2><p>{completed?'Dein Angelplan bleibt hier als Rückblick gespeichert.':current?.change??'Session beenden oder neue Bedingungen erfassen.'}</p>{current&&!completed&&<small>{current.limit}</small>}</section>
   </article>
 }
