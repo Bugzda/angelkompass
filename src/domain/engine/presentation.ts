@@ -1,9 +1,10 @@
 import type { Conditions, GuidanceMode, LureType, NumericRange, RankedSpot, ResolvedPresentation, SizeClass, WeightClass } from '../models/types'
 
+const numberFormat = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2 })
 const rangeLabel=(range:NumericRange|undefined,unit:string)=>{
   if(!range)return undefined
-  if(range.max===undefined)return`ab ${range.min} ${unit}`
-  return`${range.min}–${range.max}${range.openEnded?'+':''} ${unit}`
+  if(range.max===undefined)return`ab ${numberFormat.format(range.min)} ${unit}`
+  return`${numberFormat.format(range.min)}–${numberFormat.format(range.max)}${range.openEnded?'+':''} ${unit}`
 }
 
 export function sizeLabelFor(lure:LureType,size:SizeClass){
@@ -11,7 +12,8 @@ export function sizeLabelFor(lure:LureType,size:SizeClass){
 }
 
 function selectProfile(conditions:Conditions,lure:LureType,spot:RankedSpot){
-  const profiles=lure.presentations??[]
+  // A vegetation preference must not select a rig outside its supported depth.
+  const profiles=(lure.presentations??[]).filter(profile=>conditions.depth==='unknown'||profile.depths.includes(conditions.depth))
   if(lure.id==='jig'&&conditions.targetFish==='perch'){
     if(['edgeOrGaps','dense'].includes(conditions.vegetation))return profiles.find(item=>item.id==='texas-offset')??profiles[0]
     if(spot.spot.id==='dropoff'&&conditions.vegetation==='none')return profiles.find(item=>item.id==='carolina')??profiles[0]
