@@ -15,7 +15,7 @@ export function Layout() {
   const status = offlineReady ? (online?'Offline bereit':'Offline verfügbar') : (online?'Online':'Offline')
   const isSectionActive = (section: 'home'|'new'|'inventory'|'history') => {
     const path = location.pathname
-    return section === 'home' ? path === '/' : section === 'new' ? path.startsWith('/neu') || path === '/empfehlung' : section === 'inventory' ? path.startsWith('/bestand') : path.startsWith('/verlauf') || path.startsWith('/session')
+    return section === 'home' ? path === '/' : section === 'new' ? path.startsWith('/neu') || path === '/empfehlung' : section === 'inventory' ? path.startsWith('/bestand') : path.startsWith('/verlauf') || path.startsWith('/session') || path === '/daten'
   }
   const navItems: Array<{ section:'home'|'new'|'inventory'|'history'; to:string; icon:IconName; label:string }> = [
     { section:'home', to:'/', icon:'home', label:'Start' },
@@ -25,6 +25,11 @@ export function Layout() {
   ]
   const themeIcon:IconName=preference==='system'?'theme-system':preference==='dark'?'theme-dark':'theme-light'
   useEffect(()=>{document.documentElement.scrollTop=0;document.body.scrollTop=0;mainRef.current?.focus({preventScroll:true})},[location.pathname])
+  useEffect(() => {
+    const path = location.pathname
+    const title = path === '/' ? 'Dein Plan am See' : path === '/daten' ? 'Datensicherung' : path === '/bestand' ? 'Köderbox' : path === '/verlauf' ? 'Logbuch' : path.endsWith('/karte') ? 'Am Wasser' : path.startsWith('/session/') ? 'Deine Session' : path === '/empfehlung' ? 'Dein Angelplan' : path === '/neu' ? 'Zielfisch wählen' : path.startsWith('/neu/') ? 'Bedingungen am See' : 'Seite nicht gefunden'
+    document.title = `${title} · Angelkompass`
+  }, [location.pathname])
   const update=async()=>{try{await applyUpdate();setUpdateError(undefined)}catch{setUpdateError('Die Aktualisierung ist fehlgeschlagen. Bitte versuche es erneut, sobald du online bist.')}}
   return <div className="app">
     <a className="skip-link" href="#main-content">Zum Inhalt springen</a>

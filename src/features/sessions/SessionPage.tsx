@@ -38,8 +38,8 @@ function SessionDetails({ session }: { session: FishingSession }) {
     </dl>
     <div className="attempts">{session.recommendation.switchPlan.map((step, index) => {
       const currentIndex = session.progress === 'exhausted' ? phaseOrder.length : phaseOrder.indexOf(session.progress)
-      const state = index < currentIndex ? 'done' : index === currentIndex ? 'active-attempt' : ''
-      return <article className={state} aria-current={index===currentIndex?'step':undefined} key={step.phase}><span className="step">0{index + 1}</span><div><h3>{step.title}</h3><p>{step.change}</p><small><b>{step.limit}</b> · {step.reason}</small></div></article>
+      const state = index < currentIndex ? 'done' : active && index === currentIndex ? 'active-attempt' : ''
+      return <article className={state} aria-current={active&&index===currentIndex?'step':undefined} key={step.phase}><span className="step">0{index + 1}</span><div><h3>{step.title}</h3><p>{step.change}</p><small><b>{step.limit}</b> · {step.reason}</small></div></article>
     })}</div>
     <SessionFeedback session={session}/>
     {active && session.progress === 'exhausted' && <aside className="notice"><strong>Plan ausgeschöpft</strong><p>Alle drei Wechselphasen wurden ohne Erfolg durchlaufen. Beende die Session oder erfasse neue Bedingungen.</p></aside>}
@@ -52,6 +52,6 @@ export function SessionPage() {
   const { id } = useParams()
   const { sessions, error } = useSessions()
   const session = sessions.find((item) => item.id === id)
-  if (!session) return <section className="page-shell empty-state"><h1>Session nicht gefunden</h1><p>Der Eintrag wurde möglicherweise gelöscht oder ist auf diesem Gerät nicht verfügbar.</p><Link className="primary" to="/verlauf">Zum Verlauf</Link></section>
-  return <section className="page-shell session-page"><p className="eyebrow">SESSION VOM {date(session.createdAt).toUpperCase()}</p><h1>Dein Versuch am Wasser.</h1>{error && <p className="storage-error">{error}</p>}<SessionDetails session={session} /></section>
+  if (!session) return <section className="page-shell empty-state"><h1>Session nicht gefunden</h1>{error&&<p className="storage-error" role="alert">{error} <Link to="/daten">Daten sichern →</Link></p>}<p>Der Eintrag wurde möglicherweise gelöscht oder ist auf diesem Gerät nicht verfügbar.</p><Link className="primary" to="/verlauf">Zum Verlauf</Link></section>
+  return <section className="page-shell session-page"><p className="eyebrow">SESSION VOM {date(session.createdAt).toUpperCase()}</p><h1>Dein Versuch am Wasser.</h1>{error && <p className="storage-error" role="alert">{error}</p>}<SessionDetails session={session} /></section>
 }

@@ -1,18 +1,20 @@
 import type { Conditions, FeedbackOutcome, FishingSession, Recommendation, SessionProgress } from '../../domain/models/types'
 import { profileFor } from '../../domain/species/profiles'
-import { canRecommend } from '../../domain/models/validation'
+import { canRecommend, isRecord, oneOf } from '../../domain/models/validation'
+import { SESSION_KEY, RESTORE_JOURNAL_KEY } from '../data/storageKeys'
+import { assertStorageReady } from '../data/storageTransaction'
+export { SESSION_KEY } from '../data/storageKeys'
 
-const STORAGE_KEY = 'angelkompass.sessions.v1'
+const STORAGE_KEY = SESSION_KEY
 const SCHEMA_VERSION = 1 as const
-interface SessionEnvelope { schemaVersion: 1; sessions: FishingSession[] }
+interface SessionEnvelope { schemaVersion: 1; sessions: unknown[] }
 
 const listeners = new Set<() => void>()
 let cache: FishingSession[] | undefined
 let lastError: string | undefined
 let readBlocked = false
+let retained: unknown[] = []
 
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
-const oneOf = (value: unknown, values: readonly string[]) => typeof value === 'string' && values.includes(value)
 const stringArray = (value: unknown) => Array.isArray(value) && value.every((item) => typeof item === 'string')
 const validDate = (value: unknown) => typeof value === 'string' && Number.isFinite(Date.parse(value))
 
@@ -38,28 +40,40 @@ function isFeedback(value: unknown): boolean {
     oneOf(value.phase, ['initial', 'refine', 'move']) && validDate(value.createdAt)
 }
 
-function isSession(value: unknown): value is FishingSession {
+export function isSession(value: unknown): value is FishingSession {
   if (!isRecord(value)) return false
   const validProgress = oneOf(value.progress, ['initial', 'refine', 'move', 'exhausted'])
   const validStatus = value.status === 'active' || value.status === 'completed'
-  return value.schemaVersion === 1 && typeof value.id === 'string' && typeof value.rulesetVersion === 'string' &&
+  return value.schemaVersion === 1 && typeof value.id === 'string' && /^[\w-][\w.-]*$/.test(value.id) && typeof value.rulesetVersion === 'string' &&
     isConditions(value.conditions) && isRecommendation(value.recommendation) && Array.isArray(value.feedback) && value.feedback.every(isFeedback) && validProgress && validStatus &&
     validDate(value.createdAt) && validDate(value.updatedAt) && (value.completedAt===undefined||validDate(value.completedAt))
+}
+
+export function parseSessions(raw: string): { sessions: FishingSession[]; retained: unknown[] } {
+  const parsed: unknown = JSON.parse(raw)
+  if (!isRecord(parsed) || parsed.schemaVersion !== SCHEMA_VERSION || !Array.isArray(parsed.sessions)) throw new Error('Ungültiges Sessionformat')
+  const candidates = parsed.sessions.filter(isSession).sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+  const sessions: FishingSession[] = []
+  const retained = parsed.sessions.filter(item => !isSession(item))
+  const ids = new Set<string>()
+  let activeFound = false
+  for (const session of candidates) {
+    if (ids.has(session.id) || (session.status === 'active' && activeFound)) { retained.push(session); continue }
+    ids.add(session.id)
+    if (session.status === 'active') activeFound = true
+    sessions.push(session)
+  }
+  return { sessions, retained }
 }
 
 function read(): FishingSession[] {
   readBlocked=false
   try {
-    const parsed: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{"schemaVersion":1,"sessions":[]}')
-    if (!isRecord(parsed) || parsed.schemaVersion !== SCHEMA_VERSION || !Array.isArray(parsed.sessions)) throw new Error('Ungültiges Sessionformat')
-    const sessions = parsed.sessions.filter(isSession).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    let activeFound = false
-    return sessions.filter((session) => {
-      if (session.status !== 'active') return true
-      if (activeFound) return false
-      activeFound = true
-      return true
-    })
+    assertStorageReady()
+    const data = parseSessions(localStorage.getItem(STORAGE_KEY) ?? '{"schemaVersion":1,"sessions":[]}')
+    retained = data.retained
+    lastError = retained.length ? `${retained.length} Logbucheinträge sind nicht lesbar oder widersprüchlich. Sie bleiben unverändert gespeichert und sind in der vollständigen Datensicherung enthalten.` : undefined
+    return data.sessions
   } catch {
     readBlocked=true
     lastError='Die gespeicherten Sessions sind nicht lesbar. Bestehende Daten werden nicht überschrieben. Prüfe den Browser-Speicher.'
@@ -71,13 +85,13 @@ function current() { return cache ??= read() }
 function emit() { cache = [...read()]; listeners.forEach((listener) => listener()) }
 
 if(typeof window!=='undefined')window.addEventListener('storage',event=>{
-  if(event.key===STORAGE_KEY||event.key===null){lastError=undefined;emit()}
+  if(event.key===STORAGE_KEY||event.key===RESTORE_JOURNAL_KEY||event.key===null){lastError=undefined;emit()}
 })
 
 function persist(sessions: FishingSession[]): boolean {
   try {
     if(readBlocked)throw new Error('Speicher nicht lesbar')
-    const envelope: SessionEnvelope = { schemaVersion: SCHEMA_VERSION, sessions }
+    const envelope: SessionEnvelope = { schemaVersion: SCHEMA_VERSION, sessions: [...sessions, ...retained] }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope))
     lastError = undefined
     emit()
@@ -94,6 +108,7 @@ export const sessionStore = {
   subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener) } },
   getSnapshot: current,
   getError: () => lastError,
+  refresh: emit,
   clearError() { lastError = undefined; cache = [...current()]; listeners.forEach((listener) => listener()) },
   create(conditions: Conditions, recommendation: Recommendation): FishingSession | undefined {
     emit()
@@ -140,5 +155,5 @@ export const sessionStore = {
     }:item))
   },
   delete(id: string): boolean { emit();return persist(current().filter((session) => session.id !== id)) },
-  resetForTests() { cache = undefined; lastError = undefined; readBlocked=false; listeners.clear() },
+  resetForTests() { cache = undefined; lastError = undefined; readBlocked=false; retained=[]; listeners.clear() },
 }

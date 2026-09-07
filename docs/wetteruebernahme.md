@@ -2,6 +2,8 @@
 
 Stand: 5. September 2026. Für aktuelle Bedingungen, nicht für die Planung eines zukünftigen Angeltags.
 
+Ergänzung 7. September 2026: Der Wetterbereich ist zunächst eingeklappt, damit die manuellen Beobachtungen früher erreichbar sind. Öffnen löst keinen Abruf aus. Ein laufender Abruf lässt sich abbrechen. Die 15-Sekunden-Grenze beendet auch das Warten auf eine unbeantwortete Standortfreigabe; verspätete Standort- oder Netzwerkantworten werden nach Abbruch ignoriert. Diese Fälle sind durch Regressionstests abgesichert. Aktueller Gesamtprüfstand: [Review vom 7. September](review-2026-09-07.md); die Testzahlen weiter unten beschreiben den ursprünglichen Stand.
+
 Auf der Bedingungsseite bietet Open-Meteo nach explizitem Abruf per Standort oder Ortssuche eine Vorschau. Nutzer wählen einen Suchtreffer mit Region und Land. „Offene Angaben ergänzen“ ergänzt ausschließlich unbekannte Tageszeit und Licht; bestehende Angaben werden auch bei Änderungen während des Abrufs erhalten. Alle Felder bleiben manuell änderbar. Die Vorschau benennt ihre Herkunft als Wettermodell. Es gibt keine automatische Aktualisierung und keinen Hintergrundabruf.
 
 ## Ableitung und Grenzen

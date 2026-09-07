@@ -1,3 +1,19 @@
+## Review und Überarbeitung 7. September 2026
+
+Ausgangsstand: aktuelles `origin/main` bei `ad038ff` (23 Commits per Fast-forward übernommen). Vor den Änderungen wurde `codex/checkpoint-before-review-20260907` angelegt. Die Überarbeitung liegt auf `codex/app-review-polish`; sie wurde nicht gepusht oder veröffentlicht. Frühere Veröffentlichungsangaben unten sind historische Stände.
+
+- Lokale Speicherung geprüft und gegen den Verlust nicht lesbarer oder widersprüchlicher Einträge bei späteren Änderungen abgesichert. Bestand v3 und Sessions v1 bleiben kompatibel; alte Bestandskeys bleiben erhalten.
+- Neue Seite `/daten`: vollständige JSON-Sicherung, Importvorschau, ergänzende Wiederherstellung, Erhalt vorhandener Sessions und Rücksicherung bei Schreibfehlern oder unterbrochenem Import. Bisherige reine Session-Exporte sind importierbar. Keine externe Datenbank, Cloud oder neue Abhängigkeit ergänzt.
+- Bei Hecht, tiefer Angelzone und dichtem Kraut wird ein tiefenkompatibles Montageprofil gewählt. Neue Hecht-Snapshots verwenden `pike-lake-2.0.2`; alte Snapshots werden nicht neu berechnet. Ranking, Evidenzgewichtung und Research-Archiv bleiben unverändert.
+- Wetterbereich zunächst eingeklappt, Abruf abbrechbar; eine unbeantwortete Standortfreigabe blockiert die Oberfläche nicht länger als 15 Sekunden.
+- Kompaktere mobile Bedingungen und Fischwahl, klare Größenwahl, bessere Kontraste, vollständige Desktopnavigation im Kopfbereich, konsistente Rückmeldungen und Seitenüberschriften.
+- Offline-Bereitschaft erst nach einem aktivierten Controller; erste Installation übernimmt die Seite. Updates bleiben mit Bestätigung und Schutz aktiver Sessions, auch bei Aktivierung durch einen anderen Tab.
+- Prüfung: 302 Tests in 22 Dateien, TypeScript, Produktions-/PWA-Build sowie Routing- und Researchvalidierung erfolgreich. Mobile Abläufe auf 320/390 Pixeln und Desktopdarstellung geprüft. Vollständiger Offline-Neustart im integrierten Testbrowser nicht bestätigt; Details und weitere Grenzen im Review.
+
+Details: [`docs/review-2026-09-07.md`](docs/review-2026-09-07.md).
+
+---
+
 ## Aktueller Stand: Fotofunktion entfernt
 
 Auf Nutzerwunsch aus Oberfläche und Laufzeit entfernt. Keine KI-Downloads mehr. Details: `docs/fotoanalyse-lokal.md`. Die folgenden Fotoanalyse-Ergänzungen sind historische Stände.

@@ -4,10 +4,16 @@ import { sessionStore } from './sessionStore'
 import { useSessions } from './useSessions'
 import { Icon } from '../../ui/components/Icon'
 import { useState } from 'react'
-import type { TargetFish } from '../../domain/models/types'
+import type { FishingSession, TargetFish } from '../../domain/models/types'
 import { downloadSessions } from './sessionExport'
 
 const date = (value: string) => new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
+
+const feedbackSummary = (session: FishingSession) => {
+  const bites = session.feedback.filter(item => item.outcome === 'bite').length
+  const catches = session.feedback.filter(item => item.outcome === 'catch').length
+  return `${bites} ${bites === 1 ? 'Biss' : 'Bisse'} · ${catches} ${catches === 1 ? 'Fang' : 'Fänge'}`
+}
 
 export function SessionsPage() {
   const { sessions, error } = useSessions()
@@ -25,6 +31,7 @@ export function SessionsPage() {
       <dl className="logbook-stats" aria-label="Statistik der angezeigten Sessions"><div><dt>Sessions</dt><dd>{String(filtered.length).padStart(2,'0')}</dd></div><div><dt>Bisse</dt><dd>{String(bites).padStart(2,'0')}</dd></div><div><dt>Fänge</dt><dd>{String(catches).padStart(2,'0')}</dd></div></dl>
       <p className="collection-note">{filtered.length} {filtered.length===1?'Eintrag':'Einträge'} · Neueste zuerst <span>Export als JSON · alle Fischarten</span></p>
     </>}
-    <div className="session-list">{sessions.length === 0 ? <div className="empty"><img src={`${import.meta.env.BASE_URL}assets/terrain/perch.webp`} alt=""/><h2>Noch kein Eintrag im Logbuch.</h2><p>Starte deine erste Session und speichere den gewählten Angelplan.</p><Link className="primary" to="/neu">Erste Session starten</Link></div> : filtered.length===0?<div className="empty"><h2>Noch keine {fishLabel[fish==='all'?'perch':fish]}-Session.</h2><p>Für diesen Zielfisch gibt es noch keinen Eintrag.</p><Link className="primary" to={`/neu/${fish}`}>Session starten</Link></div>:filtered.map((session,index) => <article key={session.id}><span className="journal-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span><Link to={`/session/${session.id}`}><div><strong>{fishLabel[session.conditions.targetFish]} · {session.recommendation.setup.lure.label}</strong><p>{session.recommendation.spot.spot.label}</p><small>{date(session.createdAt)} · {session.feedback.filter(item=>item.outcome==='bite').length} Bisse · {session.feedback.filter(item=>item.outcome==='catch').length} Fänge</small></div><span className={`session-status ${session.status}`}>{session.status === 'active' ? 'Aktiv' : 'Abgeschlossen'}</span><Icon name="arrow-right"/></Link><button className="delete" aria-label="Session löschen" onClick={() => remove(session.id)}><Icon name="close"/></button></article>)}</div>
+    <div className="session-list">{sessions.length === 0 ? <div className="empty"><img src={`${import.meta.env.BASE_URL}assets/terrain/perch.webp`} alt=""/><h2>Noch kein Eintrag im Logbuch.</h2><p>Starte deine erste Session und speichere den gewählten Angelplan.</p><Link className="primary" to="/neu">Erste Session starten</Link></div> : filtered.length===0?<div className="empty"><h2>Noch keine {fishLabel[fish==='all'?'perch':fish]}-Session.</h2><p>Für diesen Zielfisch gibt es noch keinen Eintrag.</p><Link className="primary" to={`/neu/${fish}`}>Session starten</Link></div>:filtered.map((session,index) => <article key={session.id}><span className="journal-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span><Link to={`/session/${session.id}`}><div><strong>{fishLabel[session.conditions.targetFish]} · {session.recommendation.setup.lure.label}</strong><p>{session.recommendation.spot.spot.label}</p><small>{date(session.createdAt)} · {feedbackSummary(session)}</small></div><span className={`session-status ${session.status}`}>{session.status === 'active' ? 'Aktiv' : 'Abgeschlossen'}</span><Icon name="arrow-right"/></Link><button className="delete" aria-label="Session löschen" onClick={() => remove(session.id)}><Icon name="close"/></button></article>)}</div>
+    <Link className="data-link" to="/daten"><Icon name="download" size={18}/><span>Köderbox und Logbuch sichern<small>Datensicherung & Wiederherstellung</small></span><Icon name="arrow-right" size={18}/></Link>
   </section>
 }

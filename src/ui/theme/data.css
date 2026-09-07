@@ -1,0 +1,31 @@
+.data-overview { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-soft); font-size: .83rem; }
+.data-overview > svg { color: var(--forest); }
+.local-badge { margin-left: auto; color: var(--ink-soft); font-size: .72rem; }
+.data-card { padding: 28px; margin-block: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.data-card h2 { margin: 12px 0; }
+.data-card p { color: var(--ink-soft); line-height: 1.7; font-size: .87rem; }
+.data-card > small { display: block; margin-top: 14px; color: var(--ink-soft); font-size: .73rem; line-height: 1.5; }
+.data-card .primary { font-size: .83rem; }
+.file-field { display: grid; gap: 12px; padding: 20px; border: 1px dashed var(--line); border-radius: var(--radius-sm); background: var(--surface-raised); font-size: .85rem; font-weight: 700; }
+.file-field:focus-within { outline: 3px solid var(--focus); outline-offset: 3px; }
+.file-field input { width: 100%; min-width: 0; color: var(--ink-soft); font-size: .78rem; font-weight: 500; }
+.file-field input::file-selector-button { min-height: 44px; margin-right: 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+.restore-preview { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+.restore-preview ul { padding-left: 20px; font-size: .85rem; line-height: 1.9; }
+.save-confirmation { display: flex; align-items: flex-start; gap: 12px; padding: 18px 20px; border-radius: var(--radius-sm); color: var(--success); background: var(--success-bg); font-size: .85rem; line-height: 1.6; }
+.save-confirmation svg { flex-shrink: 0; margin-top: 3px; }
+.data-link { display: flex; align-items: center; gap: 14px; min-height: 76px; margin-top: 32px; padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); font-size: .83rem; font-weight: 700; }
+.data-link:hover { border-color: var(--forest); }
+.data-link > svg:first-child { color: var(--forest); }
+.data-link > svg:last-child { margin-left: auto; }
+.data-link small { display: block; margin-top: 4px; color: var(--ink-soft); font-size: .73rem; font-weight: 500; }
+@media(max-width:480px) {
+ .data-card { padding: 20px; }
+ .data-card .primary { width: 100%; }
+ .data-overview { gap: 12px; padding: 16px; }
+ .local-badge { width: 100%; margin-left: 36px; }
+ .file-field { padding: 16px; }
+}
+@media(min-width:1100px) {
+ .flow-action, .water-view .session-feedback { bottom: 20px; }
+}

@@ -9,7 +9,7 @@ export function WaterCardPage() {
   const { id } = useParams()
   const { sessions, error } = useSessions()
   const session = sessions.find(item => item.id === id)
-  if (!session) return <section className="page-shell empty-state"><h1>Session nicht gefunden</h1><p>Die Session wurde möglicherweise gelöscht.</p><Link className="primary" to="/verlauf">Zum Verlauf</Link></section>
+  if (!session) return <section className="page-shell empty-state"><h1>Session nicht gefunden</h1>{error&&<p className="storage-error" role="alert">{error} <Link to="/daten">Daten sichern →</Link></p>}<p>Die Session wurde möglicherweise gelöscht.</p><Link className="primary" to="/verlauf">Zum Verlauf</Link></section>
   return <section className="water-view">{error&&<p className="storage-error" role="alert">{error}</p>}<CompactRecommendation recommendation={session.recommendation} fish={session.conditions.targetFish} progress={session.progress} completed={session.status==='completed'}/>
     {session.status==='completed'?<SessionCompletion session={session}/>:<>
       {!error&&<p className="save-status">Angelplan auf diesem Gerät gespeichert · Rückmeldungen werden direkt gesichert.</p>}

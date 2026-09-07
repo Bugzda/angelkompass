@@ -10,6 +10,7 @@ import { SpeciesPage } from '../features/situation/SpeciesPage'
 import { WaterCardPage } from '../features/sessions/WaterCardPage'
 import { NotFoundPage, RouteError } from '../ui/components/RouteError'
 import { RetiredPhotoRoute } from './RetiredPhotoRoute'
+import { DataPage } from '../features/data/DataPage'
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       { path: 'session/:id', element: <SessionPage /> },
       { path: 'session/:id/karte', element: <WaterCardPage /> },
       { path: 'verlauf', element: <SessionsPage /> },
+      { path: 'daten', element: <DataPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

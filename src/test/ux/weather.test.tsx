@@ -5,7 +5,7 @@ import { SituationPage } from '../../features/situation/SituationPage'
 import { parseWeather } from '../../features/situation/weather'
 const now = Math.floor(Date.now() / 1000)
 const data = (overrides = {}) => ({ current: { time: now, is_day: 1, cloud_cover: 80, temperature_2m: 20, wind_speed_10m: 10, precipitation: 0, ...overrides }, daily: { sunrise: [now - 10000], sunset: [now + 10000] } })
-function show() { render(<MemoryRouter initialEntries={['/neu/perch']}><Routes><Route path="/neu/:fish" element={<SituationPage/>}/></Routes></MemoryRouter>) }
+function show() { render(<MemoryRouter initialEntries={['/neu/perch']}><Routes><Route path="/neu/:fish" element={<SituationPage/>}/></Routes></MemoryRouter>); fireEvent.click(screen.getByRole('button', { name: /Wetter am Angelort/ })) }
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); localStorage.clear() })
 describe('Wettervorschläge', () => {
   it('ordnet Tag, Bewölkung, Dämmerung und Nacht ein', () => {

@@ -8,7 +8,7 @@ Mobile, lokal speichernde Entscheidungshilfe für das Uferangeln auf Barsch, Hec
 
 Neuer UX-Durchgang: [`docs/ux-angelplan-2026-09-05.md`](docs/ux-angelplan-2026-09-05.md). Geführter Einstieg, passende Köderauswahl, direkter Start auf die Am-Wasser-Karte und Abschluss mit Wiederholungsstart.
 
-Aktuelles Code- und UI-Review: [`docs/review-2026-09-05.md`](docs/review-2026-09-05.md).
+Aktuelles Code-, Daten- und UI-Review: [`docs/review-2026-09-07.md`](docs/review-2026-09-07.md). Frühere Prüfung: [`docs/review-2026-09-05.md`](docs/review-2026-09-05.md).
 
 ## Entwicklung
 
@@ -41,7 +41,13 @@ Auf der Bedingungsseite lassen sich über Standortfreigabe oder Ortssuche aktuel
 
 Eine der maximal drei vorhandenen Empfehlungen kann als aktive Session gespeichert werden. Biss und Fang werden protokolliert; „Kein Erfolg“ schaltet durch den dreistufigen Wechselplan. Sessions und Verlauf bleiben ausschließlich auf dem Gerät und verändern weder Ranking noch Regelgewichte. Details stehen in [`docs/meilenstein-session-feedback.md`](docs/meilenstein-session-feedback.md).
 
-Die letzte Rückmeldung einer aktiven Session lässt sich einschließlich des Phasenwechsels rückgängig machen. Das Logbuch bietet Filter nach Zielfisch, Biss-/Fangzähler und einen JSON-Export aller Session-Snapshots. Ein Import ist noch nicht enthalten. Die Köderbox bietet Suche, Zielfischfilter und eine Bestandsübersicht. Beim Bearbeiten der Bedingungen und beim Browser-Zurück bleiben Eingaben im Verlauf des aktuellen Tabs erhalten.
+Die letzte Rückmeldung einer aktiven Session lässt sich einschließlich des Phasenwechsels rückgängig machen. Das Logbuch bietet Filter nach Zielfisch, Biss-/Fangzähler und einen JSON-Export aller Session-Snapshots. Die Köderbox bietet Suche, Zielfischfilter und eine Bestandsübersicht. Beim Bearbeiten der Bedingungen und beim Browser-Zurück bleiben Eingaben im Verlauf des aktuellen Tabs erhalten.
+
+## Datensicherung
+
+„Datensicherung & Wiederherstellung“ ist über Köderbox und Logbuch erreichbar, auch ohne vorhandene Sessions. Eine vollständige JSON-Sicherung enthält Bestand, Sessions und die ursprünglichen Speicherwerte einschließlich nicht lesbarer Einträge. Der Import unterstützt auch bisherige reine Session-Exporte. Nach einer Vorschau ergänzt er Ködergrößen und neue Sessions; lokale Sessions mit gleicher ID bleiben unverändert. Ist bereits ein Plan aktiv, werden zusätzlich importierte aktive Pläne als abgeschlossen übernommen.
+
+Die App nutzt weiterhin lokalen Browser-Speicher (Bestand v3, Sessions v1) ohne Konto oder Serverdatenbank. Die Wiederherstellung prüft Änderungen seit der Vorschau und verwendet eine Rücksicherung für Schreibfehler und unterbrochene Importe. Nicht lesbare Originaleinträge bleiben erhalten, werden aber nicht automatisch aus einer Sicherung aktiviert. Browserdaten können vom Nutzer oder Betriebssystem gelöscht werden; wichtige Sicherungen deshalb außerhalb des Browsers aufbewahren. Format, Konfliktverhalten und Grenzen stehen im [aktuellen Review](docs/review-2026-09-07.md).
 
 ## Veröffentlichung
 

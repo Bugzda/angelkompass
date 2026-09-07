@@ -48,6 +48,7 @@ export function InventoryPage(){
       </article>
     })}</div>{!group.lures.some(lure=>lure.label.toLocaleLowerCase('de').includes(query.trim().toLocaleLowerCase('de')))&&<p className="filter-empty">Keine Köder für „{query}“ gefunden.</p>}</section>)}
     {!hasResults&&<button className="secondary" onClick={()=>setQuery('')}>Suche zurücksetzen</button>}
+    <Link className="data-link" to="/daten"><Icon name="download" size={18}/><span>Köderbox und Logbuch sichern<small>Datensicherung & Wiederherstellung</small></span><Icon name="arrow-right" size={18}/></Link>
     {context&&<div className="flow-action"><span role="status">{selectedForContext} {selectedForContext===1?'Köderprofil':'Köderprofile'} für {fishLabel[context.targetFish]} ausgewählt</span><Link className="primary" to={returnConditions?'/empfehlung':`/neu/${context.targetFish}`} state={context}>{returnConditions?'Auswahl übernehmen & zum Angelplan':'Auswahl übernehmen & weiter'} <Icon name="arrow-right"/></Link></div>}
   </section>
 }
