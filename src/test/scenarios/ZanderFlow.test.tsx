@@ -79,14 +79,13 @@ describe('Zander-Nutzerablauf und Speicherung',()=>{
   it('startet über die Zander-URL, speichert den Plan und lädt ihn im Logbuch und Export',()=>{
     localStorage.setItem('angelkompass.inventory.v3',JSON.stringify({schemaVersion:3,items:[{targetFish:'zander',lureTypeId:'jig',sizes:['medium']}]}))
     const view=render(<MemoryRouter initialEntries={['/neu/zander']}><Routes><Route path="/neu/:fish" element={<SituationPage/>}/><Route path="/empfehlung" element={<RecommendationPage/>}/><Route path="/session/:id" element={<SessionPage/>}/><Route path="/session/:id/karte" element={<WaterCardPage/>}/></Routes></MemoryRouter>)
-    expect(screen.getByText('Zander')).toBeInTheDocument()
+    expect(screen.getByText('Zander · SEE · VOM UFER')).toBeInTheDocument()
     expect(screen.queryByText('Jagende Barsche')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button',{name:'Zanderkontakt'}))
     fireEvent.click(screen.getByRole('button',{name:/Empfehlungen berechnen/}))
-    expect(screen.getByText('DEIN ZANDER-PLAN AM SEE')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button',{name:/Session mit dieser Empfehlung starten/}))
-    fireEvent.click(screen.getByRole('link',{name:/Am-Wasser-Karte öffnen/}))
-    expect(screen.getByText(/ZANDER · RANG/)).toBeInTheDocument()
+    expect(screen.getByRole('heading',{name:'Dein Angelplan.'})).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button',{name:/Mit diesem Plan ans Wasser/}))
+    expect(screen.getByText(/Zander · Schritt 1 von 3/)).toBeInTheDocument()
     const saved=sessionStore.getSnapshot()[0]
     expect(saved.conditions.activity.signs).toEqual(['zanderContact'])
     expect(saved.rulesetVersion).toBe('zander-lake-1.0.0')

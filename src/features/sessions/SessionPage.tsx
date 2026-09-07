@@ -1,4 +1,5 @@
 import { SessionCompletion } from './SessionCompletion'
+import { useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { FeedbackOutcome, FishingSession } from '../../domain/models/types'
 import { sessionStore } from './sessionStore'
@@ -16,13 +17,23 @@ const list = (values: string[]) => values.length ? values.map((value) => conditi
 function SessionDetails({ session }: { session: FishingSession }) {
   const navigate = useNavigate()
   const active = session.status === 'active'
+  const attemptsRef = useRef<HTMLDivElement>(null)
+  const exhaustedRef = useRef<HTMLElement>(null)
+  const previousProgress = useRef(session.progress)
+  useEffect(() => {
+    if (previousProgress.current === session.progress) return
+    previousProgress.current = session.progress
+    const current = attemptsRef.current?.querySelector<HTMLElement>('[aria-current="step"]') ?? exhaustedRef.current
+    current?.focus({ preventScroll: true })
+    current?.scrollIntoView?.({ block: 'start', behavior: 'instant' })
+  }, [session.progress])
   const restart = () => {
     if(sessionStore.complete(session.id))navigate(`/neu/${session.conditions.targetFish}`,{state:{...session.conditions,pikeSafetyConfirmed:session.conditions.targetFish==='pike'?false:undefined}})
   }
   const presentation=presentationForDisplay(session.recommendation.setup)
   return <>
     {!active&&<SessionCompletion session={session}/>}
-    <div className="session-head"><div><span className="overline">GEWÄHLTE EMPFEHLUNG</span><h2>{session.recommendation.setup.lure.label}</h2><p>{session.recommendation.spot.spot.label} · Rang {session.recommendation.rank}</p></div><span className={`session-status ${session.status}`}>{active ? 'Aktiv' : 'Abgeschlossen'}</span></div>
+    <div className="session-head"><div><span className="overline">GESPEICHERTER STARTPLAN</span><h2>{session.recommendation.setup.lure.label}</h2><p>{session.recommendation.spot.spot.label} · Rang {session.recommendation.rank}</p></div><span className={`session-status ${session.status}`}>{active ? 'Aktiv' : 'Abgeschlossen'}</span></div>
     <Link className="primary water-card-link" to={`/session/${session.id}/karte`}>Am-Wasser-Karte öffnen <Icon name="arrow-right"/></Link>
     <div className="session-presentation"><div><span>Größe</span><strong>{presentation.sizeLabel}</strong></div><div><span>{presentation.weightKind==='lure-total'?'Ködergewicht':'Beschwerung'}</span><strong>{presentation.weightLabel}</strong></div><div><span>Montage</span><strong>{presentation.mounting}</strong></div><div><span>Führung</span><strong>{presentation.guidance}</strong></div></div>
     <dl className="condition-summary">
@@ -36,13 +47,13 @@ function SessionDetails({ session }: { session: FishingSession }) {
       <div><dt>Aktivität</dt><dd>{session.conditions.activity.status === 'observed' ? list(session.conditions.activity.signs) : session.conditions.activity.status === 'none' ? 'Nichts sichtbar' : 'Nicht geprüft'}</dd></div>
       <div><dt>Struktur</dt><dd>{session.conditions.observedStructure.length?list(session.conditions.observedStructure):session.conditions.structureStatus==='none'?'Keine weitere Struktur':'Nicht geprüft'}</dd></div>
     </dl>
-    <div className="attempts">{session.recommendation.switchPlan.map((step, index) => {
+    <div className="attempts" ref={attemptsRef}>{session.recommendation.switchPlan.map((step, index) => {
       const currentIndex = session.progress === 'exhausted' ? phaseOrder.length : phaseOrder.indexOf(session.progress)
       const state = index < currentIndex ? 'done' : active && index === currentIndex ? 'active-attempt' : ''
-      return <article className={state} aria-current={active&&index===currentIndex?'step':undefined} key={step.phase}><span className="step">0{index + 1}</span><div><h3>{step.title}</h3><p>{step.change}</p><small><b>{step.limit}</b> · {step.reason}</small></div></article>
+      return <article className={state} tabIndex={-1} aria-current={active&&index===currentIndex?'step':undefined} key={step.phase}><span className="step">0{index + 1}</span><div><h3>{step.title}</h3><p>{step.change}</p><small><b>{step.limit}</b> · {step.reason}</small></div></article>
     })}</div>
     <SessionFeedback session={session}/>
-    {active && session.progress === 'exhausted' && <aside className="notice"><strong>Plan ausgeschöpft</strong><p>Alle drei Wechselphasen wurden ohne Erfolg durchlaufen. Beende die Session oder erfasse neue Bedingungen.</p></aside>}
+    {active && session.progress === 'exhausted' && <aside className="notice" tabIndex={-1} ref={exhaustedRef}><strong>Plan ausgeschöpft</strong><p>Alle drei Wechselphasen wurden ohne Erfolg durchlaufen. Beende die Session oder erfasse neue Bedingungen.</p></aside>}
     {session.feedback.length > 0 && <div className="feedback-log"><h2>Rückmeldungen</h2>{[...session.feedback].reverse().map((item) => <p key={item.id}><strong>{outcomeLabels[item.outcome]}</strong><span>{date(item.createdAt)} · Phase {phaseOrder.indexOf(item.phase) + 1}</span></p>)}</div>}
     {active && <div className="session-actions"><button className="secondary" onClick={() => sessionStore.complete(session.id)}>Session beenden</button>{session.progress === 'exhausted' && <button className="primary" onClick={restart}>Beenden & neu planen</button>}</div>}
   </>
@@ -52,6 +63,6 @@ export function SessionPage() {
   const { id } = useParams()
   const { sessions, error } = useSessions()
   const session = sessions.find((item) => item.id === id)
-  if (!session) return <section className="page-shell empty-state"><h1>Session nicht gefunden</h1>{error&&<p className="storage-error" role="alert">{error} <Link to="/daten">Daten sichern →</Link></p>}<p>Der Eintrag wurde möglicherweise gelöscht oder ist auf diesem Gerät nicht verfügbar.</p><Link className="primary" to="/verlauf">Zum Verlauf</Link></section>
+  if (!session) return <section className="page-shell empty-state"><h1>Session nicht gefunden</h1>{error&&<p className="storage-error" role="alert">{error} <Link to="/daten">Daten sichern →</Link></p>}<p>Der Eintrag wurde möglicherweise gelöscht oder ist auf diesem Gerät nicht verfügbar.</p><Link className="primary" to="/verlauf">Zum Logbuch</Link></section>
   return <section className="page-shell session-page"><p className="eyebrow">SESSION VOM {date(session.createdAt).toUpperCase()}</p><h1>Dein Versuch am Wasser.</h1>{error && <p className="storage-error" role="alert">{error}</p>}<SessionDetails session={session} /></section>
 }

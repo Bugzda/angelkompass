@@ -14,6 +14,8 @@ it.each([[0,'night'],[4,'night'],[5,'dawn'],[8,'dawn'],[9,'day'],[17,'day'],[18,
 it('wählt Zeitangaben ohne Abruf vor und erlaubt Korrektur', () => {
   vi.useFakeTimers(); vi.setSystemTime(new Date(2026, 11, 5, 23))
   render(<MemoryRouter initialEntries={['/neu/perch']}><Routes><Route path="/neu/:fish" element={<SituationPage/>}/></Routes></MemoryRouter>)
+  expect(screen.getByRole('button',{name:'Zeit ändern: Winter · Nacht'})).toHaveAttribute('aria-expanded','false')
+  fireEvent.click(screen.getByRole('button',{name:/Zeit ändern:/}))
   expect(screen.getByRole('button',{name:'Winter'})).toHaveAttribute('aria-pressed','true')
   expect(screen.getByRole('button',{name:'Nacht'})).toHaveAttribute('aria-pressed','true')
   fireEvent.click(screen.getByRole('button',{name:'Morgen'}))

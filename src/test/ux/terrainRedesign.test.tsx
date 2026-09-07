@@ -28,11 +28,9 @@ describe('Terrain-Redesign',()=>{
 
   it('zeigt Zander neben Barsch und Hecht',()=>{
     render(<MemoryRouter><SpeciesPage/></MemoryRouter>)
-    expect(screen.getByText('3 Spots · 10 Ködertypen')).toBeInTheDocument()
-    expect(screen.getByText('4 Spots · 9 Ködertypen')).toBeInTheDocument()
+    expect(screen.queryByText(/Ködertypen/)).not.toBeInTheDocument()
     expect(screen.getByRole('link',{name:/Barsch/})).toHaveAttribute('href','/neu/perch')
     expect(screen.getByRole('link',{name:/Hecht/})).toHaveAttribute('href','/neu/pike')
-    expect(screen.getByText('4 Spots · 4 Ködertypen')).toBeInTheDocument()
     expect(screen.getByRole('link',{name:/Zander/})).toHaveAttribute('href','/neu/zander')
   })
 
@@ -42,7 +40,7 @@ describe('Terrain-Redesign',()=>{
   })
 
   it.each([
-    ['/', 'Start'],['/neu/perch','Neue Session'],['/empfehlung','Neue Session'],['/bestand','Bestand'],['/session/test/karte','Verlauf'],
+    ['/', 'Start'],['/neu/perch','Planen'],['/empfehlung','Planen'],['/bestand','Köderbox'],['/session/test/karte','Logbuch'],
   ])('markiert auf %s genau den logischen Navigationsbereich', (path,label)=>{
     render(<MemoryRouter initialEntries={[path]}><Routes><Route path="*" element={<Layout/>}/></Routes></MemoryRouter>)
     const active=screen.getByRole('link',{name:label})

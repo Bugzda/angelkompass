@@ -24,18 +24,21 @@ describe('UX-Paket',()=>{
 
   it('bietet im leeren Verlauf direkt die erste Session an',()=>{
     render(<MemoryRouter><SessionsPage/></MemoryRouter>)
-    expect(screen.getByRole('link',{name:'Erste Session starten'})).toHaveAttribute('href','/neu')
+    expect(screen.getByRole('link',{name:'Ersten Angelplan erstellen'})).toHaveAttribute('href','/neu')
   })
 
-  it('öffnet nur Rang 1 und macht weitere Karten per Akkordeon zugänglich',()=>{
+  it('zeigt jeden vorhandenen Köder einmal und öffnet Details auf Wunsch',()=>{
     const top=createRecommendations(conditions);localStorage.setItem('angelkompass.inventory.v1',JSON.stringify(top.map(item=>({lureTypeId:item.setup.lure.id}))))
     render(<MemoryRouter initialEntries={[{pathname:'/empfehlung',state:conditions}]}><RecommendationPage/></MemoryRouter>)
-    const close=screen.getByRole('button',{name:/Details schließen/})
-    const open=screen.getAllByRole('button',{name:/Details anzeigen/})
-    expect(close).toHaveAttribute('aria-expanded','true')
-    expect(open).toHaveLength(2)
-    fireEvent.click(open[0])
-    expect(screen.getAllByRole('button',{name:'Session mit dieser Empfehlung starten'})).toHaveLength(2)
+    const toggles=screen.getAllByRole('button',{name:'Details anzeigen'})
+    expect(toggles).toHaveLength(3)
+    expect(toggles.every(button=>button.getAttribute('aria-expanded')==='false')).toBe(true)
+    for(const item of top)expect(screen.getAllByRole('heading',{name:item.setup.lure.label})).toHaveLength(1)
+    expect(screen.queryByRole('region',{name:'Montage und Führung'})).not.toBeInTheDocument()
+    fireEvent.click(toggles[0])
+    expect(screen.getByRole('button',{name:'Details schließen'})).toHaveAttribute('aria-expanded','true')
+    expect(screen.getByRole('region',{name:'Montage und Führung'})).toBeInTheDocument()
+    expect(screen.getAllByRole('button',{name:'Alternative starten'})).toHaveLength(2)
   })
 
   it('zeigt die gespeicherte Empfehlung und schreibt Feedback in der Am-Wasser-Karte',()=>{
@@ -43,7 +46,7 @@ describe('UX-Paket',()=>{
     render(<MemoryRouter initialEntries={[`/session/${session.id}/karte`]}><Routes><Route path="/session/:id/karte" element={<WaterCardPage/>}/></Routes></MemoryRouter>)
     expect(screen.getByText(session.recommendation.setup.lure.label)).toBeInTheDocument()
     expect(screen.getByRole('group',{name:'Rückmeldung erfassen'})).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button',{name:'Kein Erfolg →'}))
+    fireEvent.click(screen.getByRole('button',{name:'Ohne Kontakt → nächster Schritt'}))
     expect(sessionStore.getSnapshot()[0].progress).toBe('refine')
     expect(screen.getByRole('heading',{name:session.recommendation.switchPlan[1].title})).toBeInTheDocument()
   })
@@ -51,6 +54,6 @@ describe('UX-Paket',()=>{
   it('führt auch aus einer fehlenden Am-Wasser-Karte verständlich zurück',()=>{
     render(<MemoryRouter initialEntries={['/session/fehlt/karte']}><Routes><Route path="/session/:id/karte" element={<WaterCardPage/>}/></Routes></MemoryRouter>)
     expect(screen.getByRole('heading',{name:'Session nicht gefunden'})).toBeInTheDocument()
-    expect(screen.getByRole('link',{name:'Zum Verlauf'})).toHaveAttribute('href','/verlauf')
+    expect(screen.getByRole('link',{name:'Zum Logbuch'})).toHaveAttribute('href','/verlauf')
   })
 })

@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRecommendations } from '../../domain/engine/scoring'
 import type { Conditions } from '../../domain/models/types'
 import { RecommendationPage } from '../../features/recommendations/RecommendationPage'
-import { SessionPage } from '../../features/sessions/SessionPage'
+import { WaterCardPage } from '../../features/sessions/WaterCardPage'
 import { SessionsPage } from '../../features/sessions/SessionsPage'
 import { sessionStore } from '../../features/sessions/sessionStore'
 
@@ -19,10 +19,10 @@ afterEach(() => { cleanup(); vi.restoreAllMocks() })
 describe('Session-Nutzerablauf', () => {
   it('startet eine bewusst gewählte Top-3-Empfehlung und öffnet ihre Session', () => {
     const top=createRecommendations(conditions);localStorage.setItem('angelkompass.inventory.v1',JSON.stringify(top.map(item=>({lureTypeId:item.setup.lure.id}))))
-    render(<MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}><Routes><Route path="/empfehlung" element={<RecommendationPage />} /><Route path="/session/:id" element={<SessionPage />} /></Routes></MemoryRouter>)
-    fireEvent.click(screen.getAllByRole('button', { name: /Details anzeigen/ })[0])
-    fireEvent.click(screen.getAllByRole('button', { name: 'Session mit dieser Empfehlung starten' })[1])
-    expect(screen.getByText('Dein Versuch am Wasser.')).toBeInTheDocument()
+    render(<MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}><Routes><Route path="/empfehlung" element={<RecommendationPage />} /><Route path="/session/:id/karte" element={<WaterCardPage />} /></Routes></MemoryRouter>)
+    const alternative=screen.getAllByRole('button', { name: 'Alternative starten' })[0]
+    fireEvent.click(alternative)
+    expect(screen.getByRole('group',{name:'Rückmeldung erfassen'})).toBeInTheDocument()
     expect(sessionStore.getSnapshot()[0].recommendation.rank).toBe(2)
   })
 
@@ -31,25 +31,26 @@ describe('Session-Nutzerablauf', () => {
     sessionStore.create(conditions, createRecommendations(conditions)[0])
     render(<MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}><Routes><Route path="/empfehlung" element={<RecommendationPage />} /></Routes></MemoryRouter>)
     expect(screen.getByText('Eine Session ist bereits aktiv.')).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: 'Session mit dieser Empfehlung starten' }).every((button) => button.hasAttribute('disabled'))).toBe(true)
+    expect(screen.getByRole('button', { name: 'Mit diesem Plan ans Wasser' })).toBeDisabled()
+    expect(screen.getAllByRole('button', { name: 'Alternative starten' }).every((button) => button.hasAttribute('disabled'))).toBe(true)
   })
 
   it('trennt vorhandene Optionen von einem fehlenden Köder-Tipp', () => {
     const top = createRecommendations(conditions)
     localStorage.setItem('angelkompass.inventory.v1', JSON.stringify([{ lureTypeId: top[0].setup.lure.id }]))
     render(<MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}><Routes><Route path="/empfehlung" element={<RecommendationPage />} /></Routes></MemoryRouter>)
-    expect(screen.getAllByText('Im Bestand')).toHaveLength(1)
-    expect(screen.getAllByRole('button',{name:'Session mit dieser Empfehlung starten'})).toHaveLength(1)
+    expect(screen.getAllByText('In deiner Köderbox')).toHaveLength(1)
+    expect(screen.getAllByRole('button',{name:'Mit diesem Plan ans Wasser'})).toHaveLength(1)
     expect(screen.queryByRole('button',{name:'Nicht im Bestand'})).not.toBeInTheDocument()
     expect(screen.getByRole('heading',{name:'Fachlich beste Ergänzung'})).toBeInTheDocument()
-    expect(screen.getAllByText('NICHT IM BESTAND')).toHaveLength(1)
+    expect(screen.getAllByText('NICHT IN DEINER KÖDERBOX')).toHaveLength(1)
   })
 
   it('zeigt bei leerem Bestand nur eine klare Meldung und einen optionalen Tipp',()=>{
     render(<MemoryRouter initialEntries={[{pathname:'/empfehlung',state:conditions}]}><RecommendationPage/></MemoryRouter>)
     expect(screen.getByText('Kein geeigneter vorhandener Köder')).toBeInTheDocument()
-    expect(screen.queryByRole('button',{name:'Session mit dieser Empfehlung starten'})).not.toBeInTheDocument()
-    expect(screen.getAllByText('NICHT IM BESTAND')).toHaveLength(1)
+    expect(screen.queryByRole('button',{name:'Mit diesem Plan ans Wasser'})).not.toBeInTheDocument()
+    expect(screen.getAllByText('NICHT IN DEINER KÖDERBOX')).toHaveLength(1)
   })
 
   it('löscht erst nach bestätigter Rückfrage aus dem Verlauf', () => {

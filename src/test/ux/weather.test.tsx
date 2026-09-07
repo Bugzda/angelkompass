@@ -25,6 +25,7 @@ describe('Wettervorschläge', () => {
     const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ results: [{ name: 'Potsdam', latitude: 52.40123, longitude: 13.06123, country: 'Deutschland' }] }) }).mockResolvedValueOnce({ ok: true, json: async () => data() })
     vi.stubGlobal('fetch', fetcher); show()
     expect(fetcher).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: /Zeit ändern:/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Nacht' }))
     fireEvent.change(screen.getByLabelText('Ort oder Postleitzahl am See'), { target: { value: 'Potsdam' } })
     fireEvent.click(screen.getByRole('button', { name: 'Ort suchen' }))

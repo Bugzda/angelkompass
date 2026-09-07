@@ -21,7 +21,7 @@ describe('Sessionansicht', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Biss' }))
     expect(screen.getByText('Rückmeldungen')).toBeInTheDocument()
     expect(sessionStore.getSnapshot()[0].progress).toBe('initial')
-    fireEvent.click(screen.getByRole('button', { name: /Kein Erfolg/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Ohne Kontakt/ }))
     expect(sessionStore.getSnapshot()[0].progress).toBe('refine')
   })
 
@@ -36,7 +36,7 @@ describe('Sessionansicht', () => {
   it('zeigt für eine fehlende Session einen klaren Rückweg',()=>{
     render(<MemoryRouter initialEntries={['/session/fehlt']}><Routes><Route path="/session/:id" element={<SessionPage/>}/></Routes></MemoryRouter>)
     expect(screen.getByRole('heading',{name:'Session nicht gefunden'})).toBeInTheDocument()
-    expect(screen.getByRole('link',{name:'Zum Verlauf'})).toHaveAttribute('href','/verlauf')
+    expect(screen.getByRole('link',{name:'Zum Logbuch'})).toHaveAttribute('href','/verlauf')
   })
 
   it('zeigt einen alten v1-Snapshot ohne resolvedPresentation unverändert an',()=>{

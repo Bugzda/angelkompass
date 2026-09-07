@@ -6,7 +6,7 @@ Vollständiger Übergabestand für neue Chats: [`PROJECT_CHECKPOINT.md`](PROJECT
 
 Mobile, lokal speichernde Entscheidungshilfe für das Uferangeln auf Barsch, Hecht und Zander am See.
 
-Neuer UX-Durchgang: [`docs/ux-angelplan-2026-09-05.md`](docs/ux-angelplan-2026-09-05.md). Geführter Einstieg, passende Köderauswahl, direkter Start auf die Am-Wasser-Karte und Abschluss mit Wiederholungsstart.
+Aktuelle UI-/UX-Überarbeitung: [`docs/ux-fokus-2026-09-08.md`](docs/ux-fokus-2026-09-08.md). Kompakte Bedingungen und Köderbox, eindeutige Empfehlungskarten mit aufklappbaren Quellen, aktueller Handlungsschritt im Vordergrund und direkter Zugang zum aktiven Plan. Der [geführte Einstieg](docs/ux-angelplan-2026-09-05.md) umfasst auch Abschluss und Wiederholungsstart.
 
 Aktuelles Code-, Daten- und UI-Review: [`docs/review-2026-09-07.md`](docs/review-2026-09-07.md). Frühere Prüfung: [`docs/review-2026-09-05.md`](docs/review-2026-09-05.md).
 

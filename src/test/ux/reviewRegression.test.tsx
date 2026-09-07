@@ -91,6 +91,7 @@ describe('Eingabeerhalt und Navigation', () => {
   it('behält Bedingungen beim Bearbeiten und bei Browser-Zurück', () => {
     render(<Flow/>)
     fireEvent.click(screen.getByRole('link', { name: 'Bedingungen ändern' }))
+    fireEvent.click(screen.getByRole('button', { name: /Zeit ändern:/ }))
     expect(screen.getByRole('button', { name: 'Herbst' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: 'Klar' })).toHaveAttribute('aria-pressed', 'true')
     fireEvent.click(screen.getByRole('button', { name: 'Tief' }))
@@ -101,10 +102,10 @@ describe('Eingabeerhalt und Navigation', () => {
 
   it('führt nach einer Bestandsänderung mit denselben Eingaben zum Ergebnis', () => {
     render(<Flow/>)
-    fireEvent.click(screen.getByRole('link', { name: 'Persönlichen Bestand bearbeiten →' }))
+    fireEvent.click(screen.getByRole('link', { name: 'Köderbox bearbeiten' }))
     fireEvent.click(screen.getByRole('button', { name: 'Barsch Softbait / Gummifisch: Alle Größen' }))
-    fireEvent.click(screen.getByRole('link', { name: /Zurück zu deinen Empfehlungen/ }))
-    expect(screen.getByRole('button', { name: 'Session mit dieser Empfehlung starten' })).toBeEnabled()
+    fireEvent.click(screen.getByRole('link', { name: /Zurück zum Angelplan/ }))
+    expect(screen.getByRole('button', { name: 'Mit diesem Plan ans Wasser' })).toBeEnabled()
     fireEvent.click(screen.getByRole('link', { name: 'Bedingungen ändern' }))
     expect(screen.getByRole('button', { name: 'Klar' })).toHaveAttribute('aria-pressed', 'true')
   })

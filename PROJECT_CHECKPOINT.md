@@ -1,3 +1,13 @@
+## UI-/UX-Fokus · 8. September 2026
+
+Ausgangsstand: `main` und `origin/main` bei `bd05089`. Die aktuelle Überarbeitung verkürzt Bedingungen und Köderauswahl, zeigt jede vorhandene Empfehlung einmal und stellt die aktuelle Anweisung am Wasser in den Vordergrund. Nach einem Wechsel bleiben ursprüngliches Setup und Snapshot ausdrücklich als Startplan erhalten. Navigation: Planen/Aktiver Plan, Köderbox und Logbuch. Bewertungsdetails einschließlich Quellen sind aufklappbar.
+
+308 Tests in 23 Dateien, TypeScript, Produktions-/PWA-Build sowie Routing- und Quellenvalidierung erfolgreich. Browserablauf mit separaten lokalen Testdaten auf 320/390 Pixeln und Desktopdarstellung geprüft. Veröffentlichung im aktuellen Auftrag über den bestehenden Pages-Workflow auf `main`.
+
+Details, Datenvertrag und Prüfungen: [`docs/ux-fokus-2026-09-08.md`](docs/ux-fokus-2026-09-08.md). Die folgenden Abschnitte dokumentieren frühere Stände.
+
+---
+
 ## Nachprüfung 7. September 2026: Arbeitsanleitung und Offline-Neustart
 
 Die Empfehlungen aus Eric Provenchers Artikel wurden projektbezogen in `AGENTS.md` umgesetzt: bedarfsgerechtes Lesen, klare lokale Handlungserlaubnis, gezielte Prüfungen und Abschluss erst nach Behebung und Überprüfung der relevanten Fehler. Die Anleitung wurde von 532 auf 405 Wörter gekürzt; die Produktregeln bleiben erhalten. Im Repository gibt es keine eigenen Skills zu überarbeiten.
