@@ -17,7 +17,7 @@ pnpm install
 pnpm dev
 ```
 
-Qualitätsprüfung: `pnpm lint`, `pnpm test` und `pnpm build`.
+Qualitätsprüfung: `pnpm lint`, `pnpm test` und `pnpm build`. Der Build prüft zusätzlich den erzeugten Service Worker auf Startfehler, widersprüchliche Cacheeinträge und fehlende Offline-Dateien. Für einen vorhandenen Build: `pnpm pwa:validate`.
 
 Die Fachlogik liegt unabhängig von React unter `src/domain`. Das Barschprofil umfasst drei Spot-Typen und zehn Ködertypen, das Hechtprofil vier Spot-Typen und neun Ködertypen, das Zanderprofil vier Spot-Typen und vier Ködertypen. Das Zander-Regelwerk und seine Quellen sind in [`docs/zander-research-v1.0.0.md`](docs/zander-research-v1.0.0.md) dokumentiert. Optional ergänzt Open-Meteo aktuelle Wettervorschläge; es gibt kein Backend. `pnpm lint` prüft beide TypeScript-Projekte.
 

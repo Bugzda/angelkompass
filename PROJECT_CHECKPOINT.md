@@ -1,3 +1,13 @@
+## Nachprüfung 7. September 2026: Arbeitsanleitung und Offline-Neustart
+
+Die Empfehlungen aus Eric Provenchers Artikel wurden projektbezogen in `AGENTS.md` umgesetzt: bedarfsgerechtes Lesen, klare lokale Handlungserlaubnis, gezielte Prüfungen und Abschluss erst nach Behebung und Überprüfung der relevanten Fehler. Die Anleitung wurde von 532 auf 405 Wörter gekürzt; die Produktregeln bleiben erhalten. Im Repository gibt es keine eigenen Skills zu überarbeiten.
+
+Der offene Offline-Fehler ist behoben. Doppelte `assets/terrain/`-Einträge mit unterschiedlichen Revisionen verursachten beim Start des erzeugten Workers `add-to-cache-list-conflicting-entries`. Alle Offline-Dateien werden jetzt einmal erfasst; statische Dateinamen erhalten Inhaltsrevisionen. `pnpm build` führt zusätzlich `scripts/validate-pwa.mjs` aus und stoppt bei solchen Laufzeitfehlern des Workers. Nachweis mit positiver Prüfung und absichtlich wiederhergestelltem ursprünglichem Konflikt.
+
+Der zuvor fehlgeschlagene Neustart sowie ein direkter Unterseitenaufruf funktionieren nach der Korrektur bei gestopptem Server im integrierten Browser. Details stehen im aktualisierten [Review](docs/review-2026-09-07.md). Die folgenden Angaben zur offenen Offline-Ursache beschreiben den Stand vor dieser Nachprüfung. Änderungen weiterhin lokal, nicht veröffentlicht.
+
+---
+
 ## Review und Überarbeitung 7. September 2026
 
 Ausgangsstand: aktuelles `origin/main` bei `ad038ff` (23 Commits per Fast-forward übernommen). Vor den Änderungen wurde `codex/checkpoint-before-review-20260907` angelegt. Die Überarbeitung liegt auf `codex/app-review-polish`; sie wurde nicht gepusht oder veröffentlicht. Frühere Veröffentlichungsangaben unten sind historische Stände.
