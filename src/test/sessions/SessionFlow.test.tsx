@@ -53,14 +53,50 @@ describe('Session-Nutzerablauf', () => {
     expect(screen.getAllByText('NICHT IN DEINER KÖDERBOX')).toHaveLength(1)
   })
 
-  it('löscht erst nach bestätigter Rückfrage aus dem Verlauf', () => {
-    sessionStore.create(conditions, createRecommendations(conditions)[0])
-    const confirm = vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValueOnce(true)
+  it('löscht abgeschlossene Sessions ohne Browserdialog erst nach Bestätigung und dauerhaft', () => {
+    const session = sessionStore.create(conditions, createRecommendations(conditions)[0])!
+    sessionStore.complete(session.id)
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
     render(<MemoryRouter><SessionsPage /></MemoryRouter>)
-    fireEvent.click(screen.getByRole('button', { name: 'Session löschen' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Session-Aktionen' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Abbrechen' }))
     expect(sessionStore.getSnapshot()).toHaveLength(1)
-    fireEvent.click(screen.getByRole('button', { name: 'Session löschen' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Session-Aktionen' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Endgültig löschen' }))
+    expect(screen.getByText('Noch kein Eintrag im Logbuch.')).toBeInTheDocument()
+    sessionStore.refresh()
     expect(sessionStore.getSnapshot()).toHaveLength(0)
-    expect(confirm).toHaveBeenCalledTimes(2)
+    expect(confirm).not.toHaveBeenCalled()
+  })
+
+  it('unterscheidet Scrollen, kurze Gesten und Linkswischen; Wischen löscht noch nichts', () => {
+    sessionStore.create(conditions, createRecommendations(conditions)[0])
+    const { container } = render(<MemoryRouter><SessionsPage /></MemoryRouter>)
+    const row = container.querySelector('.session-swipe-content')!
+    const swipe = (x: number, y: number) => {
+      fireEvent.touchStart(row, { touches: [{ clientX: 200, clientY: 100 }] })
+      fireEvent.touchMove(row, { touches: [{ clientX: x, clientY: y }] })
+      fireEvent.touchEnd(row)
+    }
+    swipe(190, 200)
+    expect(screen.queryByText('Endgültig löschen')).not.toBeInTheDocument()
+    swipe(175, 102)
+    expect(screen.queryByText('Endgültig löschen')).not.toBeInTheDocument()
+    swipe(100, 105)
+    expect(screen.getByRole('button', { name: 'Endgültig löschen' })).toBeInTheDocument()
+    expect(sessionStore.getSnapshot()).toHaveLength(1)
+  })
+
+  it('behält die Session bei einem Schreibfehler und erlaubt erneutes Löschen', () => {
+    sessionStore.create(conditions, createRecommendations(conditions)[0])
+    render(<MemoryRouter><SessionsPage /></MemoryRouter>)
+    fireEvent.click(screen.getByRole('button', { name: 'Session-Aktionen' }))
+    const write = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('blocked') })
+    fireEvent.click(screen.getByRole('button', { name: 'Endgültig löschen' }))
+    expect(sessionStore.getSnapshot()).toHaveLength(1)
+    expect(screen.getByText(/Löschen fehlgeschlagen/)).toBeInTheDocument()
+    write.mockRestore()
+    fireEvent.click(screen.getByRole('button', { name: 'Endgültig löschen' }))
+    expect(sessionStore.getSnapshot()).toHaveLength(0)
   })
 })

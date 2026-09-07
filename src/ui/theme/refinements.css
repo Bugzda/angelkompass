@@ -149,3 +149,17 @@ button > svg, a > svg { flex-shrink: 0; }
  .bottom a:hover:not(.active) { background: var(--surface); color: var(--ink); }
  html { scroll-padding-bottom: 40px; }
 }
+
+/* Swipe actions keep deletion explicit and independent of browser dialogs. */
+.session-list > .session-row { display: block; overflow: hidden; }
+.session-swipe-content { display: grid; grid-template-columns: auto 1fr auto; align-items: center; touch-action: pan-y; }
+.session-list .session-swipe-content > a { min-width: 0; padding: 14px 10px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.session-swipe-content > a > div { min-width: 0; overflow-wrap: anywhere; }
+.session-swipe-content > a > svg { display: none; }
+.session-menu { width: 44px; min-height: 44px; border: 0; background: transparent; color: var(--ink-soft); font-size: 1.6rem; cursor: pointer; }
+.swipe-hint { color: var(--ink-soft); font-size: .75rem; }
+.session-delete-confirm { padding: 16px; background: var(--danger-bg); border-radius: var(--radius-sm); }
+.session-list .session-delete-confirm p { color: var(--ink); margin: 0 0 12px; }
+.session-delete-confirm > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.session-delete-button { min-height: 44px; border: 1px solid var(--danger); border-radius: 999px; padding: 10px 16px; color: var(--danger); background: var(--surface); font-weight: 700; cursor: pointer; }
+@media(max-width:480px) { .session-list .session-swipe-content > a { grid-template-columns: 1fr; } .session-swipe-content .session-status { grid-row: 1; justify-self: start; } }

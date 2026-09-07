@@ -41,7 +41,7 @@ Auf der Bedingungsseite lassen sich über Standortfreigabe oder Ortssuche aktuel
 
 Eine der maximal drei vorhandenen Empfehlungen kann als aktive Session gespeichert werden. Biss und Fang werden protokolliert; „Kein Erfolg“ schaltet durch den dreistufigen Wechselplan. Sessions und Verlauf bleiben ausschließlich auf dem Gerät und verändern weder Ranking noch Regelgewichte. Details stehen in [`docs/meilenstein-session-feedback.md`](docs/meilenstein-session-feedback.md).
 
-Die letzte Rückmeldung einer aktiven Session lässt sich einschließlich des Phasenwechsels rückgängig machen. Das Logbuch bietet Filter nach Zielfisch, Biss-/Fangzähler und einen JSON-Export aller Session-Snapshots. Die Köderbox bietet Suche, Zielfischfilter und eine Bestandsübersicht. Beim Bearbeiten der Bedingungen und beim Browser-Zurück bleiben Eingaben im Verlauf des aktuellen Tabs erhalten.
+Die letzte Rückmeldung einer aktiven Session lässt sich einschließlich des Phasenwechsels rückgängig machen. Das Logbuch bietet Filter nach Zielfisch, Biss-/Fangzähler und einen JSON-Export aller Session-Snapshots. Zum Löschen eines Eintrags nach links wischen oder das Drei-Punkte-Menü öffnen und „Endgültig löschen“ bestätigen. „Abbrechen“ erhält den Eintrag; die Bestätigung erfolgt innerhalb der App ohne Browserdialog. Bei einem Speicherfehler bleibt die Session erhalten und das Löschen kann erneut versucht werden. Die Köderbox bietet Suche, Zielfischfilter und eine Bestandsübersicht. Beim Bearbeiten der Bedingungen und beim Browser-Zurück bleiben Eingaben im Verlauf des aktuellen Tabs erhalten.
 
 ## Datensicherung
 
