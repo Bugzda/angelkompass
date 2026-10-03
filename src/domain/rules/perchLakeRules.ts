@@ -456,7 +456,7 @@ export const setupRules: ScoringRule[] = [
     confidence: 0.8,
     effect: 3,
     reasonCode: 'DROPOFF_CONTROL',
-    sourceIds: [],
+    sourceIds: ['S15'],
     matches: x => x.spotId === 'dropoff' && setup(x, 'jig'),
   },
   {
@@ -467,7 +467,7 @@ export const setupRules: ScoringRule[] = [
     confidence: 0.8,
     effect: 3,
     reasonCode: 'SHALLOW_SEARCH',
-    sourceIds: [],
+    sourceIds: ['S16'],
     matches: x =>
       x.spotId === 'shallow' &&
       setup(x, 'twitchbait', 'spinner', 'crankbait', 'chatterbait', 'spinnerbait', 'tail-spinner'),
