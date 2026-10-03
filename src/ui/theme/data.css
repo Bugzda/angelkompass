@@ -1,3 +1,4 @@
+/* Backup and restore page. */
 .data-overview {
   display: flex;
   align-items: center;
@@ -86,50 +87,6 @@
   font-size: 0.85rem;
   line-height: 1.9;
 }
-.save-confirmation {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 18px 20px;
-  border-radius: var(--radius-sm);
-  color: var(--success);
-  background: var(--success-bg);
-  font-size: 0.85rem;
-  line-height: 1.6;
-}
-.save-confirmation svg {
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-.data-link {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-height: 76px;
-  margin-top: 32px;
-  padding: 18px 20px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  font-size: 0.83rem;
-  font-weight: 700;
-}
-.data-link:hover {
-  border-color: var(--forest);
-}
-.data-link > svg:first-child {
-  color: var(--forest);
-}
-.data-link > svg:last-child {
-  margin-left: auto;
-}
-.data-link small {
-  display: block;
-  margin-top: 4px;
-  color: var(--ink-soft);
-  font-size: 0.73rem;
-  font-weight: 500;
-}
 @media (max-width: 480px) {
   .data-card {
     padding: 20px;
@@ -147,11 +104,5 @@
   }
   .file-field {
     padding: 16px;
-  }
-}
-@media (min-width: 1100px) {
-  .flow-action,
-  .water-view .session-feedback {
-    bottom: 20px;
   }
 }

@@ -1,3 +1,4 @@
+/* Reset, typography, buttons and generic page primitives. */
 * {
   box-sizing: border-box;
 }
@@ -142,13 +143,6 @@ h3 {
   width: 100%;
   margin-top: 24px;
 }
-.empty-state {
-  text-align: center;
-  padding-block: 60px;
-}
-.empty-state p {
-  color: var(--ink-soft);
-}
 @media (min-width: 760px) {
   .app-main {
     padding-top: 52px;
@@ -173,4 +167,68 @@ h3 {
     animation: none !important;
     transition: none !important;
   }
+}
+.app-main:focus {
+  outline: none;
+}
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: var(--lime);
+  color: var(--lime-ink);
+  font-weight: 700;
+}
+.skip-link:focus {
+  top: 12px;
+}
+.app {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+.app-main {
+  padding-bottom: 40px;
+}
+a.species-chip:hover {
+  background: #fff;
+  transform: translateY(-2px);
+}
+body {
+  -webkit-font-smoothing: antialiased;
+}
+button > svg,
+a > svg {
+  flex-shrink: 0;
+}
+.primary,
+.secondary {
+  text-align: center;
+  line-height: 1.45;
+}
+.page-shell > h1 {
+  text-wrap: balance;
+}
+@media (min-width: 1100px) {
+  .app {
+    padding-bottom: 0;
+  }
+  .app-main {
+    padding-bottom: 64px;
+  }
+  html {
+    scroll-padding-bottom: 40px;
+  }
+}
+button,
+summary,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+html {
+  scroll-padding-block: 110px 190px;
+}
+.app-main {
+  padding-top: 24px;
 }

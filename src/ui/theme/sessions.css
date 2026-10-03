@@ -1,0 +1,937 @@
+/* On-water card, session details, switch setups, feedback and logbook. */
+.empty-state {
+  text-align: center;
+  padding-block: 60px;
+}
+.empty-state p {
+  color: var(--ink-soft);
+}
+.switch-plan {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.session-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.session-head h2 {
+  margin: 6px 0;
+}
+.session-head p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+.water-card-link {
+  width: 100%;
+  margin: 12px 0 22px;
+  justify-content: space-between;
+}
+.condition-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  padding: 1px;
+  background: var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.condition-summary div {
+  padding: 12px;
+  background: var(--surface);
+}
+.condition-summary dt {
+  color: var(--ink-soft);
+  font-size: 0.65rem;
+}
+.condition-summary dd {
+  margin: 4px 0 0;
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+.attempts {
+  margin-top: 24px;
+}
+.attempts article {
+  display: flex;
+  gap: 18px;
+  padding: 20px 14px;
+  border-bottom: 1px solid var(--line);
+  opacity: 0.46;
+}
+.attempts article.active-attempt,
+.attempts article.done {
+  opacity: 1;
+}
+.attempts article.active-attempt {
+  border-left: 4px solid var(--lime);
+  background: var(--surface);
+}
+.attempts article.done h3::after {
+  content: ' ✓';
+  color: var(--success);
+}
+.step {
+  font:
+    700 1.2rem 'Barlow Condensed',
+    sans-serif;
+  color: var(--forest);
+}
+.attempts h3 {
+  margin-bottom: 4px;
+}
+.attempts p {
+  font-size: 0.84rem;
+}
+.attempts small {
+  color: var(--ink-soft);
+}
+.feedback,
+.session-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.feedback button {
+  min-height: 48px;
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-weight: 700;
+}
+.feedback button:last-child {
+  background: var(--forest-deep);
+  color: #fff;
+}
+.feedback-log {
+  margin-top: 28px;
+}
+.feedback-log p {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+.feedback-log span {
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+}
+.session-list {
+  margin-top: 22px;
+}
+.session-list > article {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+.journal-index {
+  font:
+    700 1.4rem 'Barlow Condensed',
+    sans-serif;
+  color: var(--forest);
+}
+.session-list article > a {
+  min-height: 84px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+}
+.session-list p {
+  margin: 4px 0;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+}
+.delete {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.delete:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.empty {
+  padding: 40px 24px;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.empty img {
+  width: min(300px, 85%);
+  max-height: 130px;
+  object-fit: contain;
+  margin: 0 auto 22px;
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+.empty p {
+  color: var(--ink-soft);
+}
+.water-view {
+  width: min(100%, 760px);
+  margin: auto;
+}
+.water-card {
+  padding: clamp(24px, 5vw, 44px);
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--forest-deep);
+  color: #eef8f5;
+  box-shadow: var(--shadow-lg);
+}
+.water-fish {
+  position: absolute;
+  right: -7%;
+  top: 35px;
+  width: 55%;
+  max-height: 210px;
+  object-fit: contain;
+  filter: invert(1) grayscale(1);
+  opacity: 0.09;
+}
+.water-heading,
+.water-specs,
+.water-card section {
+  position: relative;
+  z-index: 1;
+}
+.water-card h1,
+.water-card h2 {
+  color: #fff;
+}
+.water-card h1 {
+  margin: 12px 0 4px;
+}
+.water-spot {
+  color: #bed2cd;
+  font-size: 1.15rem;
+}
+.water-specs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 26px 0;
+}
+.water-specs span {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 13px;
+  border: 1px solid #43645f;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+.water-specs small {
+  color: #acc5bf;
+  font-weight: 500;
+}
+.water-card section {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid #35534f;
+}
+.water-card section p {
+  line-height: 1.55;
+}
+.current-step {
+  padding: 19px !important;
+  border: 0 !important;
+  border-left: 4px solid var(--mint) !important;
+  border-radius: var(--radius-sm);
+  background: #113b37;
+}
+.water-feedback {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  gap: 8px;
+  padding: 0;
+  margin: 14px 0;
+  border: 0;
+}
+.water-feedback legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+.water-feedback button {
+  min-height: 58px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-weight: 700;
+}
+.water-feedback button:last-child {
+  background: var(--lime);
+  color: var(--lime-ink);
+  border-color: var(--lime);
+}
+@media (max-width: 760px) {
+  .condition-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .water-specs,
+  .water-feedback {
+    grid-template-columns: 1fr;
+  }
+  .session-list article > a {
+    grid-template-columns: 1fr auto;
+  }
+  .session-list article > a > svg {
+    display: none;
+  }
+  .condition-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.session-presentation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0 0 22px;
+  padding: 1px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--line);
+}
+.session-presentation > div {
+  min-width: 0;
+  padding: 15px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.session-presentation span {
+  color: var(--ink-soft);
+  font-size: 0.67rem;
+}
+.session-presentation strong {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.water-specs span {
+  overflow-wrap: anywhere;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+@media (max-width: 480px) {
+  .session-presentation {
+    grid-template-columns: 1fr;
+  }
+}
+.logbook-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid #28534e;
+  border-radius: var(--radius);
+  background: var(--forest-deep);
+  color: #eef8f5;
+  overflow: hidden;
+}
+.logbook-stats > div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  padding: 25px;
+}
+.logbook-stats > div + div {
+  border-left: 1px solid #35534f;
+}
+.logbook-stats dt {
+  color: #bed2cd;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.13em;
+}
+.logbook-stats dd {
+  margin: 0;
+  color: var(--mint);
+  font:
+    600 clamp(2.6rem, 8vw, 4.5rem)/1 'Barlow Condensed',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.collection-note {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+}
+.session-list > article {
+  padding: 8px 0;
+}
+.session-list article > a {
+  min-width: 0;
+}
+.session-list article > a > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.session-list small {
+  color: var(--ink-soft);
+  font-size: 0.69rem;
+}
+.session-list article:hover {
+  background: var(--surface-raised);
+}
+.session-head .session-status {
+  align-self: flex-start;
+}
+.water-card .overline {
+  color: var(--mint);
+}
+.water-card h1 {
+  font-size: clamp(3rem, 9vw, 5rem);
+  overflow-wrap: anywhere;
+}
+.water-progress {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0;
+  margin: 26px 0 0;
+  gap: 12px;
+  list-style: none;
+}
+.water-progress li {
+  border-top: 2px solid #43645f;
+  padding-top: 12px;
+  color: #bed2cd;
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+.water-progress li.current {
+  border-color: var(--mint);
+  color: var(--mint);
+}
+.water-progress span {
+  display: block;
+  margin-bottom: 4px;
+  font:
+    600 1.5rem 'Barlow Condensed',
+    sans-serif;
+}
+.feedback {
+  border: 0;
+  padding: 0;
+}
+.feedback button,
+.water-feedback button {
+  cursor: pointer;
+}
+.feedback button:hover,
+.water-feedback button:hover {
+  border-color: var(--forest);
+}
+.feedback-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin: 20px 0 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  font-size: 0.82rem;
+}
+.feedback-summary strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.3rem;
+  margin-right: 4px;
+}
+.feedback-summary span:last-child {
+  margin-left: auto;
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+}
+.undo-feedback {
+  min-height: 44px;
+  padding: 9px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  text-align: left;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.water-feedback {
+  grid-template-columns: 1fr 1fr 1.4fr;
+}
+@media (max-width: 480px) {
+  .logbook-stats > div {
+    padding: 20px 16px;
+  }
+  .session-list article > a {
+    grid-template-columns: 1fr;
+    padding: 14px 10px;
+  }
+  .session-list article > a .session-status {
+    grid-row: 1;
+  }
+  .feedback-summary {
+    gap: 8px 20px;
+  }
+  .feedback-summary span:last-child {
+    width: 100%;
+    margin-left: 0;
+  }
+  .water-feedback button {
+    padding: 8px;
+    font-size: 0.78rem;
+  }
+}
+.session-list > article {
+  border-radius: var(--radius-sm);
+}
+.sessions-page .empty p {
+  line-height: 1.6;
+}
+.attempts article:not(.active-attempt):not(.done) {
+  opacity: 1;
+  color: var(--ink-soft);
+}
+.attempts article:not(.active-attempt):not(.done) h3 {
+  color: var(--ink-soft);
+}
+.session-list > .session-row {
+  display: block;
+  overflow: hidden;
+}
+.session-swipe-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  touch-action: pan-y;
+}
+.session-list .session-swipe-content > a {
+  min-width: 0;
+  padding: 14px 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.session-swipe-content > a > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.session-swipe-content > a > svg {
+  display: none;
+}
+.session-menu {
+  width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+.swipe-hint {
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+}
+.session-delete-confirm {
+  padding: 16px;
+  background: var(--danger-bg);
+  border-radius: var(--radius-sm);
+}
+.session-list .session-delete-confirm p {
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+.session-delete-confirm > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.session-delete-button {
+  min-height: 44px;
+  border: 1px solid var(--danger);
+  border-radius: 999px;
+  padding: 10px 16px;
+  color: var(--danger);
+  background: var(--surface);
+  font-weight: 700;
+  cursor: pointer;
+}
+@media (max-width: 480px) {
+  .session-list .session-swipe-content > a {
+    grid-template-columns: 1fr;
+  }
+  .session-swipe-content .session-status {
+    grid-row: 1;
+    justify-self: start;
+  }
+}
+.completion-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 24px;
+  margin: 20px 0;
+}
+.completion-card h2 {
+  margin: 12px 0;
+}
+.completion-card p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.completion-card small {
+  display: block;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-top: 16px;
+}
+.water-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+.water-actions button {
+  width: 100%;
+}
+.water-feedback button,
+.feedback button {
+  min-height: 56px;
+}
+.water-card section p {
+  line-height: 1.75;
+}
+@media (max-width: 600px) {
+  .water-feedback {
+    gap: 8px;
+  }
+  .water-feedback button {
+    font-size: 0.88rem;
+  }
+}
+.water-view .session-feedback {
+  position: sticky;
+  bottom: calc(94px + env(safe-area-inset-bottom));
+  z-index: 5;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  margin-top: 16px;
+}
+.water-view .feedback-summary {
+  border: 0;
+  background: transparent;
+  padding: 0 2px;
+  margin: 0 0 10px;
+}
+.water-view .feedback-summary span:last-child {
+  display: none;
+}
+.water-view .water-feedback {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.water-view .undo-feedback {
+  margin-top: 4px;
+  padding-bottom: 0;
+}
+.water-view .water-card {
+  scroll-margin-bottom: 290px;
+}
+.focused-plan {
+  padding: 24px;
+}
+.focused-plan h1 {
+  font-size: clamp(2.2rem, 6vw, 3rem);
+  margin: 12px 0;
+}
+.focused-plan .water-spot {
+  font-size: 0.94rem;
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+.focused-plan .water-fish {
+  top: 16px;
+  right: -8%;
+  opacity: 0.06;
+}
+.focused-plan .current-step {
+  margin: 18px 0 0;
+  scroll-margin-top: 95px;
+}
+.focused-plan .current-step:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 4px;
+}
+.focused-plan .current-step h2 {
+  margin: 12px 0;
+  font-size: 2rem;
+}
+.focused-plan .current-step p {
+  font-size: 1rem;
+  line-height: 1.65;
+  margin: 0 0 12px;
+}
+.focused-plan .current-step small {
+  display: block;
+  font-size: 0.88rem;
+  color: #d0e4dd;
+  line-height: 1.6;
+}
+.focused-plan .water-progress {
+  margin: 20px 0;
+  gap: 10px;
+}
+.focused-plan .water-progress li {
+  font-size: 0.8rem;
+}
+.focused-plan .water-progress li span {
+  font-size: 1.25rem;
+}
+.starting-setup,
+.step-setup {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid #43645f;
+}
+.starting-setup summary,
+.step-setup summary {
+  min-height: 48px;
+  padding-block: 12px;
+  font-weight: 700;
+  font-size: 0.94rem;
+  cursor: pointer;
+  line-height: 1.5;
+}
+.original-plan-label p {
+  margin: 8px 0;
+}
+.original-plan-label small,
+.weight-hint {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #c6dcd5;
+}
+.focused-plan .water-specs {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  margin: 12px 0;
+}
+.focused-plan .water-specs span {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.focused-plan .water-specs small {
+  font-size: 0.82rem;
+}
+.focused-plan .starting-setup section {
+  margin-top: 16px;
+  padding-top: 16px;
+}
+.starting-setup h2 {
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+.starting-setup section p {
+  font-size: 0.94rem;
+  margin-block: 8px;
+}
+.switch-setup {
+  margin-block: 12px 20px;
+  overflow-wrap: anywhere;
+}
+.switch-lure {
+  display: block;
+  font-size: 1rem;
+}
+.switch-setup .switch-spot {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 6px 0 16px;
+}
+.switch-specs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 14px;
+  margin-block: 16px;
+}
+.switch-specs dt {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  margin-bottom: 6px;
+}
+.switch-specs dd {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.switch-setup h3 {
+  font-size: 1.5rem;
+  margin: 18px 0 8px;
+}
+.switch-setup p {
+  font-size: 0.94rem;
+  line-height: 1.65;
+  margin: 8px 0;
+}
+.switch-setup-details {
+  margin-top: 14px;
+}
+.switch-setup-details summary {
+  min-height: 48px;
+  padding-block: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.6;
+  cursor: pointer;
+}
+.attempts article.done .switch-setup h3::after {
+  content: none;
+}
+.focused-plan .switch-setup .switch-spot,
+.focused-plan .switch-specs dt,
+.legacy-step-note {
+  color: #c6dcd5;
+}
+.focused-plan .switch-setup h3 {
+  color: #fff;
+}
+.focused-plan .switch-setup .brief-compromise {
+  color: #fff0cf;
+  background: #533e24;
+}
+.legacy-step-note {
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+.water-view .session-feedback {
+  bottom: var(--nav-clearance);
+  padding: 8px 12px 12px;
+}
+.feedback-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+}
+.session-feedback .feedback-summary {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  gap: 12px;
+}
+.session-feedback .feedback-summary span:last-child {
+  display: inline;
+  width: auto;
+  margin: 0;
+  font-size: inherit;
+  color: inherit;
+}
+.session-feedback .feedback-summary strong {
+  font-size: 1.1rem;
+}
+.session-feedback .undo-feedback {
+  margin: 0;
+  padding: 8px 4px;
+  font-size: 0.8rem;
+  min-height: 44px;
+}
+.session-feedback .feedback,
+.session-feedback .water-feedback {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.8fr);
+  gap: 8px;
+  margin: 0;
+}
+.session-feedback .feedback button,
+.session-feedback .water-feedback button {
+  min-height: 52px;
+  padding: 8px;
+  border-radius: 14px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.session-feedback .advance-step {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+}
+.session-feedback .advance-step small {
+  font-weight: 500;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+.session-feedback .ongoing-feedback {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.water-view > .save-status {
+  font-size: 0.82rem;
+}
+.water-view > .full {
+  font-size: 0.88rem;
+}
+@media (max-width: 480px) {
+  .focused-plan {
+    padding: 20px;
+  }
+  .focused-plan .current-step {
+    padding: 16px !important;
+  }
+}
+@media (max-width: 360px) {
+  .focused-plan {
+    padding: 16px;
+  }
+  .focused-plan h1 {
+    font-size: 1.8rem;
+    margin-block: 8px;
+  }
+  .focused-plan .water-spot {
+    font-size: 0.9rem;
+    margin-block: 10px;
+  }
+  .focused-plan .current-step {
+    margin-top: 12px;
+  }
+  .session-feedback .undo-feedback {
+    font-size: 0.75rem;
+  }
+}

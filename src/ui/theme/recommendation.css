@@ -1,0 +1,303 @@
+/* Recommendation page: plan options, details, evidence, colors and optional tips. */
+.recommendation-page > .lead {
+  max-width: 720px;
+}
+.metric-help {
+  padding: 16px 18px;
+  margin: 10px 0 18px;
+  border-left: 4px solid var(--lime);
+  background: var(--surface-soft);
+}
+.metric-help p {
+  margin: 4px 0;
+  font-size: 0.82rem;
+}
+.metric-help small {
+  display: block;
+  margin-top: 8px;
+  color: var(--ink-soft);
+}
+.specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+.specs span,
+.color-examples span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  font-size: 0.7rem;
+}
+.confidence {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  font-size: 0.75rem;
+}
+.confidence.high {
+  background: var(--success-bg);
+  color: var(--success);
+}
+.confidence.low {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.color-guidance,
+.reason-box {
+  margin: 14px 0;
+  padding: 15px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+}
+.color-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+.color-guidance p,
+.reason-box li {
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.reason-box ul {
+  padding-left: 18px;
+}
+.color-guidance > small {
+  display: block;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.quick-start {
+  width: 100%;
+  position: relative;
+  min-height: 56px;
+}
+.metric-help summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1.5;
+  padding-block: 10px;
+}
+.recommendation-options {
+  display: grid;
+  gap: 16px;
+}
+.recommendation-option {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 22px;
+}
+.recommended-option {
+  border: 2px solid var(--forest);
+}
+.option-heading h2 {
+  margin: 10px 0;
+  font-size: 2.3rem;
+}
+.option-heading p {
+  margin: 0 0 14px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.option-specs {
+  display: flex;
+  align-items: center;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+.option-specs .inventory-status {
+  order: 0;
+  font-size: 0.75rem;
+}
+.option-guidance {
+  padding: 16px;
+  background: var(--surface-soft);
+  border-radius: 12px;
+  line-height: 1.65;
+  font-size: 0.94rem;
+  margin: 18px 0;
+}
+.option-guidance strong {
+  display: block;
+  margin-bottom: 5px;
+}
+.brief-compromise {
+  color: var(--warning);
+  background: var(--warning-bg);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.option-actions {
+  margin-top: 16px;
+}
+.option-actions > .secondary {
+  width: 100%;
+}
+.option-actions .accordion-toggle {
+  font-size: 0.86rem;
+}
+.plan-details {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.presentation-details dl {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  margin: 0 0 22px;
+}
+.presentation-details dt,
+.plain-confidence dt {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  margin-bottom: 5px;
+}
+.presentation-details dd,
+.plain-confidence dd {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  font-weight: 600;
+}
+.presentation-details h3 {
+  margin: 18px 0 8px;
+  font-size: 1.5rem;
+}
+.presentation-details p {
+  font-size: 0.94rem;
+  line-height: 1.65;
+  margin: 0;
+}
+.plan-details .reason-box {
+  margin: 22px 0 18px;
+}
+.plan-details .reason-box li {
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+.plain-confidence {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-block: 20px;
+}
+.plan-details details {
+  border-top: 1px solid var(--line);
+}
+.plan-details summary {
+  min-height: 48px;
+  padding-block: 12px;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  font-weight: 700;
+  cursor: pointer;
+}
+.plan-details .metric-help p,
+.plan-disclosure p,
+.plan-disclosure small {
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+.plan-details .color-guidance {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.plan-details .switch-plan {
+  padding-left: 24px;
+}
+.plan-details .switch-plan li {
+  margin-bottom: 22px;
+  padding-left: 4px;
+}
+.plan-details .switch-plan h3 {
+  margin: 8px 0;
+}
+.plan-edit-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0;
+}
+.plan-edit-links a {
+  flex: 1;
+  font-size: 0.85rem;
+}
+.optional-tips {
+  margin-top: 30px;
+}
+.optional-tips > h2 {
+  margin-bottom: 12px;
+  font-size: 1.9rem;
+}
+.optional-tips > p,
+.optional-option p,
+.optional-option small {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+.optional-option {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.optional-option h3 {
+  font-size: 1.75rem;
+  margin: 10px 0;
+}
+.no-inventory h2 {
+  margin-bottom: 12px;
+}
+.no-inventory .primary {
+  margin-top: 18px;
+}
+@media (max-width: 480px) {
+  .recommendation-option {
+    padding: 18px;
+  }
+  .option-heading h2 {
+    font-size: 2rem;
+  }
+  .plain-confidence,
+  .presentation-details dl {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+.rule-sources {
+  padding-left: 20px;
+}
+.rule-sources li {
+  margin-bottom: 18px;
+  overflow-wrap: anywhere;
+}
+.rule-sources a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.rule-sources small {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.rule-sources p {
+  margin-top: 6px;
+}
