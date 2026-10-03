@@ -149,7 +149,7 @@ export const pikeLures: LureType[] = [
         mounting:
           'Hechtsicheres Vorfach, am geschlossenen Bügel direkt anbinden oder geeigneten, belastbaren Karabiner verwenden',
         depths: ['shallow', 'medium'],
-        vegetation: ['edgeOrGaps', 'dense', 'unknown'],
+        vegetation: ['none', 'edgeOrGaps', 'dense', 'unknown'],
         style: 'search',
         weightKind: 'lure-total',
         lureWeightBySize: { small: { min: 15, max: 30 }, medium: { min: 30, max: 60 }, large: { min: 60, max: 100 } },

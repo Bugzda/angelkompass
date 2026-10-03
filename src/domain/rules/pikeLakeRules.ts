@@ -1,5 +1,7 @@
+import { pikeLures } from '../catalogs/pikeLures'
 import type { Conditions, LureType, SpotFeature } from '../models/types'
 import type { ScoringContext, ScoringRule } from './perchLakeRules'
+import { lacksVegetationProfile } from './vegetationFit'
 
 const sign = (c: Conditions, value: string) =>
   c.activity.status === 'observed' && c.activity.signs.includes(value as never)
@@ -295,6 +297,20 @@ export const pikeSetupRules: ScoringRule[] = [
       setup(x, 'tailbait') &&
       ['cold', 'cool'].includes(x.conditions.waterTemperature) &&
       x.conditions.vegetation !== 'dense',
+  },
+  {
+    id: 'PKL022',
+    target: 'setup',
+    group: 'presentation',
+    evidenceClass: 'experience',
+    confidence: 0.75,
+    effect: -3,
+    reasonCode: 'PIKE_VEGETATION_RIG_MISMATCH',
+    sourceIds: ['P06'],
+    // Crankbait, spinner and tailbait in dense weed are already graded by PKL012.
+    matches: x =>
+      lacksVegetationProfile(pikeLures, x.conditions, x.candidateId) &&
+      !(x.conditions.vegetation === 'dense' && setup(x, 'crankbait', 'spinner', 'tailbait')),
   },
 ]
 export const pikeAllRules = [...pikeSpotRules, ...pikeSetupRules]

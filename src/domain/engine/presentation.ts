@@ -41,7 +41,8 @@ function selectProfile(conditions: Conditions, lure: LureType, spot: RankedSpot)
       return profiles.find(item => item.id === 'pike-weedless-offset') ?? profiles[0]
     if (conditions.depth === 'shallow') return profiles.find(item => item.id === 'pike-shallow-screw') ?? profiles[0]
   }
-  return profiles.find(item => conditions.depth === 'unknown' || item.depths.includes(conditions.depth)) ?? profiles[0]
+  // Profiles are already depth-filtered; prefer one that is meant for the observed weed situation.
+  return profiles.find(item => item.vegetation.includes(conditions.vegetation)) ?? profiles[0]
 }
 
 function guidanceMode(conditions: Conditions): GuidanceMode {

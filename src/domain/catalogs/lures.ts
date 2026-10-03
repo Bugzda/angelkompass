@@ -267,7 +267,7 @@ export const lures: LureType[] = [
         label: 'Spinnerbait',
         mounting: 'Direkt am geschlossenen Bügel oder geeignetem Karabiner',
         depths: ['shallow', 'medium'],
-        vegetation: ['edgeOrGaps', 'dense', 'unknown'],
+        vegetation: ['none', 'edgeOrGaps', 'dense', 'unknown'],
         style: 'search',
         weightKind: 'lure-total',
         lureWeightBySize: { small: { min: 4, max: 8 }, medium: { min: 8, max: 15 } },

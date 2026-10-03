@@ -134,7 +134,7 @@ describe('Hecht-Ablauf und artspezifischer Bestand v3', () => {
     }
     sessionStore.resetForTests()
     const created = sessionStore.create(conditions, createRecommendations(conditions)[0])
-    expect(created?.rulesetVersion).toBe('pike-lake-2.0.2')
+    expect(created?.rulesetVersion).toBe('pike-lake-2.1.0')
     expect(created?.recommendation.setup.resolvedPresentation).toBeDefined()
     expect(created?.conditions.pikeSafetyConfirmed).toBe(true)
   })

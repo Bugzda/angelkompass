@@ -1,4 +1,6 @@
+import { lures } from '../catalogs/lures'
 import type { Conditions, EvidenceClass, LureType, RuleGroup, SpotFeature } from '../models/types'
+import { lacksVegetationProfile } from './vegetationFit'
 
 export interface ScoringContext {
   conditions: Conditions
@@ -471,6 +473,24 @@ export const setupRules: ScoringRule[] = [
     matches: x =>
       x.spotId === 'shallow' &&
       setup(x, 'twitchbait', 'spinner', 'crankbait', 'chatterbait', 'spinnerbait', 'tail-spinner'),
+  },
+  {
+    id: 'FIT003',
+    target: 'setup',
+    group: 'presentation',
+    evidenceClass: 'experience',
+    confidence: 0.75,
+    effect: -3,
+    reasonCode: 'VEGETATION_RIG_MISMATCH',
+    sourceIds: ['S15'],
+    // Dense weed in the vegetation spot is already graded by OBS014/OBS016 for these lures.
+    matches: x =>
+      lacksVegetationProfile(lures, x.conditions, x.candidateId) &&
+      !(
+        x.conditions.vegetation === 'dense' &&
+        x.spotId === 'vegetation' &&
+        setup(x, 'twitchbait', 'spinner', 'spinnerbait', 'crankbait', 'chatterbait', 'tail-spinner')
+      ),
   },
   {
     id: 'OBS015',

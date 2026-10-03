@@ -37,11 +37,15 @@ const texts: Record<string, string> = {
   PIKE_SHALLOW_SEARCH: 'Der Köder deckt die erreichbare Flachzone effizient ab.',
   PIKE_TOPWATER_WINDOW: 'Ohne warmes, flaches Fenster wird Topwater deutlich zurückgestuft.',
   PIKE_TOPWATER_ACTIVITY: 'Bestätigte Oberflächenaktivität öffnet ein klares Topwater-Fenster.',
+  PIKE_VEGETATION_RIG_MISMATCH:
+    'Für diese Krautlage und Tiefe ist keine passende Montage dieses Köders vorgesehen; ein krautgeschützter Köder ist leichter zu kontrollieren.',
   PIKE_TAILBAIT_COLD: 'Der Tailbait lässt sich bei kühlem Wasser besonders langsam mit langen Pausen präsentieren.',
   OBSERVED_STRUCTURE: 'Die sichtbare Struktur ist ein direktes Signal für diesen Spot.',
   VEGETATION_EDGE_OBSERVED: 'Lockere Krautkanten und Lücken verbinden Deckung mit gutem Jagdraum.',
   DENSE_VEGETATION_HABITAT:
     'Dichtes Kraut bietet Habitat; befischt werden vor allem Außenkante, Taschen und freie Bahnen.',
+  VEGETATION_RIG_MISMATCH:
+    'Für diese Krautlage und Tiefe ist keine passende Montage dieses Köders vorgesehen; Hänger und Laufstörungen werden wahrscheinlicher.',
   DEPTH_MATCH: 'Spot und geschätzte Angeltiefe passen zusammen.',
   COLD_DROPOFF: 'Kaltes Wasser spricht häufiger für erreichbare Tiefenkanten.',
   COLD_SHALLOW_PENALTY: 'Flaches Wasser wird bei sehr kaltem Wasser vorsichtiger bewertet.',

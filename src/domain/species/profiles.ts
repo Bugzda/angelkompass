@@ -25,7 +25,7 @@ export const speciesProfiles: Record<TargetFish, SpeciesProfile> = {
   perch: {
     targetFish: 'perch',
     label: 'Barsch',
-    rulesetVersion: 'perch-lake-2.0.0',
+    rulesetVersion: 'perch-lake-2.1.0',
     lures,
     spots,
     spotRules,
@@ -47,7 +47,7 @@ export const speciesProfiles: Record<TargetFish, SpeciesProfile> = {
   pike: {
     targetFish: 'pike',
     label: 'Hecht',
-    rulesetVersion: 'pike-lake-2.0.2',
+    rulesetVersion: 'pike-lake-2.1.0',
     lures: pikeLures,
     spots: pikeSpots,
     spotRules: pikeSpotRules,
