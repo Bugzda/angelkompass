@@ -25,9 +25,7 @@ export function SessionsPage() {
     <section className="page-shell sessions-page">
       <p className="eyebrow">Logbuch</p>
       <h1>Deine Sessions</h1>
-      <p className="lead">
-        Deine Angelpläne mit Bissen und Fängen. Alles bleibt auf diesem Gerät gespeichert.
-      </p>
+      <p className="lead">Deine Angelpläne mit Bissen und Fängen. Alles bleibt auf diesem Gerät gespeichert.</p>
       {error && (
         <p className="storage-error" role="alert">
           {error}

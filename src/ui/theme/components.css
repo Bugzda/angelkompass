@@ -57,9 +57,9 @@
   border-color: var(--ink);
 }
 .chips button.selected {
-  background: var(--green);
-  border-color: var(--green);
-  color: var(--surface);
+  background: var(--selected-bg);
+  border-color: var(--selected-bg);
+  color: var(--selected-ink);
 }
 .chips button.selected svg {
   color: currentColor;

@@ -2,6 +2,8 @@
 
 Stand: 12. Juli 2026
 
+> **Historisch.** Seit dem 3. Oktober 2026 gilt das Feldbuch-Design: [`feldbuch-redesign-2026-10-03.md`](feldbuch-redesign-2026-10-03.md). Tokens, Schriften und das Hero-Bild `lake-morning` aus diesem Dokument werden nicht mehr verwendet; die Fischzeichnungen bleiben.
+
 ## Gestaltungsprinzip
 
 Angelkompass kombiniert zu etwa 80 Prozent eine helle, bildstarke Terrain-Oberfläche mit zu etwa 20 Prozent einem dunklen Current-Fokusmodus. Terrain trägt Marke, Orientierung und normale Arbeitsseiten. Current bleibt auf das praktische Ergebnis-Briefing und die Am-Wasser-Karte begrenzt. Dekorative Konturlinien sind keine Karten-, Tiefen- oder Sensordaten.

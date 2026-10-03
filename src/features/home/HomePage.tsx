@@ -48,8 +48,8 @@ export function HomePage() {
         <h1>{activeSession ? 'Du bist am Wasser' : 'Was befischst du heute?'}</h1>
         {!activeSession && (
           <p className="lead">
-            Beschreibe, was du am See siehst. Angelkompass schlägt dir einen passenden Köder aus deiner Box vor und
-            gibt dir einen Plan für die nächsten Würfe.
+            Beschreibe, was du am See siehst. Angelkompass schlägt dir einen passenden Köder aus deiner Box vor und gibt
+            dir einen Plan für die nächsten Würfe.
           </p>
         )}
       </header>

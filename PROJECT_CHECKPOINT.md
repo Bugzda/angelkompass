@@ -1,3 +1,11 @@
+## Feldbuch-Redesign · 3. Oktober 2026
+
+Ausgangsstand: `main` bei `a666d31`, Umsetzung auf Branch `design/feldbuch`. Die Oberfläche wurde vom generischen Lime-/Condensed-Look auf ein eigenständiges Feldbuch-Design umgestellt: Papier- und Tintenpalette mit einem Akzent in Posen-Orange, Source Serif 4 für Überschriften, IBM Plex Sans/Mono, flache Flächen mit Linien statt Schatten, feste Reiterleiste, Fischliste mit wissenschaftlichen Namen auf Start- und Zielfischseite, sachlichere Texte ohne Versalien-Kicker und Schlusspunkte, neues App-Icon. Hero-Foto und alte Schriften entfernt. Keine Änderung an Fachregeln, Ranking, Datenformaten oder Snapshots.
+
+353 Tests in 26 Dateien, TypeScript, Prettier, Produktions-/PWA-Build und Routing-Validierung erfolgreich. Mobil (375 px) hell und dunkel sowie Desktop im integrierten Browser auf eigenem Ursprung mit Wegwerfdaten geprüft. Lokale Commits, nicht gepusht und nicht veröffentlicht. Details: [`docs/design/feldbuch-redesign-2026-10-03.md`](docs/design/feldbuch-redesign-2026-10-03.md).
+
+---
+
 ## Datenabsicherung und Köderbox-Analyse · 3. Oktober 2026
 
 Ausgangsstand: `main` bei `4efc7f2`. Datenabsicherung: Speicherschutz per `navigator.storage.persist()` (einmalig nach dem ersten Sessionstart, zusätzlich manuell auf der Seite Datensicherung), Teilen der Vollsicherung über das Teilen-Menü, Anzeige der letzten Sicherung, Erinnerung in Logbuch und Sessionabschluss (`angelkompass.backup-status.v1`, nicht Teil der Sicherung). Köderbox-Analyse unter `/bestand/analyse`: Ein Web Worker rechnet ein festes Situationsraster mit der unveränderten praktischen Auswahl durch und ergänzt jede fehlende Ködergröße probeweise. Die Engine teilt dafür `orderCandidates` und `inventorySizeFor` mit dem Ranking, die Ergebnisse sind identisch. Keine Änderung an Fachregeln, Gewichten oder Snapshots.

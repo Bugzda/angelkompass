@@ -158,12 +158,12 @@
   border-color: var(--ink);
 }
 .inventory-size-choices button.selected {
-  border-color: var(--green);
-  background: var(--green);
-  color: var(--surface);
+  border-color: var(--selected-bg);
+  background: var(--selected-bg);
+  color: var(--selected-ink);
 }
 .inventory-size-choices button.selected small {
-  color: color-mix(in srgb, var(--surface) 80%, transparent);
+  color: color-mix(in srgb, var(--selected-ink) 80%, transparent);
 }
 .inventory-size-choices .all-sizes:not(.selected) {
   border-style: dashed;
@@ -318,5 +318,4 @@
     grid-row: auto;
     width: 100%;
   }
-
 }

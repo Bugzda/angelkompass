@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { Fragment, type CSSProperties } from 'react'
 import { Icon } from '../../ui/components/Icon'
 import { type ChoiceKey, choiceIcons, choices, labels } from './conditionOptions'
 
@@ -27,15 +27,31 @@ export function ChoiceField({
               type="button"
               key={option}
               aria-pressed={selected}
+              aria-label={label}
               className={`${selected ? 'selected' : ''}${option === 'unknown' ? ' unknown-option' : ''}`}
               onClick={() => onSelect(option)}
             >
               {icon ? <Icon name={icon} size={20} /> : selected && <Icon name="check" size={15} />}
-              <span>{label}</span>
+              <span>{breakAfterSlash(label)}</span>
             </button>
           )
         })}
       </div>
     </fieldset>
   )
+}
+
+/** Allows narrow segments to wrap after a slash instead of splitting a word. */
+function breakAfterSlash(label: string) {
+  const parts = label.split('/')
+  return parts.map((part, index) => (
+    <Fragment key={index}>
+      {part}
+      {index < parts.length - 1 && (
+        <>
+          /<wbr />
+        </>
+      )}
+    </Fragment>
+  ))
 }

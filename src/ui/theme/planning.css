@@ -153,11 +153,12 @@
 .chips.segmented button {
   min-width: 0;
   min-height: 48px;
-  padding: 8px 6px;
+  padding: 8px 4px;
   justify-content: center;
   text-align: center;
   line-height: 1.2;
-  font-size: 0.84rem;
+  font-size: 0.8rem;
+  overflow-wrap: break-word;
 }
 .chips.segmented.with-icons button {
   min-height: 64px;

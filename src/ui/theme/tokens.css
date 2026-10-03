@@ -14,6 +14,8 @@
   --ink-soft: #5b5f58;
   --green: #2f4a3a;
   --green-deep: #1f2b24;
+  --selected-bg: #2f4a3a;
+  --selected-ink: #fbf9f4;
   --on-deep: #efe9dc;
   --on-deep-soft: #b9bfae;
   --deep-line: #3c4a40;
@@ -48,6 +50,8 @@
   --ink-soft: #a9a596;
   --green: #9dbf9e;
   --green-deep: #1f2b24;
+  --selected-bg: #3f5c48;
+  --selected-ink: #ece6d9;
   --on-deep: #efe9dc;
   --on-deep-soft: #b9bfae;
   --deep-line: #3c4a40;

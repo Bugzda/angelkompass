@@ -107,8 +107,8 @@
   font-weight: 600;
 }
 .feedback button:last-child {
-  background: var(--green);
-  color: var(--surface);
+  background: var(--selected-bg);
+  color: var(--selected-ink);
 }
 .feedback-log {
   margin-top: 28px;
