@@ -90,7 +90,7 @@ export function CompactRecommendation({
             className={!completed && step.phase === progress ? 'current' : ''}
             aria-current={!completed && step.phase === progress ? 'step' : undefined}
           >
-            <span>0{index + 1}</span>
+            <span>{index + 1}</span>
             {phaseLabels[step.phase]}
           </li>
         ))}

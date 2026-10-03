@@ -174,7 +174,7 @@ function SessionDetails({ session }: { session: FishingSession }) {
               aria-current={active && index === currentIndex ? 'step' : undefined}
               key={step.phase}
             >
-              <span className="step">0{index + 1}</span>
+              <span className="step">{index + 1}</span>
               <div>
                 <h3>{step.title}</h3>
                 <p>{step.change}</p>
