@@ -12,6 +12,7 @@ import { useInventory } from '../inventory/useInventory'
 import { sessionStore } from '../sessions/sessionStore'
 import { useSessions } from '../sessions/useSessions'
 import { SwitchSetupDetails } from './SwitchSetupDetails'
+import { shortWeight } from './presentationFormat'
 
 const confidenceLabel = (level: ConfidenceMetric['level']) =>
   level === 'high' ? 'Hohe Evidenz' : level === 'medium' ? 'Mittlere Evidenz' : 'Geringe Evidenz'
@@ -165,15 +166,23 @@ function RecommendationOption({
         <span className="overline">{primary ? 'EMPFOHLENER START' : `ALTERNATIVE ${recommendation.rank - 1}`}</span>
         <h2 id={`option-${recommendation.rank}`}>{recommendation.setup.lure.label}</h2>
         <p>{recommendation.spot.spot.label}</p>
-        <div className="option-specs">
-          <span>
-            {recommendation.setup.lure.material === 'metal'
-              ? presentation.weightLabel.split(' · ')[0]
-              : presentation.sizeLabel}
-          </span>
-          <span>{presentation.profileLabel}</span>
-          <span className="inventory-status available">In deiner Köderbox</span>
-        </div>
+        <dl className="option-specs">
+          <div>
+            <dt>Größe</dt>
+            <dd>{presentation.sizeLabel}</dd>
+          </div>
+          {presentation.weightKind !== 'none' && (
+            <div>
+              <dt>{presentation.weightKind === 'lure-total' ? 'Gewicht' : 'Beschwerung'}</dt>
+              <dd>{shortWeight(presentation.weightLabel)}</dd>
+            </div>
+          )}
+          <div className="option-type">
+            <dt>Typ</dt>
+            <dd>{presentation.profileLabel}</dd>
+          </div>
+        </dl>
+        <span className="inventory-status available">In deiner Köderbox</span>
       </header>
       {primary && (
         <p className="option-guidance">
@@ -305,8 +314,8 @@ export function RecommendationPage() {
             </p>
             {decision.optionalLureAdvantage && decision.optionalLureAdvantage > 0 ? (
               <small>
-                Diese Option liegt fachlich {decision.optionalLureAdvantage} Eignungspunkte vor deiner besten
-                vorhandenen Wahl.
+                Passt in dieser Situation fachlich besser als deine beste vorhandene Wahl – eine Überlegung für deine
+                nächste Köderbox.
               </small>
             ) : (
               <small>Eine zusätzliche fachliche Alternative für diese Situation.</small>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Icon } from '../../ui/components/Icon'
 import { useInventory } from '../inventory/useInventory'
 import { useSessions } from '../sessions/useSessions'
+import { downloadSessions } from '../sessions/sessionExport'
 import {
   downloadBackup,
   parseBackup,
@@ -118,6 +119,24 @@ export function DataPage() {
           <Icon name="download" size={18} /> Vollständige Sicherung herunterladen
         </button>
         <small>JSON-Datei · ohne Konto · keine Übertragung an einen Server</small>
+        {sessions.length > 0 && (
+          <button
+            className="secondary export-sessions"
+            onClick={() => {
+              try {
+                downloadSessions(sessions)
+                setError(undefined)
+                setMessage('Der Logbuch-Export wurde gestartet. Er enthält alle Sessions, aber keine Köderbox.')
+              } catch {
+                setError(
+                  'Der Export konnte nicht heruntergeladen werden. Versuche es erneut. Deine Sessions bleiben gespeichert.',
+                )
+              }
+            }}
+          >
+            <Icon name="download" size={18} /> Nur Logbuch exportieren
+          </button>
+        )}
       </article>
       <article className="data-card">
         <span className="overline">02 · WIEDERHERSTELLEN</span>

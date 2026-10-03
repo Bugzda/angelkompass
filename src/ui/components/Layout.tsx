@@ -2,17 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useSessions } from '../../features/sessions/useSessions'
 import { usePwaStatus } from '../hooks/usePwaStatus'
-import { type ThemePreference, useTheme } from '../hooks/useTheme'
+import { ConnectionStatus } from './ConnectionStatus'
 import { BrandMark, Icon, type IconName } from './Icon'
+import { ThemeControl } from './ThemeControl'
+import { ToastViewport } from './Toast'
 
 export function Layout() {
   const location = useLocation()
   const mainRef = useRef<HTMLElement>(null)
   const [updateError, setUpdateError] = useState<string>()
   const { activeSession } = useSessions()
-  const { online, offlineReady, updateAvailable, applyUpdate, dismissUpdate } = usePwaStatus()
-  const { preference, setPreference } = useTheme()
-  const status = offlineReady ? (online ? 'Offline bereit' : 'Offline verfügbar') : online ? 'Online' : 'Offline'
+  const { updateAvailable, applyUpdate, dismissUpdate } = usePwaStatus()
   const isSectionActive = (section: 'home' | 'new' | 'inventory' | 'history') => {
     const path = location.pathname
     const activePlan =
@@ -41,8 +41,6 @@ export function Layout() {
     { section: 'inventory', to: '/bestand', icon: 'inventory', label: 'Köderbox' },
     { section: 'history', to: '/verlauf', icon: 'history', label: 'Logbuch' },
   ]
-  const themeIcon: IconName =
-    preference === 'system' ? 'theme-system' : preference === 'dark' ? 'theme-dark' : 'theme-light'
   useEffect(() => {
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
@@ -91,34 +89,10 @@ export function Layout() {
           <span>ANGELKOMPASS</span>
         </NavLink>
         <div className="header-tools">
-          <label className="theme-control">
-            <span className="sr-only">Farbschema</span>
-            <Icon name={themeIcon} size={18} />
-            <select
-              value={preference}
-              onChange={event => setPreference(event.target.value as ThemePreference)}
-              aria-label="Farbschema"
-            >
-              <option value="system">System</option>
-              <option value="light">Hell</option>
-              <option value="dark">Dunkel</option>
-            </select>
-          </label>
+          <ThemeControl />
         </div>
       </header>
-      <div className="app-status">
-        <span className={`connection ${online ? 'online' : 'offline-state'}`} role="status">
-          <Icon name={online ? 'status-online' : 'status-offline'} size={17} />
-          {status}
-        </span>
-        <span className="offline-detail">
-          {offlineReady
-            ? 'Auch ohne Internet nutzbar.'
-            : online
-              ? 'Vorab online öffnen.'
-              : 'Offline-Bereitschaft noch nicht bestätigt.'}
-        </span>
-      </div>
+      <ConnectionStatus />
       {updateAvailable && (
         <aside className="update-banner" aria-live="polite">
           <Icon name="update" />
@@ -145,6 +119,7 @@ export function Layout() {
       <main className="app-main" id="main-content" tabIndex={-1} ref={mainRef}>
         <Outlet />
       </main>
+      <ToastViewport />
       <nav className="bottom" aria-label="Hauptnavigation">
         {navItems.map(item => {
           const active = isSectionActive(item.section)

@@ -106,3 +106,8 @@
     padding: 16px;
   }
 }
+
+.data-card .export-sessions {
+  margin-top: 16px;
+  font-size: 0.83rem;
+}

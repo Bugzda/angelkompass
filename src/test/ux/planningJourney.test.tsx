@@ -162,7 +162,10 @@ describe('Geführter Angelplan', () => {
       window.dispatchEvent(new Event('offline'))
     })
     expect(screen.getByRole('status')).toHaveTextContent('Offline verfügbar')
+    expect(screen.getByText(/Offline bereit/)).toBeInTheDocument()
     act(() => window.dispatchEvent(new Event('online')))
-    expect(screen.getByRole('status')).toHaveTextContent('Offline bereit')
+    // Online, the permanent bar disappears; readiness was announced once as a toast.
+    expect(screen.queryByText('Offline verfügbar')).not.toBeInTheDocument()
+    expect(localStorage.getItem('angelkompass.offline-announced.v1')).toBe('1')
   })
 })

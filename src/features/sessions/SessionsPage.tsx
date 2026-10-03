@@ -5,7 +5,6 @@ import { useSessions } from './useSessions'
 import { Icon } from '../../ui/components/Icon'
 import { useRef, useState } from 'react'
 import type { FishingSession, TargetFish } from '../../domain/models/types'
-import { downloadSessions } from './sessionExport'
 
 const date = (value: string) =>
   new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
@@ -19,7 +18,6 @@ const feedbackSummary = (session: FishingSession) => {
 export function SessionsPage() {
   const { sessions, error } = useSessions()
   const [fish, setFish] = useState<TargetFish | 'all'>('all')
-  const [exportError, setExportError] = useState<string>()
   const filtered = sessions.filter(session => fish === 'all' || session.conditions.targetFish === fish)
   const bites = filtered.reduce(
     (sum, session) => sum + session.feedback.filter(item => item.outcome === 'bite').length,
@@ -29,16 +27,6 @@ export function SessionsPage() {
     (sum, session) => sum + session.feedback.filter(item => item.outcome === 'catch').length,
     0,
   )
-  const exportAll = () => {
-    try {
-      downloadSessions(sessions)
-      setExportError(undefined)
-    } catch {
-      setExportError(
-        'Der Export konnte nicht heruntergeladen werden. Versuche es erneut. Deine Sessions bleiben gespeichert.',
-      )
-    }
-  }
 
   return (
     <section className="page-shell sessions-page">
@@ -47,9 +35,9 @@ export function SessionsPage() {
       <p className="lead">
         Jeder Versuch erzählt etwas. Hier bleiben deine Angelpläne, Bisse und Fänge auf diesem Gerät gespeichert.
       </p>
-      {(error || exportError) && (
+      {error && (
         <p className="storage-error" role="alert">
-          {error ?? exportError}
+          {error}
         </p>
       )}
       {sessions.length > 0 && (
@@ -67,10 +55,6 @@ export function SessionsPage() {
                 </button>
               ))}
             </div>
-            <button className="secondary" onClick={exportAll}>
-              <Icon name="download" size={18} />
-              Alle Sessions exportieren
-            </button>
           </div>
           <dl className="logbook-stats" aria-label="Statistik der angezeigten Sessions">
             <div>
@@ -87,8 +71,7 @@ export function SessionsPage() {
             </div>
           </dl>
           <p className="collection-note">
-            {filtered.length} {filtered.length === 1 ? 'Eintrag' : 'Einträge'} · Neueste zuerst{' '}
-            <span>Export als JSON · alle Fischarten</span>
+            {filtered.length} {filtered.length === 1 ? 'Eintrag' : 'Einträge'} · Neueste zuerst
           </p>
         </>
       )}

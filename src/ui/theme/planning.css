@@ -498,3 +498,9 @@
     grid-template-columns: 80px minmax(0, 1fr) auto;
   }
 }
+
+:root[data-theme='dark'] .species-art img {
+  filter: grayscale(1) invert(1);
+  mix-blend-mode: screen;
+  opacity: 0.88;
+}

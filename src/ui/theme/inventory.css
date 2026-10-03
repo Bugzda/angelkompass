@@ -166,3 +166,8 @@
     margin-top: 16px;
   }
 }
+
+:root[data-theme='dark'] .inventory-species > header > img {
+  filter: grayscale(1) invert(1);
+  mix-blend-mode: screen;
+}

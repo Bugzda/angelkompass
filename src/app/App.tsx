@@ -11,6 +11,7 @@ import { WaterCardPage } from '../features/sessions/WaterCardPage'
 import { NotFoundPage, RouteError } from '../ui/components/RouteError'
 import { RetiredPhotoRoute } from './RetiredPhotoRoute'
 import { DataPage } from '../features/data/DataPage'
+import { ActivePlanRedirect } from '../features/sessions/ActivePlanRedirect'
 
 const router = createBrowserRouter(
   [
@@ -23,6 +24,7 @@ const router = createBrowserRouter(
         { path: 'neu', element: <SpeciesPage /> },
         { path: 'neu/:fish', element: <SituationPage /> },
         { path: 'neu/:fish/foto', element: <RetiredPhotoRoute /> },
+        { path: 'aktiv', element: <ActivePlanRedirect /> },
         { path: 'empfehlung', element: <RecommendationPage /> },
         { path: 'bestand', element: <InventoryPage /> },
         { path: 'session/:id', element: <SessionPage /> },
