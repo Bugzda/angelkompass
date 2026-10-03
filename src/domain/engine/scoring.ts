@@ -387,6 +387,9 @@ function isPracticalSpot(conditions: Conditions, spot: RankedSpot) {
   if (conditions.observedStructure.includes(id as never)) return true
   if (id === 'vegetation') return conditions.vegetation === 'edgeOrGaps' || conditions.vegetation === 'dense'
   if (id === 'shallow') return conditions.depth === 'shallow'
+  // Visible prey makes the reachable free horizon a concrete search area.
+  if (id === 'openWater')
+    return conditions.activity.status === 'observed' && conditions.activity.signs.includes('baitfish')
   return false
 }
 
