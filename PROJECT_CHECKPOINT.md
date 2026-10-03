@@ -1,3 +1,11 @@
+## Datenabsicherung und Köderbox-Analyse · 3. Oktober 2026
+
+Ausgangsstand: `main` bei `4efc7f2`. Datenabsicherung: Speicherschutz per `navigator.storage.persist()` (einmalig nach dem ersten Sessionstart, zusätzlich manuell auf der Seite Datensicherung), Teilen der Vollsicherung über das Teilen-Menü, Anzeige der letzten Sicherung, Erinnerung in Logbuch und Sessionabschluss (`angelkompass.backup-status.v1`, nicht Teil der Sicherung). Köderbox-Analyse unter `/bestand/analyse`: Ein Web Worker rechnet ein festes Situationsraster mit der unveränderten praktischen Auswahl durch und ergänzt jede fehlende Ködergröße probeweise. Die Engine teilt dafür `orderCandidates` und `inventorySizeFor` mit dem Ranking, die Ergebnisse sind identisch. Keine Änderung an Fachregeln, Gewichten oder Snapshots.
+
+352 Tests in 26 Dateien, TypeScript, Produktions-/PWA-Build und Routing-Validierung erfolgreich. Mobil im integrierten Browser mit Wegwerfdaten geprüft. Lokale Commits, nicht gepusht und nicht veröffentlicht. Details: [`docs/datensicherung-und-koederanalyse-2026-10-03.md`](docs/datensicherung-und-koederanalyse-2026-10-03.md).
+
+---
+
 ## UX-Modernisierung · 3. Oktober 2026
 
 Ausgangsstand: `main` bei `dfa28ac`. Umgesetzt wurden alle Punkte aus dem App-Review: ruhigerer App-Rahmen (Offline-Leiste nur offline, Farbschema als Symbolknopf, dunkler Startbildschirm, App-Shortcuts samt `/aktiv`), Am-Wasser-Werkzeuge (Wake Lock, Schrittuhr ohne automatisches Weiterschalten, Vibration, große Tasten, optionale Fanglänge und Notiz), gespeicherte Angelstellen inklusive Datensicherung, beschreibende Auswertung im Logbuch, Wind und Luftdruck als reine Information, Bedingungs-Chips mit Sprung zum Feld, segmentierte Bedingungsfelder, kompaktere Köderbox, Seitenübergänge sowie Prettier und nach Bereichen gegliedertes CSS. Keine Änderung an Fachregeln, Regelgewichten, Ranking oder vorhandenen Snapshots. Neue optionale Felder sind abwärtskompatibel.

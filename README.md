@@ -6,6 +6,8 @@ Vollständiger Übergabestand für neue Chats: [`PROJECT_CHECKPOINT.md`](PROJECT
 
 Mobile, lokal speichernde Entscheidungshilfe für das Uferangeln auf Barsch, Hecht und Zander am See.
 
+Neu: [Datenabsicherung und Köderbox-Analyse](docs/datensicherung-und-koederanalyse-2026-10-03.md) mit Speicherschutz, Teilen der Sicherung, Sicherungserinnerung und einer Analyse, welche Ködergröße die eigene Box am meisten ergänzt.
+
 Aktuelle Modernisierung: [`docs/ux-modernisierung-2026-10-03.md`](docs/ux-modernisierung-2026-10-03.md) mit Am-Wasser-Werkzeugen (Bildschirm an, Schrittuhr, Vibration, große Tasten, Fang-Details), gespeicherten Angelstellen, Auswertung im Logbuch, Seitenübergängen und neu gegliedertem CSS. Vorherige UI-/UX-Überarbeitung: [`docs/ux-fokus-2026-09-08.md`](docs/ux-fokus-2026-09-08.md). Kompakte Bedingungen und Köderbox, eindeutige Empfehlungskarten mit aufklappbaren Quellen, aktueller Handlungsschritt im Vordergrund und direkter Zugang zum aktiven Plan. Der [geführte Einstieg](docs/ux-angelplan-2026-09-05.md) umfasst auch Abschluss und Wiederholungsstart.
 
 Aktuelles Code-, Daten- und UI-Review: [`docs/review-2026-09-07.md`](docs/review-2026-09-07.md). Frühere Prüfung: [`docs/review-2026-09-05.md`](docs/review-2026-09-05.md).
@@ -55,9 +57,15 @@ Die Am-Wasser-Karte hält den Bildschirm wach, solange sie geöffnet ist (abscha
 
 Die letzte Rückmeldung einer aktiven Session lässt sich einschließlich des Phasenwechsels rückgängig machen. Das Logbuch bietet Filter nach Zielfisch, Biss-/Fangzähler und eine aufklappbare Auswertung nach Köder, Angelstelle, Trübung und Tageszeit. Sie ist rein beschreibend und verändert keine Empfehlungen. Der reine JSON-Export aller Session-Snapshots liegt unter Datensicherung. Zum Löschen eines Eintrags nach links wischen oder das Drei-Punkte-Menü öffnen und „Endgültig löschen“ bestätigen. „Abbrechen“ erhält den Eintrag; die Bestätigung erfolgt innerhalb der App ohne Browserdialog. Bei einem Speicherfehler bleibt die Session erhalten und das Löschen kann erneut versucht werden. Die Köderbox bietet Suche, Zielfischfilter und eine Bestandsübersicht. Beim Bearbeiten der Bedingungen und beim Browser-Zurück bleiben Eingaben im Verlauf des aktuellen Tabs erhalten.
 
+## Köderbox-Analyse
+
+„Lücken in der Köderbox finden“ (`/bestand/analyse`) rechnet die eigene Box je Zielfisch durch ein festes Raster typischer Seesituationen. Dabei gelten dieselben Regeln und dieselbe Auswahl wie im Angelplan (höchstens drei vorhandene, tiefenpassende Köder). Die Seite zeigt, wie oft ein Plan möglich ist, wie oft die fachlich beste Wahl vorhanden ist und wie oft eine Nachbargröße nötig wird. Dazu kommen bis zu fünf Ergänzungen, die am häufigsten zum Startköder würden. Die Werte beschreiben die Abdeckung nach dem Regelwerk, keine Fangwahrscheinlichkeit. Das Ranking bleibt unverändert. Die Berechnung läuft in einem Web Worker. Details: [`docs/datensicherung-und-koederanalyse-2026-10-03.md`](docs/datensicherung-und-koederanalyse-2026-10-03.md).
+
 ## Datensicherung
 
 „Datensicherung & Wiederherstellung“ ist über Köderbox und Logbuch erreichbar, auch ohne vorhandene Sessions. Eine vollständige JSON-Sicherung enthält Bestand, Sessions, Angelstellen und die ursprünglichen Speicherwerte einschließlich nicht lesbarer Einträge. Ältere Sicherungen ohne Angelstellen bleiben lesbar. Der Import unterstützt auch bisherige reine Session-Exporte. Nach einer Vorschau ergänzt er Ködergrößen und neue Sessions; lokale Sessions mit gleicher ID bleiben unverändert. Ist bereits ein Plan aktiv, werden zusätzlich importierte aktive Pläne als abgeschlossen übernommen.
+
+Wo das Gerät Dateien teilen kann, öffnet „Sicherung teilen oder in Dateien sichern“ das Teilen-Menü, z. B. für Dateien oder iCloud Drive. Der Download bleibt verfügbar. Die Seite zeigt den Zeitpunkt der letzten Vollsicherung und den Speicherschutz des Browsers (`navigator.storage.persist()`, einmalig nach dem ersten Sessionstart automatisch angefordert). Logbuch und Sessionabschluss erinnern an eine Sicherung, sobald mindestens drei Einträge ungesichert sind oder die letzte Sicherung über 30 Tage zurückliegt.
 
 Die App nutzt weiterhin lokalen Browser-Speicher (Bestand v3, Sessions v1, Angelstellen v1) ohne Konto oder Serverdatenbank. Die Wiederherstellung prüft Änderungen seit der Vorschau und verwendet eine Rücksicherung für Schreibfehler und unterbrochene Importe. Nicht lesbare Originaleinträge bleiben erhalten, werden aber nicht automatisch aus einer Sicherung aktiviert. Browserdaten können vom Nutzer oder Betriebssystem gelöscht werden; wichtige Sicherungen deshalb außerhalb des Browsers aufbewahren. Format, Konfliktverhalten und Grenzen stehen im [aktuellen Review](docs/review-2026-09-07.md).
 
