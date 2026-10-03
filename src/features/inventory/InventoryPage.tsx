@@ -4,13 +4,11 @@ import { fishLabel } from '../../domain/species/profiles'
 import { zanderLures } from '../../domain/catalogs/zanderLures'
 import { lures } from '../../domain/catalogs/lures'
 import { pikeLures } from '../../domain/catalogs/pikeLures'
-import { sizeLabelFor } from '../../domain/engine/presentation'
-import type { LureType, SizeClass, TargetFish } from '../../domain/models/types'
+import type { LureType, TargetFish } from '../../domain/models/types'
 import { Icon } from '../../ui/components/Icon'
 import { useInventory } from './useInventory'
+import { LureCard } from './LureCard'
 import { canRecommend, isConditions, isRecord } from '../../domain/models/validation'
-
-const sizeNames: Record<SizeClass, string> = { small: 'Klein', medium: 'Mittel', large: 'Groß' }
 
 export function InventoryPage() {
   const { inventory, toggleSize, toggleAllSizes, error } = useInventory()
@@ -24,6 +22,12 @@ export function InventoryPage() {
     { fish: 'perch', label: 'Barsch', lures },
     { fish: 'zander', label: 'Zander', lures: zanderLures },
     { fish: 'pike', label: 'Hecht', lures: pikeLures },
+  ]
+  // Lures already in the box come first; the order is fixed per visit so cards do not jump while toggling.
+  const [initialSelection] = useState(() => new Set(inventory.map(item => `${item.targetFish}:${item.lureTypeId}`)))
+  const orderedLures = (group: { fish: TargetFish; lures: LureType[] }) => [
+    ...group.lures.filter(lure => initialSelection.has(`${group.fish}:${lure.id}`)),
+    ...group.lures.filter(lure => !initialSelection.has(`${group.fish}:${lure.id}`)),
   ]
   const selectedForContext = context
     ? inventory.filter(item => item.targetFish === context.targetFish).length
@@ -81,56 +85,19 @@ export function InventoryPage() {
             {group.label}
           </h2>
           <div className="inventory-options">
-            {group.lures.filter(matchesQuery).map(lure => {
-              const item = inventory.find(entry => entry.targetFish === group.fish && entry.lureTypeId === lure.id)
-              const hasAll = Boolean(item) && lure.sizes.every(size => item?.sizes?.includes(size))
-              return (
-                <article className={item ? 'selected inventory-sized' : ''} key={lure.id}>
-                  <div className="inventory-title">
-                    <div>
-                      <strong>{lure.label}</strong>
-                      <small className="inventory-size-summary">
-                        {item
-                          ? `Gespeichert: ${lure.sizes
-                              .filter(size => item.sizes.includes(size))
-                              .map(size => sizeNames[size])
-                              .join(', ')}`
-                          : 'Keine Größe ausgewählt'}
-                      </small>
-                      {item?.migratedNeedsReview && <small>Aus Altbestand übernommen · Größen prüfen</small>}
-                    </div>
-                  </div>
-                  <div className="chips inventory-size-choices">
-                    {lure.sizes.map(size => {
-                      const selected = item?.sizes?.includes(size) ?? false
-                      const label = `${sizeNames[size]} · ${sizeLabelFor(lure, size)}`
-                      return (
-                        <button
-                          type="button"
-                          className={selected ? 'selected' : ''}
-                          aria-label={`${group.label} ${lure.label}: ${label}`}
-                          aria-pressed={selected}
-                          onClick={() => toggleSize(group.fish, lure.id, size)}
-                          key={size}
-                        >
-                          {selected && <Icon name="check" size={16} />}
-                          <span>{label}</span>
-                        </button>
-                      )
-                    })}
-                    <button
-                      type="button"
-                      className={`all-sizes${hasAll ? ' selected' : ''}`}
-                      aria-label={`${group.label} ${lure.label}: Alle Größen`}
-                      aria-pressed={hasAll}
-                      onClick={() => toggleAllSizes(group.fish, lure.id)}
-                    >
-                      {hasAll && <Icon name="check" size={16} />}Alle Größen
-                    </button>
-                  </div>
-                </article>
-              )
-            })}
+            {orderedLures(group)
+              .filter(matchesQuery)
+              .map(lure => (
+                <LureCard
+                  key={lure.id}
+                  fish={group.fish}
+                  fishName={group.label}
+                  lure={lure}
+                  item={inventory.find(entry => entry.targetFish === group.fish && entry.lureTypeId === lure.id)}
+                  onToggleSize={toggleSize}
+                  onToggleAll={toggleAllSizes}
+                />
+              ))}
           </div>
           {!group.lures.some(matchesQuery) && <p className="filter-empty">Keine Köder für „{query}“ gefunden.</p>}
         </section>
@@ -140,7 +107,7 @@ export function InventoryPage() {
           Suche zurücksetzen
         </button>
       )}
-      <Link className="data-link" to="/daten">
+      <Link viewTransition className="data-link" to="/daten">
         <Icon name="download" size={18} />
         <span>
           Köderbox und Logbuch sichern<small>Datensicherung & Wiederherstellung</small>
@@ -154,6 +121,7 @@ export function InventoryPage() {
             <small>ausgewählt</small>
           </span>
           <Link
+            viewTransition
             className="primary"
             to={returnConditions ? '/empfehlung' : `/neu/${context.targetFish}`}
             state={context}

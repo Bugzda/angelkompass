@@ -1,0 +1,100 @@
+/* Motion: page transitions and tap feedback. Everything is disabled for reduced motion. */
+.app-header {
+  view-transition-name: app-header;
+}
+.bottom {
+  view-transition-name: app-nav;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+::view-transition-old(root) {
+  animation-name: page-out;
+}
+::view-transition-new(root) {
+  animation-name: page-in;
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Pressed state for touch targets. */
+.primary,
+.secondary,
+.chips button,
+.water-feedback button,
+.water-tool-toggles button,
+.inventory-size-choices button,
+.condition-chips a,
+.bottom a {
+  transition:
+    transform 0.12s ease-out,
+    background-color 0.16s,
+    border-color 0.16s,
+    color 0.16s;
+}
+.primary:active:not(:disabled),
+.secondary:active:not(:disabled),
+.chips button:active,
+.water-feedback button:active,
+.water-tool-toggles button:active,
+.inventory-size-choices button:active,
+.condition-chips a:active,
+.bottom a:active {
+  transform: scale(0.96);
+}
+
+/* Counters pop briefly when a bite or catch is recorded. */
+.feedback-summary strong {
+  display: inline-block;
+}
+.feedback-summary strong.pop {
+  animation: count-pop 0.36s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes count-pop {
+  from {
+    transform: scale(1.6);
+    color: var(--lime);
+  }
+}
+
+/* Images fade in instead of popping. */
+.hero-media img,
+.species-art img,
+.species-chip img {
+  animation: image-in 0.45s ease-out both;
+}
+@keyframes image-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  .primary:active:not(:disabled),
+  .secondary:active:not(:disabled),
+  .chips button:active,
+  .water-feedback button:active,
+  .water-tool-toggles button:active,
+  .inventory-size-choices button:active,
+  .condition-chips a:active,
+  .bottom a:active {
+    transform: none;
+  }
+}

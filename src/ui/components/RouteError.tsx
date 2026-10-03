@@ -6,7 +6,7 @@ export function NotFoundPage() {
       <p className="eyebrow">KURZ VOM KURS ABGEKOMMEN</p>
       <h1>Seite nicht gefunden.</h1>
       <p>Dieser Link führt zu keiner Seite in Angelkompass.</p>
-      <Link className="primary" to="/">
+      <Link viewTransition className="primary" to="/">
         Zur Startseite
       </Link>
     </section>
@@ -23,7 +23,7 @@ export function RouteError() {
       <button className="primary" onClick={() => window.location.reload()}>
         Erneut laden
       </button>
-      <Link className="secondary full" to="/">
+      <Link viewTransition className="secondary full" to="/">
         Zur Startseite
       </Link>
     </section>

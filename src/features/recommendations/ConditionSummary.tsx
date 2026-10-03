@@ -9,6 +9,7 @@ export function ConditionSummary({ state }: { state: PlanningState }) {
     <nav className="condition-chips" aria-label="Deine Bedingungen – zum Ändern antippen">
       {conditionChips(state).map(chip => (
         <Link
+          viewTransition
           key={chip.field}
           to={{ pathname: `/neu/${state.targetFish}`, hash: chip.field }}
           state={state}
@@ -18,6 +19,7 @@ export function ConditionSummary({ state }: { state: PlanningState }) {
         </Link>
       ))}
       <Link
+        viewTransition
         to={`/neu/${state.targetFish}`}
         state={state}
         className="condition-edit"

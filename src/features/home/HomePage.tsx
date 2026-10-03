@@ -39,14 +39,18 @@ export function HomePage() {
           <p>
             Beobachte die Situation am See. Angelkompass übersetzt sie in einen klaren, nachvollziehbaren Angelplan.
           </p>
-          <Link className="primary hero-action" to={activeSession ? `/session/${activeSession.id}/karte` : '/neu'}>
+          <Link
+            viewTransition
+            className="primary hero-action"
+            to={activeSession ? `/session/${activeSession.id}/karte` : '/neu'}
+          >
             {activeSession ? 'Zum aktiven Angelplan' : 'Angelplan erstellen'} <Icon name="arrow-right" />
           </Link>
           <span className="hero-caption">Deine Beobachtung. Deine Köder. Dein nächster Schritt.</span>
         </div>
         <nav className="species-rail" aria-label="Zielfische">
           {species.map(item => (
-            <Link key={item.id} to={item.to} className="species-chip">
+            <Link viewTransition key={item.id} to={item.to} className="species-chip">
               <img src={item.image} alt="" />
               <span>{item.label}</span>
             </Link>
@@ -87,7 +91,10 @@ export function HomePage() {
       )}
       {(inventoryError || sessionError) && (
         <p className="storage-error" role="alert">
-          {inventoryError ?? sessionError} <Link to="/daten">Daten sichern →</Link>
+          {inventoryError ?? sessionError}{' '}
+          <Link viewTransition to="/daten">
+            Daten sichern →
+          </Link>
         </p>
       )}
       {featured && (
@@ -105,6 +112,7 @@ export function HomePage() {
             </p>
           </div>
           <Link
+            viewTransition
             className="session-resume"
             to={activeSession ? `/session/${featured.id}/karte` : `/session/${featured.id}`}
           >
@@ -120,6 +128,7 @@ export function HomePage() {
             <p>Letzte Bedingungen übernehmen, kurz prüfen und neu planen.</p>
           </div>
           <Link
+            viewTransition
             className="secondary"
             to={`/neu/${latestSession.conditions.targetFish}`}
             state={repeatConditions(latestSession)}
@@ -129,7 +138,7 @@ export function HomePage() {
         </section>
       )}
       <div className="home-shortcuts">
-        <Link to="/bestand">
+        <Link viewTransition to="/bestand">
           <span className="shortcut-icon">
             <Icon name="inventory" />
           </span>
@@ -148,7 +157,7 @@ export function HomePage() {
           </div>
           <Icon name="arrow-right" />
         </Link>
-        <Link to="/verlauf">
+        <Link viewTransition to="/verlauf">
           <span className="shortcut-icon">
             <Icon name="history" />
           </span>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FeedbackOutcome, FishingSession } from '../../domain/models/types'
 import { vibrate } from '../water/waterPreferences'
 import { FeedbackDetailsForm } from './FeedbackDetailsForm'
@@ -11,6 +11,12 @@ export function SessionFeedback({ session, compact = false }: { session: Fishing
   const catches = session.feedback.filter(item => item.outcome === 'catch').length
   const active = session.status === 'active'
   const [detailsId, setDetailsId] = useState<string>()
+  // Only counters that changed since the last render get the short pop animation.
+  const previous = useRef({ bites, catches })
+  const pop = { bites: bites !== previous.current.bites, catches: catches !== previous.current.catches }
+  useEffect(() => {
+    previous.current = { bites, catches }
+  }, [bites, catches])
   const details = session.feedback.find(item => item.id === detailsId)
   const record = (outcome: FeedbackOutcome) => {
     if (!sessionStore.addFeedback(session.id, outcome)) return
@@ -27,10 +33,16 @@ export function SessionFeedback({ session, compact = false }: { session: Fishing
       <div className="feedback-toolbar">
         <div className="feedback-summary" role="status">
           <span>
-            <strong>{bites}</strong> {bites === 1 ? 'Biss' : 'Bisse'}
+            <strong key={`b${bites}`} className={pop.bites ? 'pop' : undefined}>
+              {bites}
+            </strong>{' '}
+            {bites === 1 ? 'Biss' : 'Bisse'}
           </span>
           <span>
-            <strong>{catches}</strong> {catches === 1 ? 'Fang' : 'Fänge'}
+            <strong key={`c${catches}`} className={pop.catches ? 'pop' : undefined}>
+              {catches}
+            </strong>{' '}
+            {catches === 1 ? 'Fang' : 'Fänge'}
           </span>
         </div>
         {active && session.feedback.length > 0 && (

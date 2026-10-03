@@ -22,10 +22,15 @@ export function SessionCompletion({ session }: { session: FishingSession }) {
         {catches === 1 ? 'Fang' : 'Fänge'}. Dein Angelplan und die Rückmeldungen sind auf diesem Gerät gespeichert.
       </p>
       <div className="action-row">
-        <Link className="primary" to="/verlauf">
+        <Link viewTransition className="primary" to="/verlauf">
           Zum Logbuch
         </Link>
-        <Link className="secondary" to={`/neu/${session.conditions.targetFish}`} state={repeatConditions(session)}>
+        <Link
+          viewTransition
+          className="secondary"
+          to={`/neu/${session.conditions.targetFish}`}
+          state={repeatConditions(session)}
+        >
           Mit diesen Bedingungen neu planen
         </Link>
       </div>

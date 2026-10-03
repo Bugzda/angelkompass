@@ -75,7 +75,7 @@ export function SessionsPage() {
             <img src={`${import.meta.env.BASE_URL}assets/terrain/perch.webp`} alt="" />
             <h2>Noch kein Eintrag im Logbuch.</h2>
             <p>Erstelle einen Angelplan und starte damit deine erste Session.</p>
-            <Link className="primary" to="/neu">
+            <Link viewTransition className="primary" to="/neu">
               Ersten Angelplan erstellen
             </Link>
           </div>
@@ -83,7 +83,7 @@ export function SessionsPage() {
           <div className="empty">
             <h2>Noch keine {fishLabel[fish === 'all' ? 'perch' : fish]}-Session.</h2>
             <p>Für diesen Zielfisch gibt es noch keinen Eintrag.</p>
-            <Link className="primary" to={`/neu/${fish}`}>
+            <Link viewTransition className="primary" to={`/neu/${fish}`}>
               Angelplan erstellen
             </Link>
           </div>
@@ -91,7 +91,7 @@ export function SessionsPage() {
           filtered.map((session, index) => <SessionRow key={session.id} session={session} index={index} />)
         )}
       </div>
-      <Link className="data-link" to="/daten">
+      <Link viewTransition className="data-link" to="/daten">
         <Icon name="download" size={18} />
         <span>
           Köderbox und Logbuch sichern<small>Datensicherung & Wiederherstellung</small>

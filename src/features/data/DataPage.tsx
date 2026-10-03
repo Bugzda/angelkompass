@@ -73,7 +73,7 @@ export function DataPage() {
   }
   return (
     <section className="page-shell data-page">
-      <Link className="back-link" to="/verlauf">
+      <Link viewTransition className="back-link" to="/verlauf">
         <Icon name="arrow-left" size={18} /> Zum Logbuch
       </Link>
       <p className="eyebrow">DEINE DATEN GEHÖREN DIR</p>

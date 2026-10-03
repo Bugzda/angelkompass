@@ -19,11 +19,14 @@ export function WaterCardPage() {
         <h1>Session nicht gefunden</h1>
         {error && (
           <p className="storage-error" role="alert">
-            {error} <Link to="/daten">Daten sichern →</Link>
+            {error}{' '}
+            <Link viewTransition to="/daten">
+              Daten sichern →
+            </Link>
           </p>
         )}
         <p>Die Session wurde möglicherweise gelöscht.</p>
-        <Link className="primary" to="/verlauf">
+        <Link viewTransition className="primary" to="/verlauf">
           Zum Logbuch
         </Link>
       </section>
@@ -60,7 +63,7 @@ export function WaterCardPage() {
           </div>
         </>
       )}
-      <Link className="secondary full" to={`/session/${session.id}`}>
+      <Link viewTransition className="secondary full" to={`/session/${session.id}`}>
         Sessiondetails & Rückmeldungen
       </Link>
     </section>

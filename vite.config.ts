@@ -39,6 +39,29 @@ export default defineConfig(({ command, isPreview }) => {
             { name: 'Köderbox', url: `${base}bestand`, icons: [{ src: 'icon-192.png?v=2', sizes: '192x192' }] },
             { name: 'Logbuch', url: `${base}verlauf`, icons: [{ src: 'icon-192.png?v=2', sizes: '192x192' }] },
           ],
+          screenshots: [
+            {
+              src: 'screenshots/home.jpg',
+              sizes: '780x1688',
+              type: 'image/jpeg',
+              form_factor: 'narrow',
+              label: 'Start mit aktivem Angelplan',
+            },
+            {
+              src: 'screenshots/plan.jpg',
+              sizes: '780x1688',
+              type: 'image/jpeg',
+              form_factor: 'narrow',
+              label: 'Angelplan aus der eigenen Köderbox',
+            },
+            {
+              src: 'screenshots/water.jpg',
+              sizes: '780x1688',
+              type: 'image/jpeg',
+              form_factor: 'narrow',
+              label: 'Am-Wasser-Karte mit Schrittuhr',
+            },
+          ],
           icons: [
             { src: 'icon-192.png?v=2', sizes: '192x192', type: 'image/png', purpose: 'any' },
             { src: 'icon-512.png?v=2', sizes: '512x512', type: 'image/png', purpose: 'any' },

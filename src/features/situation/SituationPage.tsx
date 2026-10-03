@@ -108,7 +108,7 @@ function SituationForm({ fish }: { fish: TargetFish }) {
             ? `${fishInventory.length} ${fishInventory.length === 1 ? 'Ködertyp' : 'Ködertypen'} bereit`
             : 'Noch keine Köder ausgewählt'}
         </span>
-        <Link to="/bestand" state={{ draftConditions: planningState }}>
+        <Link viewTransition to="/bestand" state={{ draftConditions: planningState }}>
           {fishInventory.length ? 'Köder prüfen' : 'Köder auswählen'}
           <Icon name="arrow-right" size={18} />
         </Link>
@@ -259,7 +259,7 @@ function SituationForm({ fish }: { fish: TargetFish }) {
       <button
         className="primary sticky-action"
         disabled={fish === 'pike' && !conditions.pikeSafetyConfirmed}
-        onClick={() => navigate('/empfehlung', { state: planningState })}
+        onClick={() => navigate('/empfehlung', { state: planningState, viewTransition: true })}
       >
         Empfehlungen berechnen →
       </button>

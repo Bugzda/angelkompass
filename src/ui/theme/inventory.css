@@ -4,38 +4,6 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
-.inventory-options > article {
-  min-height: 145px;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-.inventory-options > article.selected {
-  border-color: var(--lime);
-  box-shadow: inset 0 0 0 1px var(--lime);
-}
-.inventory-title {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-}
-.inventory-title > div {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.inventory-title small {
-  color: var(--ink-soft);
-  font-size: 0.7rem;
-}
-.inventory-options .all-sizes {
-  border-color: color-mix(in srgb, var(--lime) 70%, var(--line));
-}
 @media (max-width: 760px) {
   .inventory-options {
     grid-template-columns: 1fr;
@@ -66,32 +34,6 @@
   object-fit: contain;
   filter: grayscale(1);
 }
-.inventory-options > article.selected {
-  border-color: var(--forest);
-  box-shadow: inset 0 0 0 1px var(--forest);
-  background: var(--surface-raised);
-}
-.inventory-size-choices button[aria-pressed='false'] {
-  background: var(--surface);
-  border-color: var(--line);
-  color: var(--ink-soft);
-}
-.inventory-size-choices button[aria-pressed='true'] {
-  background: var(--lime);
-  border-color: var(--lime);
-  color: var(--lime-ink);
-}
-.inventory-size-choices button[aria-pressed='true'] svg {
-  color: currentColor;
-  flex-shrink: 0;
-}
-.inventory-size-choices button:hover {
-  border-color: var(--forest);
-}
-.inventory-title .inventory-size-summary {
-  color: var(--ink);
-  line-height: 1.5;
-}
 @media (max-width: 480px) {
   .inventory-species > header > img {
     width: 76px;
@@ -99,24 +41,6 @@
   .inventory-species > header {
     gap: 14px;
   }
-}
-.inventory-options > article {
-  transition:
-    background 0.16s,
-    border-color 0.16s;
-}
-.inventory-size-choices .all-sizes {
-  width: 100%;
-  justify-content: center;
-}
-.inventory-size-choices {
-  align-items: stretch;
-}
-.inventory-size-choices button:not(.all-sizes) {
-  flex: 1 1 auto;
-  justify-content: center;
-  border-radius: 12px;
-  padding-inline: 12px;
 }
 .compact-inventory .save-status {
   margin: 0;
@@ -133,31 +57,6 @@
   margin-bottom: 14px;
   font-size: 1.85rem;
 }
-.compact-inventory .inventory-options > article {
-  min-height: 0;
-  padding: 16px;
-  gap: 12px;
-}
-.compact-inventory .inventory-title strong {
-  font-size: 1rem;
-}
-.compact-inventory .inventory-title small {
-  font-size: 0.8rem;
-}
-.compact-inventory .inventory-size-choices {
-  gap: 8px;
-}
-.compact-inventory .inventory-size-choices button {
-  min-height: 48px;
-  font-size: 0.82rem;
-}
-.compact-inventory .inventory-size-choices .all-sizes {
-  width: auto;
-  flex: 1 1 auto;
-  padding-inline: 12px;
-  border-radius: 12px;
-  border-color: var(--line);
-}
 @media (max-width: 480px) {
   .compact-inventory .collection-toolbar {
     gap: 12px;
@@ -170,4 +69,129 @@
 :root[data-theme='dark'] .inventory-species > header > img {
   filter: grayscale(1) invert(1);
   mix-blend-mode: screen;
+}
+
+/* Lure cards: one row of two-line size toggles, calm selection colors. */
+.inventory-options > article {
+  padding: 14px 16px 16px;
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition:
+    background 0.16s,
+    border-color 0.16s;
+}
+.inventory-options > article.selected {
+  border-color: color-mix(in srgb, var(--forest) 45%, var(--line));
+  background: var(--surface-raised);
+}
+.inventory-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.inventory-title > div {
+  display: grid;
+  gap: 3px;
+}
+.inventory-title strong {
+  font-size: 1rem;
+}
+.inventory-title small {
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+}
+.inventory-count {
+  flex: none;
+  min-width: 44px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.inventory-count.has-items {
+  background: color-mix(in srgb, var(--lime) 22%, var(--surface-soft));
+  color: var(--ink);
+}
+.inventory-size-choices {
+  display: grid;
+  grid-template-columns: repeat(var(--segments, 4), minmax(0, 1fr));
+  gap: 6px;
+}
+.inventory-size-choices button {
+  min-width: 0;
+  min-height: 54px;
+  padding: 7px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.15;
+}
+.inventory-size-choices button strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.8rem;
+}
+.inventory-size-choices button small {
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+.inventory-size-choices button:hover {
+  border-color: var(--ink-soft);
+}
+.inventory-size-choices button.selected {
+  border-color: var(--forest);
+  background: color-mix(in srgb, var(--forest) 12%, var(--surface));
+  box-shadow: inset 0 0 0 1px var(--forest);
+}
+.inventory-size-choices button.selected svg {
+  color: var(--forest);
+}
+.inventory-size-choices .all-sizes:not(.selected) {
+  border-style: dashed;
+}
+@media (max-width: 360px) {
+  .inventory-size-choices button small {
+    font-size: 0.6rem;
+  }
+}
+
+/* Filters and search stay reachable while scrolling a long lure list. */
+.compact-inventory .collection-toolbar {
+  position: sticky;
+  z-index: 6;
+  top: calc(70px + env(safe-area-inset-top));
+  margin-inline: -20px;
+  padding: 10px 20px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid transparent;
+}
+@media (max-width: 420px) {
+  .compact-inventory .collection-toolbar {
+    margin-inline: -14px;
+    padding-inline: 14px;
+  }
+}
+@media (min-width: 1100px) {
+  .compact-inventory .collection-toolbar {
+    top: calc(70px + env(safe-area-inset-top));
+  }
 }

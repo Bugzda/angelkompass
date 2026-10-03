@@ -12,7 +12,7 @@ export function SpeciesPage() {
       <p className="lead">Wähle deinen Zielfisch.</p>
       <div className="species-grid">
         {(['perch', 'pike', 'zander'] as const).map(fish => (
-          <Link key={fish} className="species-card" to={`/neu/${fish}`}>
+          <Link viewTransition key={fish} className="species-card" to={`/neu/${fish}`}>
             <div className="species-art">
               <img src={`${import.meta.env.BASE_URL}assets/terrain/${fish}.webp`} alt="" />
             </div>

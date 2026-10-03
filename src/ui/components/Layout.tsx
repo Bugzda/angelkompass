@@ -84,7 +84,7 @@ export function Layout() {
         Zum Inhalt springen
       </a>
       <header className="app-header">
-        <NavLink to="/" className="brand" aria-label="Angelkompass Start">
+        <NavLink viewTransition to="/" className="brand" aria-label="Angelkompass Start">
           <BrandMark className="brand-mark" />
           <span>ANGELKOMPASS</span>
         </NavLink>
@@ -125,6 +125,7 @@ export function Layout() {
           const active = isSectionActive(item.section)
           return (
             <Link
+              viewTransition
               key={item.section}
               to={item.to}
               className={active ? 'active' : undefined}

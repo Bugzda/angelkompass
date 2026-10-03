@@ -58,6 +58,8 @@ export function useWaterPreferences() {
 /** Haptic confirmation; silently ignored where vibration is unsupported or switched off. */
 export function vibrate(pattern: number | number[]) {
   if (!waterPreferences.get().vibration) return
+  // Browsers block vibration before the first user gesture and log an intervention.
+  if (typeof navigator !== 'undefined' && navigator.userActivation && !navigator.userActivation.hasBeenActive) return
   try {
     navigator.vibrate?.(pattern)
   } catch {

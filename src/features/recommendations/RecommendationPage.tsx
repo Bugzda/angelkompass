@@ -31,14 +31,14 @@ export function RecommendationPage() {
       <section className="page-shell empty-state">
         <h1>Keine Berechnung vorhanden</h1>
         <p>Erfasse zuerst die Bedingungen am See.</p>
-        <Link className="primary" to="/neu">
+        <Link viewTransition className="primary" to="/neu">
           Bedingungen erfassen
         </Link>
       </section>
     )
   const start = (recommendation: Recommendation) => {
     const session = sessionStore.create(conditions, recommendation, spot)
-    if (session) navigate(`/session/${session.id}/karte`)
+    if (session) navigate(`/session/${session.id}/karte`, { viewTransition: true })
   }
   const planningState = withSpot(conditions, spot)
   return (
@@ -69,7 +69,9 @@ export function RecommendationPage() {
         <aside className="active-session-notice">
           <strong>Eine Session ist bereits aktiv.</strong>
           <p>Beende sie, bevor du einen neuen Angelplan startest.</p>
-          <Link to={`/session/${activeSession.id}/karte`}>Aktive Session fortsetzen →</Link>
+          <Link viewTransition to={`/session/${activeSession.id}/karte`}>
+            Aktive Session fortsetzen →
+          </Link>
         </aside>
       )}
       {decision.practicalPrimary ? (
@@ -89,17 +91,17 @@ export function RecommendationPage() {
         <article className="notice no-inventory">
           <h2>Kein geeigneter vorhandener Köder</h2>
           <p>Für Tiefe und Bedingungen ist aktuell kein passender Köder in deiner Köderbox markiert.</p>
-          <Link className="primary" to="/bestand" state={{ returnConditions: planningState }}>
+          <Link viewTransition className="primary" to="/bestand" state={{ returnConditions: planningState }}>
             Passende Köder auswählen
             <Icon name="arrow-right" />
           </Link>
         </article>
       )}
       <div className="plan-edit-links">
-        <Link className="secondary" to={`/neu/${conditions.targetFish}`} state={planningState}>
+        <Link viewTransition className="secondary" to={`/neu/${conditions.targetFish}`} state={planningState}>
           Bedingungen ändern
         </Link>
-        <Link className="secondary" to="/bestand" state={{ returnConditions: planningState }}>
+        <Link viewTransition className="secondary" to="/bestand" state={{ returnConditions: planningState }}>
           Köderbox bearbeiten
         </Link>
       </div>

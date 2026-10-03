@@ -69,7 +69,7 @@ function SessionDetails({ session }: { session: FishingSession }) {
   }, [session.progress])
   const restart = () => {
     if (sessionStore.complete(session.id))
-      navigate(`/neu/${session.conditions.targetFish}`, { state: repeatConditions(session) })
+      navigate(`/neu/${session.conditions.targetFish}`, { state: repeatConditions(session), viewTransition: true })
   }
   const presentation = presentationForDisplay(session.recommendation.setup)
   return (
@@ -91,7 +91,7 @@ function SessionDetails({ session }: { session: FishingSession }) {
         </div>
         <span className={`session-status ${session.status}`}>{active ? 'Aktiv' : 'Abgeschlossen'}</span>
       </div>
-      <Link className="primary water-card-link" to={`/session/${session.id}/karte`}>
+      <Link viewTransition className="primary water-card-link" to={`/session/${session.id}/karte`}>
         Am-Wasser-Karte öffnen <Icon name="arrow-right" />
       </Link>
       <div className="session-presentation">
@@ -268,11 +268,14 @@ export function SessionPage() {
         <h1>Session nicht gefunden</h1>
         {error && (
           <p className="storage-error" role="alert">
-            {error} <Link to="/daten">Daten sichern →</Link>
+            {error}{' '}
+            <Link viewTransition to="/daten">
+              Daten sichern →
+            </Link>
           </p>
         )}
         <p>Der Eintrag wurde möglicherweise gelöscht oder ist auf diesem Gerät nicht verfügbar.</p>
-        <Link className="primary" to="/verlauf">
+        <Link viewTransition className="primary" to="/verlauf">
           Zum Logbuch
         </Link>
       </section>
