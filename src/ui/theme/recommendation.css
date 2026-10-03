@@ -5,8 +5,8 @@
 .metric-help {
   padding: 16px 18px;
   margin: 10px 0 18px;
-  border-left: 4px solid var(--lime);
-  background: var(--surface-soft);
+  border-left: 2px solid var(--green);
+  background: transparent;
 }
 .metric-help p {
   margin: 4px 0;
@@ -25,18 +25,18 @@
 }
 .specs span,
 .color-examples span {
-  padding: 5px 9px;
-  border-radius: 999px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
 }
 .confidence {
   display: inline-block;
   margin-top: 6px;
-  padding: 5px 9px;
-  border-radius: 999px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
 }
 .confidence.high {
   background: var(--success-bg);
@@ -49,9 +49,8 @@
 .color-guidance,
 .reason-box {
   margin: 14px 0;
-  padding: 15px;
-  border-radius: var(--radius-sm);
-  background: var(--surface-soft);
+  padding: 0 0 0 14px;
+  border-left: 2px solid var(--line-strong);
 }
 .color-examples {
   display: flex;
@@ -61,8 +60,8 @@
 }
 .color-guidance p,
 .reason-box li {
-  font-size: 0.8rem;
-  line-height: 1.5;
+  font-size: 0.88rem;
+  line-height: 1.55;
 }
 .reason-box ul {
   padding-left: 18px;
@@ -80,7 +79,7 @@
 .metric-help summary {
   min-height: 44px;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.5;
   padding-block: 10px;
 }
@@ -92,14 +91,15 @@
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  padding: 22px;
+  padding: 20px;
 }
 .recommended-option {
-  border: 2px solid var(--forest);
+  border-color: var(--ink);
+  box-shadow: inset 0 3px 0 var(--accent);
 }
 .option-heading h2 {
-  margin: 10px 0;
-  font-size: 2.3rem;
+  margin: 0 0 4px;
+  font-size: 1.75rem;
 }
 .option-heading p {
   margin: 0 0 14px;
@@ -107,22 +107,24 @@
   line-height: 1.5;
 }
 .option-guidance {
-  padding: 16px;
-  background: var(--surface-soft);
-  border-radius: 12px;
-  line-height: 1.65;
-  font-size: 0.94rem;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--green);
+  line-height: 1.6;
+  font-size: 0.96rem;
   margin: 18px 0;
 }
 .option-guidance strong {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
 }
 .brief-compromise {
   color: var(--warning);
   background: var(--warning-bg);
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 0.85rem;
   line-height: 1.6;
 }
@@ -133,7 +135,7 @@
   width: 100%;
 }
 .option-actions .accordion-toggle {
-  font-size: 0.86rem;
+  font-size: 0.9rem;
 }
 .plan-details {
   padding-top: 12px;
@@ -160,7 +162,7 @@
 }
 .presentation-details h3 {
   margin: 18px 0 8px;
-  font-size: 1.5rem;
+  font-size: 1.15rem;
 }
 .presentation-details p {
   font-size: 0.94rem;
@@ -186,9 +188,9 @@
 .plan-details summary {
   min-height: 48px;
   padding-block: 12px;
-  font-size: 0.86rem;
+  font-size: 0.9rem;
   line-height: 1.6;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 .plan-details .metric-help p,
@@ -200,8 +202,7 @@
 .plan-details .color-guidance {
   margin: 0;
   padding: 0;
-  background: transparent;
-  border-radius: 0;
+  border: 0;
 }
 .plan-details .switch-plan {
   padding-left: 24px;
@@ -212,6 +213,7 @@
 }
 .plan-details .switch-plan h3 {
   margin: 8px 0;
+  font-size: 1.1rem;
 }
 .plan-edit-links {
   display: flex;
@@ -221,30 +223,32 @@
 }
 .plan-edit-links a {
   flex: 1;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 .optional-tips {
-  margin-top: 30px;
+  margin-top: 36px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ink);
 }
 .optional-tips > h2 {
-  margin-bottom: 12px;
-  font-size: 1.9rem;
+  margin-bottom: 8px;
+  font-size: 1.35rem;
 }
 .optional-tips > p,
 .optional-option p,
 .optional-option small {
-  font-size: 0.85rem;
-  line-height: 1.65;
+  font-size: 0.9rem;
+  line-height: 1.6;
   color: var(--ink-soft);
 }
 .optional-option {
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--line-strong);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 18px;
 }
 .optional-option h3 {
-  font-size: 1.75rem;
-  margin: 10px 0;
+  font-size: 1.35rem;
+  margin: 0 0 6px;
 }
 .no-inventory h2 {
   margin-bottom: 12px;
@@ -254,10 +258,10 @@
 }
 @media (max-width: 480px) {
   .recommendation-option {
-    padding: 18px;
+    padding: 18px 16px;
   }
   .option-heading h2 {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
   .plain-confidence,
   .presentation-details dl {
@@ -295,30 +299,26 @@
   margin-top: 6px;
 }
 
-/* Key figures always appear in the same order: size, weight, type. */
+/* Key figures always appear in the same order: size, weight, type – as a ruled table. */
 .option-specs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin: 14px 0 10px;
+  gap: 0 16px;
+  margin: 14px 0 12px;
 }
 .option-specs > div {
   min-width: 0;
-  padding: 9px 11px;
-  border-radius: 12px;
-  background: var(--surface-soft);
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
 }
 .option-specs dt {
   color: var(--ink-soft);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.8rem;
 }
 .option-specs dd {
-  margin: 3px 0 0;
-  font-size: 0.88rem;
-  font-weight: 700;
+  margin: 2px 0 0;
+  font-size: 0.94rem;
+  font-weight: 600;
   line-height: 1.3;
   overflow-wrap: break-word;
   hyphens: auto;
@@ -327,14 +327,14 @@
   grid-column: 1 / -1;
 }
 .option-heading .inventory-status {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
 }
 
 /* Condition recap; each chip links back to its field. */
 .condition-chips {
   display: flex;
   gap: 6px;
-  margin: -14px 0 22px;
+  margin: -6px 0 22px;
   padding-bottom: 4px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -348,16 +348,16 @@
   min-height: 36px;
   display: inline-flex;
   align-items: center;
-  padding: 6px 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  padding: 6px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
   background: var(--surface);
-  font-size: 0.76rem;
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 500;
   white-space: nowrap;
 }
 .condition-chips a:hover {
-  border-color: var(--forest);
+  border-color: var(--green);
 }
 .condition-chips a.unknown {
   border-style: dashed;

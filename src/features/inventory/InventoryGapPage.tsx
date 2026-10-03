@@ -148,7 +148,7 @@ export function InventoryGapPage() {
       <Link viewTransition className="back-link" to="/bestand">
         <Icon name="arrow-left" size={18} /> Zur Köderbox
       </Link>
-      <p className="eyebrow">KÖDERBOX-ANALYSE</p>
+      <p className="eyebrow">Köderbox-Analyse</p>
       <h1>Wo fehlt dir etwas?</h1>
       <p className="lead">
         Deine Köderbox wird durch viele typische Situationen am See gerechnet, mit denselben Regeln wie dein Angelplan.

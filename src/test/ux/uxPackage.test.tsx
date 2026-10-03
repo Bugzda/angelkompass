@@ -41,7 +41,7 @@ describe('UX-Paket', () => {
         <HomePage />
       </MemoryRouter>,
     )
-    expect(screen.getByText('AKTIVE SESSION')).toBeInTheDocument()
+    expect(screen.getByText('Aktive Session')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Session fortsetzen/ })).toHaveAttribute(
       'href',
       expect.stringMatching(/^\/session\//),

@@ -135,11 +135,11 @@ describe('Zander-Nutzerablauf und Speicherung', () => {
         </Routes>
       </MemoryRouter>,
     )
-    expect(screen.getByText('Zander · SEE · VOM UFER')).toBeInTheDocument()
+    expect(screen.getByText('Zander · See · vom Ufer')).toBeInTheDocument()
     expect(screen.queryByText('Jagende Barsche')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Zanderkontakt' }))
     fireEvent.click(screen.getByRole('button', { name: /Empfehlungen berechnen/ }))
-    expect(screen.getByRole('heading', { name: 'Dein Angelplan.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Dein Angelplan' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /Mit diesem Plan ans Wasser/ }))
     expect(screen.getByText(/Zander · Schritt 1 von 3/)).toBeInTheDocument()
     const saved = sessionStore.getSnapshot()[0]

@@ -3,16 +3,16 @@
 .storage-error,
 .heat-warning,
 .active-session-notice {
-  padding: 18px 20px;
+  padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   background: var(--surface);
 }
 .notice p,
 .active-session-notice p {
   margin: 6px 0 0;
   color: var(--ink-soft);
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   line-height: 1.55;
 }
 .storage-error {
@@ -29,9 +29,11 @@
 .active-session-notice a {
   display: inline-block;
   margin-top: 8px;
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: underline;
 }
+
+/* Choice chips: square-cornered tags; the selection is filled in reed green. */
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -43,24 +45,24 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 0.88rem;
+  font-weight: 500;
 }
 .chips button:hover {
-  border-color: var(--ink-soft);
+  border-color: var(--ink);
 }
 .chips button.selected {
-  background: var(--forest-deep);
-  border-color: var(--forest-deep);
-  color: #f4f9f5;
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--surface);
 }
 .chips button.selected svg {
-  color: var(--lime);
+  color: currentColor;
 }
 .form-grid {
   display: grid;
@@ -69,54 +71,59 @@
 .form-grid fieldset {
   border: 0;
   padding: 0;
-  margin: 0 0 25px;
+  margin: 0 0 24px;
 }
 .form-grid legend {
-  margin-bottom: 11px;
-  font-weight: 700;
+  margin-bottom: 10px;
+  font-weight: 600;
 }
 .form-grid legend small {
   margin-left: 6px;
   color: var(--ink-soft);
-  font-size: 0.72rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 400;
 }
 .safety-check {
   padding: 18px !important;
   border: 1px solid color-mix(in srgb, var(--warning) 45%, var(--line)) !important;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   background: var(--warning-bg);
 }
 .safety-check p {
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   line-height: 1.5;
 }
 .safety-check label {
   display: flex;
   gap: 10px;
-  align-items: flex-start;
-  font-size: 0.82rem;
-  font-weight: 700;
+  align-items: center;
+  min-height: 48px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.6;
 }
 .safety-check input {
+  flex-shrink: 0;
   width: 22px;
   height: 22px;
-  accent-color: var(--forest);
+  accent-color: var(--green);
 }
 .sticky-action {
   width: 100%;
   margin-top: 4px;
-  min-height: 58px;
+  min-height: 56px;
 }
+
+/* Status badges: small stamped labels. */
 .session-status,
 .inventory-status {
   display: inline-flex;
   align-items: center;
   width: max-content;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 0.67rem;
-  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 .session-status.active,
@@ -140,7 +147,7 @@
   border-top: 1px solid var(--line);
   background: transparent;
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 .accordion-toggle svg {
@@ -163,21 +170,21 @@
   margin: 24px 0;
 }
 .collection-toolbar .secondary {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
 }
 .search-field {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 14px;
+  padding: 0 12px;
   min-height: 46px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink-soft);
 }
 .search-field:focus-within {
-  outline: 3px solid var(--focus);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 .search-field input {
@@ -187,7 +194,7 @@
   border: 0;
   background: transparent;
   color: var(--ink);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   outline: none;
 }
 .search-field input::placeholder {
@@ -196,7 +203,7 @@
 .filter-empty {
   padding: 22px;
   color: var(--ink-soft);
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--line-strong);
   border-radius: var(--radius);
 }
 @media (max-width: 480px) {
@@ -217,7 +224,7 @@
   min-height: 44px;
   margin-bottom: 16px;
   color: var(--ink-soft);
-  font-size: 0.8rem;
+  font-size: 0.86rem;
 }
 @media (max-width: 380px) {
   .collection-toolbar .chips {
@@ -228,46 +235,43 @@
     flex: 1;
     justify-content: center;
     padding-inline: 10px;
-    font-size: 0.76rem;
+    font-size: 0.8rem;
   }
 }
+
+/* Planning progress: numbered steps on a ruled line. */
 .plan-progress {
   display: flex;
   gap: 8px;
   list-style: none;
   padding: 0;
-  margin: 0 0 28px;
+  margin: 0 0 20px;
 }
 .plan-progress li {
   display: flex;
   flex: 1;
   align-items: center;
   gap: 8px;
+  padding-top: 8px;
+  border-top: 2px solid var(--line);
   color: var(--ink-soft);
-  font-size: 0.76rem;
-  font-weight: 600;
+  font-size: 0.78rem;
+  font-weight: 500;
 }
 .plan-progress li span {
-  display: grid;
-  place-items: center;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
 }
 .plan-progress li[aria-current='step'] {
+  border-top-color: var(--ink);
   color: var(--ink);
-}
-.plan-progress li[aria-current='step'] span {
-  background: var(--lime);
-  border-color: var(--lime);
-  color: var(--lime-ink);
+  font-weight: 600;
 }
 .form-hint {
   color: var(--ink-soft);
   line-height: 1.6;
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   margin: 24px 0;
 }
 .save-status {
@@ -276,33 +280,45 @@
   gap: 8px;
   color: var(--ink-soft);
   line-height: 1.6;
-  font-size: 0.78rem;
+  font-size: 0.84rem;
 }
 .save-status svg {
   color: var(--success);
   flex-shrink: 0;
 }
+
+/* Sticky action bar above the navigation. */
 .flow-action {
   position: sticky;
-  bottom: calc(94px + env(safe-area-inset-bottom));
-  display: flex;
-  justify-content: space-between;
+  bottom: var(--nav-clearance);
+  z-index: 5;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   margin-top: 26px;
-  padding: 16px;
+  padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow-sm);
-  z-index: 5;
 }
 .flow-action > span {
-  font-size: 0.78rem;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+.flow-action > span small {
+  display: block;
   color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 400;
 }
 .flow-action .primary {
-  font-size: 0.82rem;
+  min-height: 48px;
+  padding: 10px 14px;
+  gap: 8px;
+  font-size: 0.88rem;
 }
 .action-row {
   display: flex;
@@ -310,43 +326,49 @@
   gap: 12px;
 }
 .action-row > a {
-  font-size: 0.84rem;
+  font-size: 0.88rem;
 }
 @media (max-width: 600px) {
   .plan-progress {
-    gap: 4px;
+    gap: 6px;
   }
   .plan-progress li {
     gap: 5px;
-    font-size: 0.68rem;
-  }
-  .plan-progress li span {
-    width: 24px;
-    height: 24px;
-  }
-  .flow-action {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 8px;
   }
   .action-row {
     flex-direction: column;
   }
 }
-@media (max-width: 380px) {
+@media (max-width: 480px) {
   .plan-progress li {
-    font-size: 0.64rem;
+    font-size: 0.74rem;
+  }
+}
+@media (max-width: 360px) {
+  .flow-action {
+    padding: 8px;
+    gap: 8px;
+  }
+  .flow-action .primary {
+    font-size: 0.8rem;
+    padding-inline: 10px;
+  }
+}
+@media (min-width: 1100px) {
+  .flow-action,
+  .water-view .session-feedback {
+    bottom: 20px;
   }
 }
 .save-confirmation {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 18px 20px;
-  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  border-radius: var(--radius);
   color: var(--success);
   background: var(--success-bg);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   line-height: 1.6;
 }
 .save-confirmation svg {
@@ -357,93 +379,29 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  min-height: 76px;
+  min-height: 72px;
   margin-top: 32px;
-  padding: 18px 20px;
+  padding: 16px 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  font-size: 0.83rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 .data-link:hover {
-  border-color: var(--forest);
+  border-color: var(--line-strong);
 }
 .data-link > svg:first-child {
-  color: var(--forest);
+  color: var(--green);
 }
 .data-link > svg:last-child {
   margin-left: auto;
+  color: var(--ink-soft);
 }
 .data-link small {
   display: block;
-  margin-top: 4px;
+  margin-top: 3px;
   color: var(--ink-soft);
-  font-size: 0.73rem;
-  font-weight: 500;
-}
-@media (min-width: 1100px) {
-  .flow-action,
-  .water-view .session-feedback {
-    bottom: 20px;
-  }
-}
-.plan-progress {
-  margin-bottom: 20px;
-}
-.plan-progress li {
-  font-size: 0.74rem;
-}
-.safety-check label {
-  min-height: 48px;
-  align-items: center;
-  line-height: 1.6;
-}
-.safety-check input {
-  flex-shrink: 0;
-}
-.flow-action {
-  bottom: var(--nav-clearance);
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 12px;
-  padding: 10px 12px;
-}
-.flow-action > span {
-  color: var(--ink);
-  font-size: 1rem;
-  font-weight: 700;
-  text-align: center;
-}
-.flow-action > span small {
-  display: block;
-  color: var(--ink-soft);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-.flow-action .primary {
-  min-height: 48px;
-  padding: 10px 14px;
-  gap: 8px;
-  font-size: 0.83rem;
-}
-@media (max-width: 480px) {
-  .plan-progress li {
-    font-size: 0.7rem;
-  }
-}
-@media (max-width: 360px) {
-  .flow-action {
-    padding: 8px;
-    gap: 8px;
-  }
-  .flow-action .primary {
-    font-size: 0.78rem;
-    padding-inline: 10px;
-  }
-}
-@media (min-width: 1100px) {
-  .flow-action {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
+  font-size: 0.8rem;
+  font-weight: 400;
 }

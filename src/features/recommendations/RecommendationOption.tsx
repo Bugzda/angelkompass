@@ -156,7 +156,7 @@ export function RecommendationOption({
       aria-labelledby={`option-${recommendation.rank}`}
     >
       <header className="option-heading">
-        <span className="overline">{primary ? 'EMPFOHLENER START' : `ALTERNATIVE ${recommendation.rank - 1}`}</span>
+        <span className="overline">{primary ? 'Empfohlener Start' : `Alternative ${recommendation.rank - 1}`}</span>
         <h2 id={`option-${recommendation.rank}`}>{recommendation.setup.lure.label}</h2>
         <p>{recommendation.spot.spot.label}</p>
         <dl className="option-specs">

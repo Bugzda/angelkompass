@@ -99,7 +99,7 @@ function SituationForm({ fish }: { fish: TargetFish }) {
   return (
     <section className="page-shell situation-page compact-situation">
       <PlanProgress step={1} />
-      <p className="eyebrow">{fishLabel[fish]} · SEE · VOM UFER</p>
+      <p className="eyebrow">{fishLabel[fish]} · See · vom Ufer</p>
       <h1>Was siehst du am Wasser?</h1>
       <p className="lead">Was du nicht weißt, bleibt offen.</p>
       <div className="planning-context">

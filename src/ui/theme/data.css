@@ -12,7 +12,7 @@
   font-size: 0.83rem;
 }
 .data-overview > svg {
-  color: var(--forest);
+  color: var(--green);
 }
 .local-badge {
   margin-left: auto;
@@ -48,11 +48,11 @@
   display: grid;
   gap: 12px;
   padding: 20px;
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--line-strong);
   border-radius: var(--radius-sm);
   background: var(--surface-raised);
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 .file-field:focus-within {
   outline: 3px solid var(--focus);
@@ -70,7 +70,7 @@
   margin-right: 12px;
   padding: 10px 14px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -117,14 +117,14 @@
   gap: 8px;
   margin: 0 0 16px;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 .data-card p.backup-last {
   color: var(--ink);
 }
 .backup-last svg {
   flex-shrink: 0;
-  color: var(--forest);
+  color: var(--green);
 }
 .data-card .backup-download {
   margin-top: 12px;

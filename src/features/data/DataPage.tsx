@@ -87,8 +87,8 @@ export function DataPage() {
       <Link viewTransition className="back-link" to="/verlauf">
         <Icon name="arrow-left" size={18} /> Zum Logbuch
       </Link>
-      <p className="eyebrow">DEINE DATEN GEHÖREN DIR</p>
-      <h1>Gut gesichert.</h1>
+      <p className="eyebrow">Datensicherung</p>
+      <h1>Köderbox und Logbuch sichern</h1>
       <p className="lead">
         Köderbox und Logbuch bleiben auf diesem Gerät. Mit einer Sicherung nimmst du sie auf ein anderes Gerät mit oder
         stellst sie später wieder her.
@@ -114,8 +114,8 @@ export function DataPage() {
         <span className="local-badge">Auf diesem Gerät</span>
       </div>
       <article className="data-card">
-        <span className="overline">01 · SICHERN</span>
-        <h2>Alles in einer Datei.</h2>
+        <span className="overline">Schritt 1 · Sichern</span>
+        <h2>Sicherungsdatei erstellen</h2>
         <p>
           Speichere deine Ködergrößen, Angelstellen, Angelpläne und Rückmeldungen. Eine Kopie außerhalb des Browsers
           bleibt auch nach dem Löschen der Browserdaten erhalten.
@@ -182,8 +182,8 @@ export function DataPage() {
         )}
       </article>
       <article className="data-card">
-        <span className="overline">02 · WIEDERHERSTELLEN</span>
-        <h2>Deine Daten wieder dabei.</h2>
+        <span className="overline">Schritt 2 · Wiederherstellen</span>
+        <h2>Aus einer Sicherung wiederherstellen</h2>
         <p>
           Wähle eine Sicherung oder einen bisherigen Session-Export. Du siehst vor dem Übernehmen, was ergänzt wird.
           Bereits vorhandene Sessions bleiben unverändert.
@@ -239,7 +239,7 @@ export function DataPage() {
       </article>
       {persistence && persistence !== 'unsupported' && (
         <article className="data-card storage-protection">
-          <span className="overline">03 · SPEICHERSCHUTZ</span>
+          <span className="overline">Speicherschutz</span>
           <h2>{persistence === 'persisted' ? 'Vor dem Aufräumen geschützt.' : 'Noch nicht geschützt.'}</h2>
           <p>
             {persistence === 'persisted'

@@ -89,7 +89,7 @@ describe('Session-Nutzerablauf', () => {
     expect(screen.getAllByRole('button', { name: 'Mit diesem Plan ans Wasser' })).toHaveLength(1)
     expect(screen.queryByRole('button', { name: 'Nicht im Bestand' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Fachlich beste Ergänzung' })).toBeInTheDocument()
-    expect(screen.getAllByText('NICHT IN DEINER KÖDERBOX')).toHaveLength(1)
+    expect(screen.getAllByText('Nicht in deiner Köderbox')).toHaveLength(1)
   })
 
   it('zeigt bei leerem Bestand nur eine klare Meldung und einen optionalen Tipp', () => {
@@ -100,7 +100,7 @@ describe('Session-Nutzerablauf', () => {
     )
     expect(screen.getByText('Kein geeigneter vorhandener Köder')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Mit diesem Plan ans Wasser' })).not.toBeInTheDocument()
-    expect(screen.getAllByText('NICHT IN DEINER KÖDERBOX')).toHaveLength(1)
+    expect(screen.getAllByText('Nicht in deiner Köderbox')).toHaveLength(1)
   })
 
   it('löscht abgeschlossene Sessions ohne Browserdialog erst nach Bestätigung und dauerhaft', () => {
@@ -117,7 +117,7 @@ describe('Session-Nutzerablauf', () => {
     expect(sessionStore.getSnapshot()).toHaveLength(1)
     fireEvent.click(screen.getByRole('button', { name: 'Session-Aktionen' }))
     fireEvent.click(screen.getByRole('button', { name: 'Endgültig löschen' }))
-    expect(screen.getByText('Noch kein Eintrag im Logbuch.')).toBeInTheDocument()
+    expect(screen.getByText('Noch kein Eintrag im Logbuch')).toBeInTheDocument()
     sessionStore.refresh()
     expect(sessionStore.getSnapshot()).toHaveLength(0)
     expect(confirm).not.toHaveBeenCalled()

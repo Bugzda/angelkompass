@@ -39,8 +39,8 @@ export function InventoryPage() {
 
   return (
     <section className={`page-shell inventory-page compact-inventory${context ? ' inventory-in-plan' : ''}`}>
-      <p className="eyebrow">{context ? `${fishLabel[context.targetFish]}-PLAN` : 'DEINE AUSRÜSTUNG'}</p>
-      <h1>{context ? 'Köder auswählen.' : 'Deine Köderbox.'}</h1>
+      <p className="eyebrow">{context ? `${fishLabel[context.targetFish]}-Plan` : 'Deine Ausrüstung'}</p>
+      <h1>{context ? 'Köder auswählen' : 'Deine Köderbox'}</h1>
       <p className="lead">Markiere die Ködergrößen, die du dabei hast.</p>
       {error ? (
         <p className="storage-error" role="alert">

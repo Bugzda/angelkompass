@@ -88,7 +88,7 @@ export function Layout() {
       <header className="app-header">
         <NavLink viewTransition to="/" className="brand" aria-label="Angelkompass Start">
           <BrandMark className="brand-mark" />
-          <span>ANGELKOMPASS</span>
+          <span>Angelkompass</span>
         </NavLink>
         <div className="header-tools">
           <ThemeControl />

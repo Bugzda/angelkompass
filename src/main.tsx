@@ -33,7 +33,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     {recoveryError ? (
       <main className="page-shell empty-state">
-        <h1>Wiederherstellung pausiert.</h1>
+        <h1>Wiederherstellung pausiert</h1>
         <p>
           Eine unterbrochene Datensicherung konnte noch nicht zurückgesetzt werden. Deine Sicherung bleibt erhalten.
           Prüfe den verfügbaren Browser-Speicher und öffne die App erneut.

@@ -23,10 +23,10 @@ export function SessionsPage() {
 
   return (
     <section className="page-shell sessions-page">
-      <p className="eyebrow">DEIN LOGBUCH AM WASSER</p>
-      <h1>Deine Sessions.</h1>
+      <p className="eyebrow">Logbuch</p>
+      <h1>Deine Sessions</h1>
       <p className="lead">
-        Jeder Versuch erzählt etwas. Hier bleiben deine Angelpläne, Bisse und Fänge auf diesem Gerät gespeichert.
+        Deine Angelpläne mit Bissen und Fängen. Alles bleibt auf diesem Gerät gespeichert.
       </p>
       {error && (
         <p className="storage-error" role="alert">
@@ -53,15 +53,15 @@ export function SessionsPage() {
           <dl className="logbook-stats" aria-label="Statistik der angezeigten Sessions">
             <div>
               <dt>Sessions</dt>
-              <dd>{String(filtered.length).padStart(2, '0')}</dd>
+              <dd>{filtered.length}</dd>
             </div>
             <div>
               <dt>Bisse</dt>
-              <dd>{String(bites).padStart(2, '0')}</dd>
+              <dd>{bites}</dd>
             </div>
             <div>
               <dt>Fänge</dt>
-              <dd>{String(catches).padStart(2, '0')}</dd>
+              <dd>{catches}</dd>
             </div>
           </dl>
           <LogbookInsights sessions={filtered} />
@@ -75,7 +75,7 @@ export function SessionsPage() {
         {sessions.length === 0 ? (
           <div className="empty">
             <img src={`${import.meta.env.BASE_URL}assets/terrain/perch.webp`} alt="" />
-            <h2>Noch kein Eintrag im Logbuch.</h2>
+            <h2>Noch kein Eintrag im Logbuch</h2>
             <p>Erstelle einen Angelplan und starte damit deine erste Session.</p>
             <Link viewTransition className="primary" to="/neu">
               Ersten Angelplan erstellen
@@ -83,7 +83,7 @@ export function SessionsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="empty">
-            <h2>Noch keine {fishLabel[fish === 'all' ? 'perch' : fish]}-Session.</h2>
+            <h2>Noch keine {fishLabel[fish === 'all' ? 'perch' : fish]}-Session</h2>
             <p>Für diesen Zielfisch gibt es noch keinen Eintrag.</p>
             <Link viewTransition className="primary" to={`/neu/${fish}`}>
               Angelplan erstellen

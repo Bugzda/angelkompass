@@ -49,9 +49,9 @@ export function RecommendationPage() {
     <section className="page-shell recommendation-page">
       <PlanProgress step={2} />
       <p className="eyebrow">
-        {fishLabel[conditions.targetFish]} · {spot ? spot.name : 'SEE · VOM UFER'}
+        {fishLabel[conditions.targetFish]} · {spot ? spot.name : 'See · vom Ufer'}
       </p>
-      <h1>{decision.practicalPrimary ? 'Dein Angelplan.' : 'Wähle noch deine Köder.'}</h1>
+      <h1>{decision.practicalPrimary ? 'Dein Angelplan' : 'Wähle noch deine Köder'}</h1>
       <p className="lead">
         {decision.practicalPrimary
           ? 'Passende Optionen aus deiner Köderbox. Wähle deinen Start.'
@@ -114,7 +114,7 @@ export function RecommendationPage() {
           <h2>Fachlich beste Ergänzung</h2>
           <p>Diese Option fehlt in deiner Köderbox und kann hier nicht gestartet werden.</p>
           <article className="optional-option">
-            <span className="overline">NICHT IN DEINER KÖDERBOX</span>
+            <span className="overline">Nicht in deiner Köderbox</span>
             <h3>{decision.optionalLureTip.setup.lure.label}</h3>
             <p>
               {decision.optionalLureTip.spot.spot.label} ·{' '}
@@ -135,7 +135,7 @@ export function RecommendationPage() {
         <section className="optional-tips">
           <h2>Optionaler Spot-Tipp</h2>
           <article className="optional-option">
-            <span className="overline">FALLS AM GEWÄSSER VORHANDEN</span>
+            <span className="overline">Falls am Gewässer vorhanden</span>
             <h3>{decision.optionalSpotTip.spot.spot.label}</h3>
             <p>Diesen Bereich hast du nicht bestätigt. Prüfe ihn nur, wenn er tatsächlich erreichbar vorhanden ist.</p>
           </article>

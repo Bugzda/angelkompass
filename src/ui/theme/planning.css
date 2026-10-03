@@ -1,167 +1,194 @@
 /* Planning flow: species choice, observation form, time settings and weather assistance. */
-.species-page {
-  max-width: 960px;
+.compact-situation > h1,
+.compact-inventory > h1,
+.recommendation-page > h1,
+.compact-species > h1 {
+  margin-bottom: 8px;
 }
-.species-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+.compact-situation > .lead,
+.compact-inventory > .lead,
+.recommendation-page > .lead,
+.compact-species > .lead {
+  margin-bottom: 20px;
 }
-.species-card {
-  min-height: 350px;
-  padding: 18px;
-  display: grid;
-  grid-template-rows: 1fr auto auto;
-  gap: 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  position: relative;
-  overflow: hidden;
-  transition:
-    transform 0.18s,
-    border-color 0.18s,
-    box-shadow 0.18s;
-}
-.species-card:hover,
-.species-card:focus-visible {
-  transform: translateY(-3px);
-  border-color: var(--lime);
-  box-shadow: var(--shadow-sm);
-}
-.species-art {
-  min-height: 180px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px;
-  background: linear-gradient(145deg, var(--surface-soft), var(--surface-raised));
-}
-.species-art img {
-  width: 100%;
-  height: 160px;
-  object-fit: contain;
-  filter: grayscale(1);
-  mix-blend-mode: multiply;
-}
-.species-card > div:nth-child(2) {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.species-card strong {
-  font:
-    700 2.6rem/1 'Barlow Condensed',
-    sans-serif;
-}
-.species-card > svg {
-  position: absolute;
-  right: 20px;
-  bottom: 22px;
-}
-.species-card.disabled {
-  opacity: 0.58;
-  filter: grayscale(0.6);
-}
-.species-card.disabled:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: var(--line);
-}
+
+/* Observation form: sections divided by a ruled line instead of nested cards. */
 .observation-group {
-  padding: 26px clamp(18px, 4vw, 30px);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+  padding: 18px 0 4px;
+  border-top: 1px solid var(--ink);
 }
 .observation-group > header {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.observation-group > header > span {
-  font:
-    700 2rem/1 'Barlow Condensed',
-    sans-serif;
-  color: var(--lime);
-  -webkit-text-stroke: 1px var(--forest-deep);
+  margin-bottom: 18px;
 }
 .observation-group h2 {
-  margin: 0 0 5px;
+  margin: 0;
+  font-size: 1.35rem;
 }
 .observation-group header p {
-  margin: 0;
+  margin: 4px 0 0;
   color: var(--ink-soft);
-  font-size: 0.82rem;
+  font-size: 0.88rem;
 }
-.situation-page .sticky-action {
-  position: sticky;
-  bottom: 100px;
-  z-index: 8;
-  box-shadow: var(--shadow-sm);
-}
-@media (max-width: 760px) {
-  .species-grid {
-    grid-template-columns: 1fr;
-  }
-  .species-card {
-    min-height: 260px;
-    grid-template-columns: 42% 1fr;
-    grid-template-rows: 1fr;
-  }
-  .species-art {
-    min-height: 180px;
-  }
-  .species-card > svg {
-    right: 18px;
-  }
+.observation-group fieldset:last-child {
+  margin-bottom: 0;
 }
 .situation-page .sticky-action {
   position: static;
-  box-shadow: none;
   margin-top: 22px;
 }
-.species-card > div:nth-child(2) > span:last-child {
-  padding-right: 22px;
+.situation-page .plan-progress {
+  margin-bottom: 22px;
+}
+.situation-page .form-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-block: 18px;
+  font-size: 0.84rem;
+}
+.situation-page .form-hint svg {
+  margin-top: 3px;
+  color: var(--success);
+  flex-shrink: 0;
+}
+.compact-situation .form-grid legend small {
+  display: inline-block;
+  margin-left: 0;
+  font-size: 0.84rem;
+}
+.compact-situation > .safety-check {
+  margin: 20px 0 0;
+}
+
+/* Context line: inventory and time, as ruled rows. */
+.planning-context {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  border-block: 1px solid var(--line);
+  font-size: 0.88rem;
+}
+.planning-context > span {
   color: var(--ink-soft);
-  font-size: 0.78rem;
-  line-height: 1.5;
 }
-.species-card strong {
-  margin-block: 3px;
+.planning-context a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 4px;
 }
-@media (max-width: 760px) {
-  .species-card {
-    min-height: 174px;
-    padding: 16px;
-    gap: 18px;
-    align-items: center;
-    grid-template-columns: 38% 1fr;
+.time-settings {
+  margin: 0 0 22px;
+}
+.time-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+.time-toggle > span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+}
+.time-toggle[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+.time-fields {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.time-fields[hidden],
+.recommendation-option [hidden] {
+  display: none;
+}
+.time-fields fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 18px;
+}
+.time-fields legend {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.time-fields .form-hint {
+  margin: 0;
+  font-size: 0.86rem;
+}
+@media (max-width: 360px) {
+  .planning-context {
+    font-size: 0.8rem;
+    gap: 0 8px;
   }
-  .species-art {
-    min-height: 136px;
-  }
-  .species-art img {
-    height: 120px;
-  }
-  .species-card strong {
-    font-size: 2.35rem;
-  }
-  .species-card .overline {
-    font-size: 0.65rem;
+  .planning-context a {
+    gap: 4px;
   }
 }
-@media (max-width: 380px) {
-  .species-card {
-    gap: 12px;
-    padding: 12px;
-    min-height: 154px;
-  }
-  .species-art {
-    min-height: 124px;
+
+/* Segmented single-choice fields: even columns instead of wrapping tags. */
+.chips.segmented {
+  display: grid;
+  grid-template-columns: repeat(var(--segments, 4), minmax(0, 1fr));
+  gap: 6px;
+}
+.chips.segmented button {
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 6px;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  font-size: 0.84rem;
+}
+.chips.segmented.with-icons button {
+  min-height: 64px;
+  flex-direction: column;
+  gap: 5px;
+}
+.chips.segmented.with-icons button svg {
+  color: var(--ink-soft);
+}
+.chips.segmented.with-icons button.selected svg {
+  color: currentColor;
+}
+.chips.segmented .unknown-option:not(.selected) {
+  border-style: dashed;
+  color: var(--ink-soft);
+}
+.form-grid fieldset[id] {
+  scroll-margin-block: 96px 120px;
+}
+.form-grid fieldset:focus {
+  outline: none;
+}
+@media (max-width: 360px) {
+  .chips.segmented button {
+    font-size: 0.76rem;
   }
 }
+
+/* Weather assistance: an optional disclosure. */
 .weather-assist {
-  margin-block: 16px;
+  margin-block: 20px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
@@ -176,7 +203,7 @@
   align-items: center;
   gap: 14px;
   width: 100%;
-  padding: 18px 20px;
+  padding: 16px 18px;
   text-align: left;
   color: var(--ink);
   border: 0;
@@ -185,7 +212,7 @@
   cursor: pointer;
 }
 .weather-toggle > svg:first-child {
-  color: var(--forest);
+  color: var(--green);
 }
 .weather-toggle > svg:last-child {
   margin-left: auto;
@@ -195,29 +222,29 @@
   transform: rotate(180deg);
 }
 .weather-toggle span {
-  font-weight: 700;
-  font-size: 0.88rem;
+  font-weight: 600;
+  font-size: 0.94rem;
 }
 .weather-toggle small {
   display: block;
-  margin-top: 4px;
+  margin-top: 2px;
   color: var(--ink-soft);
-  font-size: 0.73rem;
-  font-weight: 500;
+  font-size: 0.84rem;
+  font-weight: 400;
 }
 #weather-content {
-  padding: 0 20px 16px;
+  padding: 0 18px 16px;
 }
 #weather-content[hidden] {
   display: none;
 }
 .weather-assist p {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   line-height: 1.65;
   margin-block: 12px;
 }
 .weather-assist .weather-privacy {
-  font-size: 0.73rem;
+  font-size: 0.84rem;
   color: var(--ink-soft);
 }
 .weather-privacy a {
@@ -230,7 +257,7 @@
 .weather-search label {
   display: block;
   margin-bottom: 8px;
-  font-size: 0.8rem;
+  font-size: 0.86rem;
   font-weight: 600;
 }
 .weather-search > div {
@@ -243,11 +270,11 @@
   flex: 1 1 10rem;
   width: 100%;
   padding: 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   font: inherit;
   color: var(--ink);
-  background: var(--surface-raised);
+  background: var(--bg);
 }
 .weather-search input::placeholder {
   color: var(--ink-soft);
@@ -281,317 +308,107 @@
 .weather-loading p {
   flex: 1;
 }
-.situation-page .plan-progress {
-  margin-bottom: 22px;
+.weather-loading::before {
+  content: '';
+  flex: 1 0 100%;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--surface-soft) 0%, var(--surface-raised) 50%, var(--surface-soft) 100%);
+  background-size: 200% 100%;
+  animation: skeleton 1.2s ease-in-out infinite;
 }
-.situation-page > .lead {
-  margin-bottom: 20px;
-}
-.situation-page .form-hint {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  margin-block: 18px;
-  font-size: 0.75rem;
-}
-.situation-page .form-hint svg {
-  margin-top: 3px;
-  color: var(--success);
-  flex-shrink: 0;
-}
-.observation-group fieldset:last-child {
-  margin-bottom: 0;
+@keyframes skeleton {
+  to {
+    background-position: -200% 0;
+  }
 }
 @media (max-width: 480px) {
-  .observation-group {
-    padding: 20px 16px;
-  }
-  .observation-group > header {
-    gap: 12px;
-    margin-bottom: 22px;
-  }
-  .observation-group h2 {
-    font-size: 1.85rem;
-  }
   .weather-toggle {
-    padding: 16px;
+    padding: 14px 16px;
     gap: 10px;
   }
   #weather-content {
     padding-inline: 16px;
   }
 }
-.compact-situation > h1,
-.compact-inventory > h1,
-.recommendation-page > h1,
-.compact-species > h1 {
-  font-size: clamp(2.35rem, 6vw, 3.4rem);
-  margin-bottom: 12px;
-}
-.compact-situation > .lead,
-.compact-inventory > .lead,
-.recommendation-page > .lead,
-.compact-species > .lead {
-  margin-bottom: 18px;
-  font-size: 0.94rem;
-}
-.planning-context {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0 12px;
-  border-block: 1px solid var(--line);
-  font-size: 0.82rem;
-}
-.planning-context > span {
-  color: var(--ink-soft);
-}
-.planning-context a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  font-weight: 700;
-}
-.time-settings {
-  margin: 8px 0 18px;
-}
-.time-toggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 44px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--ink);
-  padding: 8px 0;
-  cursor: pointer;
-  font-size: 0.82rem;
-}
-.time-toggle > span:last-child {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--ink-soft);
-}
-.time-toggle[aria-expanded='true'] svg {
-  transform: rotate(180deg);
-}
-.time-fields {
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-.time-fields[hidden],
-.recommendation-option [hidden] {
-  display: none;
-}
-.time-fields fieldset {
-  border: 0;
-  padding: 0;
-  margin: 0 0 18px;
-}
-.time-fields legend {
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-.time-fields .form-hint {
-  margin: 0;
-  font-size: 0.82rem;
-}
-.compact-situation .observation-group {
-  padding: 20px;
-}
-.compact-situation .observation-group > header {
-  margin-bottom: 20px;
-}
-.compact-situation .observation-group h2 {
-  font-size: 1.75rem;
-  margin: 0;
-}
-.compact-situation .form-grid legend small {
-  display: inline-block;
-  margin-left: 0;
-  font-size: 0.8rem;
-}
-.compact-situation .chips button.selected {
-  border-color: var(--forest);
-}
-.compact-situation > .safety-check {
-  margin: 20px 0 0;
-}
-.weather-toggle small,
-.weather-assist .weather-privacy {
-  font-size: 0.8rem;
-}
-.compact-species {
-  max-width: 860px;
-}
-.compact-species .species-grid {
-  gap: 12px;
-}
-.compact-species .species-card {
-  min-height: 210px;
-  padding: 18px;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: 1fr auto;
-  align-items: center;
-  gap: 12px;
-}
-.compact-species .species-art {
-  grid-column: 1 / -1;
-  min-height: 110px;
-}
-.compact-species .species-art img {
-  height: 100px;
-}
-.compact-species .species-card strong {
-  font-size: 2.15rem;
-}
-.compact-species .species-card > svg {
-  position: static;
-}
-@media (max-width: 760px) {
-  .compact-species .species-grid {
-    grid-template-columns: 1fr;
-  }
-  .compact-species .species-card {
-    min-height: 104px;
-    grid-template-columns: 100px minmax(0, 1fr) auto;
-    grid-template-rows: auto;
-    padding: 12px;
-    gap: 16px;
-  }
-  .compact-species .species-art {
-    grid-column: auto;
-    min-height: 78px;
-  }
-  .compact-species .species-art img {
-    height: 70px;
-  }
-  .compact-species .species-card strong {
-    font-size: 2rem;
-  }
-}
-@media (max-width: 480px) {
-  .compact-situation .plan-progress {
-    margin-bottom: 18px;
-  }
-  .compact-situation .observation-group {
-    padding: 18px 16px;
-  }
-}
-@media (max-width: 360px) {
-  .planning-context {
-    font-size: 0.76rem;
-    gap: 0 8px;
-  }
-  .planning-context a {
-    gap: 4px;
-  }
-  .compact-species .species-card {
-    grid-template-columns: 80px minmax(0, 1fr) auto;
-  }
-}
 
-:root[data-theme='dark'] .species-art img {
-  filter: grayscale(1) invert(1);
-  mix-blend-mode: screen;
-  opacity: 0.88;
-}
-
-/* Segmented single-choice fields: even columns instead of wrapping pills. */
-.chips.segmented {
+/* Weather facts: information only. */
+.weather-facts {
   display: grid;
-  grid-template-columns: repeat(var(--segments, 4), minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+  margin: 12px 0 6px;
+}
+.weather-facts > div {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.weather-facts dt {
+  display: flex;
+  align-items: center;
   gap: 6px;
-}
-.chips.segmented button {
-  min-width: 0;
-  min-height: 48px;
-  padding: 8px 6px;
-  justify-content: center;
-  border-radius: 14px;
-  text-align: center;
-  line-height: 1.2;
-  font-size: 0.78rem;
-}
-.chips.segmented.with-icons button {
-  min-height: 64px;
-  flex-direction: column;
-  gap: 5px;
-}
-.chips.segmented.with-icons button svg {
   color: var(--ink-soft);
+  font-size: 0.8rem;
 }
-.chips.segmented.with-icons button.selected svg {
-  color: var(--lime);
+.weather-facts dd {
+  margin: 2px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
 }
-.chips.segmented .unknown-option:not(.selected) {
-  border-style: dashed;
+.weather-info-note {
+  display: block;
+  margin-bottom: 10px;
   color: var(--ink-soft);
-}
-.form-grid fieldset[id] {
-  scroll-margin-block: 96px 120px;
-}
-.form-grid fieldset:focus {
-  outline: none;
-}
-@media (max-width: 360px) {
-  .chips.segmented button {
-    font-size: 0.72rem;
-  }
+  font-size: 0.82rem;
 }
 
 /* Saved fishing spots. */
 .spot-picker {
-  margin: 0 0 18px;
-  padding: 18px 20px;
+  margin: 0 0 22px;
+  padding: 16px 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
 .spot-picker > header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 8px;
   margin-bottom: 12px;
 }
 .spot-picker > header svg {
-  color: var(--forest);
+  align-self: center;
+  color: var(--green);
 }
 .spot-picker h2 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 .spot-picker > header small {
   color: var(--ink-soft);
-  font-size: 0.74rem;
+  font-size: 0.82rem;
 }
 .spot-picker .chips {
   margin-bottom: 10px;
 }
 .spot-picker .form-hint {
   margin: 10px 0 0;
+  font-size: 0.84rem;
 }
 .spot-save,
 .spot-update {
   width: 100%;
   min-height: 44px;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
 }
 .spot-name-form {
   display: grid;
   gap: 8px;
 }
 .spot-name-form label {
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.86rem;
+  font-weight: 600;
 }
 .spot-name-form > div {
   display: grid;
@@ -600,9 +417,9 @@
 }
 .spot-name-form input {
   min-height: 48px;
-  padding: 10px 14px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
   background: var(--bg);
   color: var(--ink);
   font-size: 1rem;
@@ -614,7 +431,7 @@
   border: 0;
   background: none;
   color: var(--ink-soft);
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
@@ -629,8 +446,8 @@
   display: flex;
   align-items: center;
   color: var(--ink-soft);
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.86rem;
+  font-weight: 600;
   cursor: pointer;
 }
 .spot-manage ul {
@@ -645,11 +462,11 @@
   justify-content: space-between;
   gap: 10px;
   border-bottom: 1px solid var(--line);
-  font-size: 0.86rem;
+  font-size: 0.9rem;
 }
 .spot-manage small {
   color: var(--ink-soft);
-  font-size: 0.74rem;
+  font-size: 0.8rem;
 }
 .spot-delete-confirm {
   display: flex;
@@ -662,7 +479,7 @@
   display: grid;
   place-items: center;
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--ink-soft);
   cursor: pointer;
@@ -675,55 +492,9 @@
   min-height: 40px;
   padding: 6px 14px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--danger);
   color: var(--surface);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-}
-
-/* Weather facts: information only. */
-.weather-facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin: 12px 0 6px;
-}
-.weather-facts > div {
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: var(--surface-soft);
-}
-.weather-facts dt {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--ink-soft);
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-.weather-facts dd {
-  margin: 4px 0 0;
-  font-weight: 700;
-  font-size: 0.88rem;
-}
-.weather-info-note {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--ink-soft);
-  font-size: 0.74rem;
-}
-.weather-loading::before {
-  content: '';
-  flex: 1 0 100%;
-  height: 64px;
-  border-radius: 12px;
-  background: linear-gradient(90deg, var(--surface-soft) 0%, var(--surface-raised) 50%, var(--surface-soft) 100%);
-  background-size: 200% 100%;
-  animation: skeleton 1.2s ease-in-out infinite;
-}
-@keyframes skeleton {
-  to {
-    background-position: -200% 0;
-  }
 }

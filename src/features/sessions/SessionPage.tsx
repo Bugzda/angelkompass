@@ -77,7 +77,7 @@ function SessionDetails({ session }: { session: FishingSession }) {
       {!active && <SessionCompletion session={session} />}
       <div className="session-head">
         <div>
-          <span className="overline">GESPEICHERTER STARTPLAN</span>
+          <span className="overline">Gespeicherter Startplan</span>
           <h2>{session.recommendation.setup.lure.label}</h2>
           <p>
             {session.recommendation.spot.spot.label} · Rang {session.recommendation.rank}
@@ -282,8 +282,8 @@ export function SessionPage() {
     )
   return (
     <section className="page-shell session-page">
-      <p className="eyebrow">SESSION VOM {date(session.createdAt).toUpperCase()}</p>
-      <h1>Dein Versuch am Wasser.</h1>
+      <p className="eyebrow">Session vom {date(session.createdAt)}</p>
+      <h1>Dein Versuch am Wasser</h1>
       {error && (
         <p className="storage-error" role="alert">
           {error}

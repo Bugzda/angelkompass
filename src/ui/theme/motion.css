@@ -52,7 +52,7 @@
 .inventory-size-choices button:active,
 .condition-chips a:active,
 .bottom a:active {
-  transform: scale(0.96);
+  transform: scale(0.98);
 }
 
 /* Counters pop briefly when a bite or catch is recorded. */
@@ -65,14 +65,12 @@
 @keyframes count-pop {
   from {
     transform: scale(1.6);
-    color: var(--lime);
+    color: var(--accent);
   }
 }
 
 /* Images fade in instead of popping. */
-.hero-media img,
-.species-art img,
-.species-chip img {
+.species-row img {
   animation: image-in 0.45s ease-out both;
 }
 @keyframes image-in {

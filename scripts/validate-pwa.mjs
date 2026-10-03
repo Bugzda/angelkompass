@@ -56,7 +56,7 @@ for (const entry of entries) {
     assert.ok(typeof entry.revision === 'string' && entry.revision.length > 0, `Unversioned static asset: ${entry.url}`)
   }
 }
-for (const file of ['index.html', 'manifest.webmanifest', 'assets/terrain/lake-morning.avif', 'assets/terrain/perch.webp', 'assets/terrain/pike.webp', 'assets/terrain/zander.webp']) {
+for (const file of ['index.html', 'manifest.webmanifest', 'assets/terrain/perch.webp', 'assets/terrain/pike.webp', 'assets/terrain/zander.webp']) {
   assert.ok(urls.has(new URL(file, scope).href), `Offline asset not cached: ${file}`)
 }
 console.log(`PWA gültig: Worker startet, ${entries.length} eindeutige Cacheeinträge mit gültigen Dateien und Revisionen.`)

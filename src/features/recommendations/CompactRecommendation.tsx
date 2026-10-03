@@ -70,7 +70,7 @@ export function CompactRecommendation({
         aria-atomic="true"
       >
         <span className="overline">
-          {completed ? 'SESSION ABGESCHLOSSEN' : current ? 'JETZT' : 'ALLE SCHRITTE AUSPROBIERT'}
+          {completed ? 'Session abgeschlossen' : current ? 'Jetzt' : 'Alle Schritte ausprobiert'}
         </span>
         <h2>{completed ? 'Dein gespeicherter Angelplan' : (current?.title ?? 'Weiterangeln oder abschließen')}</h2>
         <p>

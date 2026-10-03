@@ -102,11 +102,11 @@ describe('Geführter Angelplan', () => {
   })
   it('zeigt den Einstieg nur vor der ersten Session und führt aktive Pläne direkt ans Wasser', () => {
     const view = render(<Journey path="/" />)
-    expect(screen.getByRole('heading', { name: 'In drei Schritten ans Wasser.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'So entsteht dein Angelplan' })).toBeInTheDocument()
     act(() => {
       sessionStore.create(conditions, createRecommendations(conditions)[0])
     })
-    expect(screen.queryByRole('heading', { name: 'In drei Schritten ans Wasser.' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'So entsteht dein Angelplan' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Session fortsetzen' })).toHaveAttribute(
       'href',
       `/session/${sessionStore.getSnapshot()[0].id}/karte`,
@@ -119,7 +119,7 @@ describe('Geführter Angelplan', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Mit diesem Plan ans Wasser' }))
     fireEvent.click(screen.getByRole('button', { name: 'Fang' }))
     fireEvent.click(screen.getByRole('button', { name: 'Session beenden' }))
-    expect(screen.getByRole('heading', { name: 'Session abgeschlossen.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Session abgeschlossen' })).toBeInTheDocument()
     expect(screen.getByText(/Zander · 0 Bisse · 1 Fang/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Fang' })).not.toBeInTheDocument()
     expect(screen.queryByText('JETZT')).not.toBeInTheDocument()
@@ -134,11 +134,11 @@ describe('Geführter Angelplan', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Session beenden' }))
     expect(screen.getByRole('alert')).toHaveTextContent('nicht lokal gespeichert')
-    expect(screen.queryByRole('heading', { name: 'Session abgeschlossen.' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Session abgeschlossen' })).not.toBeInTheDocument()
     expect(screen.queryByText(/Angelplan auf diesem Gerät gespeichert/)).not.toBeInTheDocument()
     write.mockRestore()
     fireEvent.click(screen.getByRole('button', { name: 'Session beenden' }))
-    expect(screen.getByRole('heading', { name: 'Session abgeschlossen.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Session abgeschlossen' })).toBeInTheDocument()
   })
   it('blockiert auch den direkten Startknopf, wenn bereits ein Plan aktiv ist', () => {
     stock()

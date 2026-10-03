@@ -1,112 +1,110 @@
-/* Start page: hero, species rail, session teaser and shortcuts. */
-.terrain-hero {
-  min-height: 650px;
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  background: #dfe7df;
-  color: #0d1716;
-  box-shadow: var(--shadow-lg);
+/* Start page: intro, field-guide species list, session block and further sections. */
+.home-intro {
+  margin-bottom: 8px;
 }
-.hero-media,
-.hero-media img,
-.hero-shade {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+.home-intro h1 {
+  font-size: clamp(2.1rem, 7vw, 3rem);
+  margin-bottom: 12px;
 }
-.hero-media img {
-  object-fit: cover;
-  object-position: center;
+.home-intro .lead {
+  margin-bottom: 20px;
 }
-.hero-shade {
-  background:
-    linear-gradient(90deg, rgb(242 245 239 / 0.97) 0%, rgb(242 245 239 / 0.86) 38%, rgb(242 245 239 / 0.12) 72%),
-    linear-gradient(0deg, rgb(6 28 25 / 0.46), transparent 48%);
+.home-section-title {
+  margin: 28px 0 4px;
+  font-size: 1.2rem;
 }
-.hero-copy {
-  position: relative;
-  z-index: 2;
-  max-width: 620px;
-  padding: clamp(34px, 7vw, 78px);
-}
-.hero-copy h1 {
-  color: #0d1716;
-  font-size: clamp(4.2rem, 10vw, 7.8rem);
-  margin: 18px 0 20px;
-}
-.hero-copy > p:not(.eyebrow) {
-  max-width: 510px;
-  color: #304641;
-  line-height: 1.65;
-}
-.hero-action {
-  margin-top: 24px;
-  min-width: 220px;
-  justify-content: space-between;
-}
-.species-rail {
-  position: absolute;
-  z-index: 3;
-  left: clamp(22px, 5vw, 62px);
-  right: clamp(22px, 5vw, 62px);
-  bottom: 22px;
+
+/* Species rows: the engravings are the visual identity, set on paper without frames. */
+.species-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  border-top: 1px solid var(--ink);
 }
-.species-chip {
-  min-height: 82px;
-  padding: 10px 14px;
-  display: flex;
+.species-row {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
-  background: rgb(255 255 255 / 0.88);
-  border: 1px solid rgb(13 23 22 / 0.16);
-  border-radius: 16px;
-  color: #0d1716;
-  backdrop-filter: blur(12px);
-  font-weight: 700;
+  gap: 16px;
+  min-height: 92px;
+  padding: 10px 4px 10px 0;
+  border-bottom: 1px solid var(--line);
+  transition: background-color 0.16s;
 }
-.species-chip img {
-  width: 88px;
-  height: 50px;
+.species-row:hover {
+  background: var(--surface-raised);
+}
+.species-row img {
+  width: 112px;
+  height: 64px;
   object-fit: contain;
-  filter: grayscale(1);
+  filter: grayscale(1) contrast(1.1);
+  mix-blend-mode: multiply;
 }
-.species-chip small {
-  display: block;
-  margin-top: 2px;
-  color: #5c6764;
-  font-size: 0.58rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.species-row > span {
+  display: grid;
+  gap: 2px;
 }
+.species-row strong {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+.species-row em {
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+.species-row > svg {
+  color: var(--ink-soft);
+}
+:root[data-theme='dark'] .species-row img {
+  filter: grayscale(1) invert(1) contrast(0.9);
+  mix-blend-mode: screen;
+  opacity: 0.85;
+}
+@media (min-width: 760px) {
+  .species-row {
+    grid-template-columns: 160px minmax(0, 1fr) auto;
+    min-height: 108px;
+  }
+  .species-row img {
+    width: 160px;
+    height: 80px;
+  }
+}
+@media (max-width: 360px) {
+  .species-row {
+    grid-template-columns: 88px minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+  .species-row img {
+    width: 88px;
+  }
+}
+
+/* Active or latest session: a marked entry with the one main action. */
 .home-session {
-  width: calc(100% - clamp(30px, 8vw, 100px));
-  margin: -30px auto 22px;
-  padding: 22px 24px;
-  position: relative;
-  z-index: 4;
+  margin: 20px 0;
+  padding: 18px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-sm);
 }
 .home-session.active-session {
-  border-left: 5px solid var(--lime);
+  border-left: 3px solid var(--accent);
 }
 .home-session h2 {
-  margin: 7px 0 5px;
+  margin: 0 0 4px;
+  font-size: 1.35rem;
 }
 .home-session p {
   margin: 0;
   color: var(--ink-soft);
+  font-size: 0.9rem;
 }
 .session-resume {
   min-height: 48px;
@@ -114,201 +112,26 @@
   align-items: center;
   gap: 10px;
   flex: 0 0 auto;
-  font-weight: 700;
+  font-weight: 600;
 }
-.home-notice {
-  margin-top: 20px;
-}
-@media (max-width: 760px) {
-  .terrain-hero {
-    min-height: 700px;
-    border-radius: 20px;
-  }
-  .hero-shade {
-    background: linear-gradient(
-      180deg,
-      rgb(242 245 239 / 0.95) 0%,
-      rgb(242 245 239 / 0.68) 48%,
-      rgb(6 28 25 / 0.58) 76%,
-      rgb(6 28 25 / 0.86) 100%
-    );
-  }
-  .hero-copy {
-    padding: 34px 26px;
-  }
-  .hero-copy h1 {
-    font-size: clamp(4rem, 17vw, 6rem);
-  }
-  .species-rail {
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
-  }
-  .species-chip {
-    padding: 8px;
-    flex-direction: column;
-    text-align: center;
-  }
-  .species-chip img {
-    width: 70px;
-    height: 38px;
-  }
+@media (max-width: 600px) {
   .home-session {
-    width: calc(100% - 28px);
-    margin-top: -18px;
-    align-items: flex-start;
+    align-items: stretch;
     flex-direction: column;
+    gap: 14px;
+  }
+  .home-session .primary {
+    width: 100%;
   }
 }
-.hero-copy {
-  padding-bottom: 160px;
-}
-@media (max-width: 760px) {
-  .hero-copy {
-    padding: 34px 26px 160px;
-  }
-}
-.hero-copy .eyebrow {
-  color: #123c36;
-}
-.terrain-hero {
-  display: flex;
-  flex-direction: column;
-  min-height: 580px;
-}
-.hero-copy {
-  max-width: 760px;
-  padding: 48px 56px 26px;
-  flex: 1;
-}
-.hero-copy h1 {
-  max-width: 650px;
-  font-size: clamp(3.5rem, 7vw, 5.8rem);
-  line-height: 0.96;
-  margin: 16px 0 20px;
-  text-wrap: balance;
-}
-.hero-copy > p:not(.eyebrow) {
-  max-width: 435px;
-  font-size: 0.94rem;
-}
-.hero-action {
-  margin-top: 12px;
-  box-shadow: 0 4px 20px rgb(17 43 21 / 0.12);
-}
-.hero-caption {
-  display: block;
-  margin-top: 14px;
-  font-size: 0.68rem;
-  color: #304641;
-}
-.species-rail {
-  position: relative;
-  inset: auto;
-  margin: 12px 32px 26px;
-}
-.species-chip {
-  transition:
-    background 0.18s,
-    transform 0.18s;
-}
-.home-session {
-  width: 100%;
-  margin: 20px 0;
-}
-.home-shortcuts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 24px;
-}
-.home-shortcuts > a {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 18px;
-  padding: 24px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  transition: border-color 0.18s;
-}
-.home-shortcuts > a:hover {
-  border-color: var(--forest);
-}
-.shortcut-icon {
-  display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
-  background: var(--surface-soft);
-  color: var(--forest);
-}
-.home-shortcuts h2 {
-  font-size: 1.8rem;
-  margin: 7px 0;
-}
-.home-shortcuts p {
-  color: var(--ink-soft);
-  font-size: 0.77rem;
-  line-height: 1.5;
-  margin: 0;
-}
-.home-notice {
-  background: transparent;
-  border: 0;
-  border-top: 1px solid var(--line);
-  border-radius: 0;
-  padding-inline: 0;
-}
-.home-notice strong {
-  font-size: 0.8rem;
-}
-@media (max-width: 760px) {
-  .terrain-hero {
-    min-height: 0;
-  }
-  .hero-copy {
-    padding: 30px 26px 24px;
-  }
-  .hero-copy h1 {
-    font-size: clamp(3.4rem, 12vw, 5rem);
-  }
-  .hero-copy > p:not(.eyebrow) {
-    font-size: 0.87rem;
-  }
-  .hero-shade {
-    background: linear-gradient(180deg, rgb(242 245 239 / 0.97), rgb(242 245 239 / 0.84) 60%, rgb(6 28 25 / 0.7));
-  }
-  .species-rail {
-    margin: 6px 14px 16px;
-  }
-  .home-shortcuts {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .home-shortcuts > a {
-    padding: 20px;
-  }
-  .home-session {
-    padding: 20px;
-  }
-}
+
+/* First visit: how a plan comes together. */
 .first-plan {
-  margin: 28px 0;
-  padding: 28px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  margin: 32px 0;
 }
 .first-plan h2 {
-  margin: 10px 0;
-}
-.first-plan p {
-  color: var(--ink-soft);
-  font-size: 0.86rem;
-  line-height: 1.6;
+  margin: 0 0 14px;
+  font-size: 1.3rem;
 }
 .first-plan ol {
   display: grid;
@@ -316,101 +139,113 @@
   list-style: none;
   padding: 0;
   gap: 24px;
-  margin: 26px 0 0;
+  margin: 0;
 }
 .first-plan li {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   gap: 12px;
 }
 .first-plan li > span {
-  font:
-    600 1.6rem 'Barlow Condensed',
-    sans-serif;
-  color: var(--forest);
+  flex: none;
+  width: 1.6em;
+  height: 1.6em;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
 }
 .first-plan li strong {
-  font-size: 0.88rem;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 .first-plan li p {
-  margin: 6px 0 0;
-  font-size: 0.78rem;
+  margin: 4px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.55;
 }
+@media (max-width: 600px) {
+  .first-plan ol {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Repeat the last plan. */
 .repeat-plan {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 22px;
+  padding: 18px 20px;
   margin: 20px 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
 .repeat-plan p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: var(--ink-soft);
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   line-height: 1.6;
 }
 .repeat-plan .secondary {
   flex-shrink: 0;
-  font-size: 0.8rem;
+  font-size: 0.86rem;
 }
 @media (max-width: 600px) {
-  .first-plan {
-    padding: 22px;
-  }
-  .first-plan ol {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
   .repeat-plan {
     align-items: stretch;
     flex-direction: column;
     gap: 14px;
-    padding: 20px;
   }
 }
 
-/* Dark theme: a night-lake version of the hero instead of the bright morning fog. */
-:root[data-theme='dark'] .terrain-hero {
-  background: #0b1f1d;
-  color: #f2f7f3;
+/* Further sections as plain index rows. */
+.home-links {
+  display: grid;
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
 }
-:root[data-theme='dark'] .hero-media img {
-  filter: brightness(0.5) saturate(0.75) contrast(1.05);
+.home-links > a {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 68px;
+  padding: 12px 4px 12px 0;
+  border-bottom: 1px solid var(--line);
 }
-:root[data-theme='dark'] .hero-shade {
-  background:
-    linear-gradient(90deg, rgb(7 20 19 / 0.94) 0%, rgb(7 20 19 / 0.78) 42%, rgb(7 20 19 / 0.18) 76%),
-    linear-gradient(0deg, rgb(3 12 11 / 0.65), transparent 50%);
+.home-links > a:hover {
+  background: var(--surface-raised);
 }
-:root[data-theme='dark'] .hero-copy h1 {
-  color: #f2f7f3;
+.home-links > a > svg:first-child {
+  color: var(--green);
 }
-:root[data-theme='dark'] .hero-copy .eyebrow {
-  color: var(--lime);
+.home-links > a > svg:last-child {
+  color: var(--ink-soft);
 }
-:root[data-theme='dark'] .hero-copy > p:not(.eyebrow),
-:root[data-theme='dark'] .hero-caption {
-  color: #b7c9c4;
+.home-links span {
+  display: grid;
+  gap: 2px;
 }
-:root[data-theme='dark'] .species-chip {
-  background: rgb(255 255 255 / 0.07);
-  border-color: rgb(255 255 255 / 0.14);
-  color: #f2f7f3;
+.home-links strong {
+  font-weight: 600;
 }
-:root[data-theme='dark'] a.species-chip:hover {
-  background: rgb(255 255 255 / 0.13);
+.home-links small {
+  color: var(--ink-soft);
+  font-size: 0.86rem;
 }
-:root[data-theme='dark'] .species-chip img {
-  filter: grayscale(1) invert(1);
-  mix-blend-mode: screen;
-  opacity: 0.9;
+.home-notice {
+  margin: 32px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.6;
 }
-@media (max-width: 760px) {
-  :root[data-theme='dark'] .hero-shade {
-    background: linear-gradient(180deg, rgb(7 20 19 / 0.9), rgb(7 20 19 / 0.74) 60%, rgb(3 12 11 / 0.94));
-  }
+.home-notice strong {
+  color: var(--ink);
+  font-weight: 600;
 }

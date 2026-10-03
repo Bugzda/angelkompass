@@ -52,7 +52,7 @@
 .condition-summary dd {
   margin: 4px 0 0;
   font-size: 0.77rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 .attempts {
   margin-top: 24px;
@@ -69,7 +69,7 @@
   opacity: 1;
 }
 .attempts article.active-attempt {
-  border-left: 4px solid var(--lime);
+  border-left: 3px solid var(--accent);
   background: var(--surface);
 }
 .attempts article.done h3::after {
@@ -77,10 +77,10 @@
   color: var(--success);
 }
 .step {
-  font:
-    700 1.2rem 'Barlow Condensed',
-    sans-serif;
-  color: var(--forest);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--green);
 }
 .attempts h3 {
   margin-bottom: 4px;
@@ -102,13 +102,13 @@
   min-height: 48px;
   padding: 9px 16px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
-  font-weight: 700;
+  font-weight: 600;
 }
 .feedback button:last-child {
-  background: var(--forest-deep);
-  color: #fff;
+  background: var(--green);
+  color: var(--surface);
 }
 .feedback-log {
   margin-top: 28px;
@@ -135,10 +135,11 @@
   border-bottom: 1px solid var(--line);
 }
 .journal-index {
-  font:
-    700 1.4rem 'Barlow Condensed',
-    sans-serif;
-  color: var(--forest);
+  padding-right: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--ink-soft);
 }
 .session-list article > a {
   min-height: 84px;
@@ -195,9 +196,8 @@
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: var(--forest-deep);
-  color: #eef8f5;
-  box-shadow: var(--shadow-lg);
+  background: var(--green-deep);
+  color: var(--on-deep);
 }
 .water-fish {
   position: absolute;
@@ -207,7 +207,7 @@
   max-height: 210px;
   object-fit: contain;
   filter: invert(1) grayscale(1);
-  opacity: 0.09;
+  opacity: 0.08;
 }
 .water-heading,
 .water-specs,
@@ -217,14 +217,14 @@
 }
 .water-card h1,
 .water-card h2 {
-  color: #fff;
+  color: var(--on-deep);
 }
 .water-card h1 {
   margin: 12px 0 4px;
 }
 .water-spot {
-  color: #bed2cd;
-  font-size: 1.15rem;
+  color: var(--on-deep-soft);
+  font-size: 1rem;
 }
 .water-specs {
   display: grid;
@@ -237,18 +237,18 @@
   flex-direction: column;
   gap: 5px;
   padding: 13px;
-  border: 1px solid #43645f;
+  border: 1px solid var(--deep-line);
   border-radius: var(--radius-sm);
-  font-weight: 700;
+  font-weight: 600;
 }
 .water-specs small {
-  color: #acc5bf;
+  color: var(--on-deep-soft);
   font-weight: 500;
 }
 .water-card section {
   padding-top: 18px;
   margin-top: 18px;
-  border-top: 1px solid #35534f;
+  border-top: 1px solid var(--deep-line);
 }
 .water-card section p {
   line-height: 1.55;
@@ -256,9 +256,9 @@
 .current-step {
   padding: 19px !important;
   border: 0 !important;
-  border-left: 4px solid var(--mint) !important;
+  border-left: 3px solid var(--accent-light) !important;
   border-radius: var(--radius-sm);
-  background: #113b37;
+  background: var(--deep-raised);
 }
 .water-feedback {
   display: grid;
@@ -278,14 +278,14 @@
 .water-feedback button {
   min-height: 58px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
-  font-weight: 700;
+  font-weight: 600;
 }
 .water-feedback button:last-child {
-  background: var(--lime);
-  color: var(--lime-ink);
-  border-color: var(--lime);
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
 }
 @media (max-width: 760px) {
   .condition-summary {
@@ -347,33 +347,30 @@
 .logbook-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid #28534e;
-  border-radius: var(--radius);
-  background: var(--forest-deep);
-  color: #eef8f5;
-  overflow: hidden;
+  margin: 0;
+  border-block: 1px solid var(--ink);
 }
 .logbook-stats > div {
   display: flex;
   flex-direction: column-reverse;
-  gap: 8px;
-  padding: 25px;
+  gap: 2px;
+  padding: 14px 4px 12px;
 }
 .logbook-stats > div + div {
-  border-left: 1px solid #35534f;
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
 }
 .logbook-stats dt {
-  color: #bed2cd;
-  text-transform: uppercase;
-  font-size: 0.65rem;
-  letter-spacing: 0.13em;
+  color: var(--ink-soft);
+  font-size: 0.84rem;
 }
 .logbook-stats dd {
   margin: 0;
-  color: var(--mint);
-  font:
-    600 clamp(2.6rem, 8vw, 4.5rem)/1 'Barlow Condensed',
-    sans-serif;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  font-weight: 500;
+  line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 .collection-note {
@@ -405,10 +402,10 @@
   align-self: flex-start;
 }
 .water-card .overline {
-  color: var(--mint);
+  color: var(--accent-light);
 }
 .water-card h1 {
-  font-size: clamp(3rem, 9vw, 5rem);
+  font-size: clamp(2rem, 7vw, 2.8rem);
   overflow-wrap: anywhere;
 }
 .water-progress {
@@ -421,22 +418,22 @@
   list-style: none;
 }
 .water-progress li {
-  border-top: 2px solid #43645f;
+  border-top: 2px solid var(--deep-line);
   padding-top: 12px;
-  color: #bed2cd;
+  color: var(--on-deep-soft);
   font-size: 0.7rem;
   line-height: 1.45;
 }
 .water-progress li.current {
-  border-color: var(--mint);
-  color: var(--mint);
+  border-color: var(--accent-light);
+  color: var(--accent-light);
 }
 .water-progress span {
   display: block;
   margin-bottom: 4px;
-  font:
-    600 1.5rem 'Barlow Condensed',
-    sans-serif;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 .feedback {
   border: 0;
@@ -448,7 +445,7 @@
 }
 .feedback button:hover,
 .water-feedback button:hover {
-  border-color: var(--forest);
+  border-color: var(--green);
 }
 .feedback-summary {
   display: flex;
@@ -458,7 +455,7 @@
   margin: 20px 0 12px;
   padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius);
   background: var(--surface);
   font-size: 0.82rem;
 }
@@ -578,11 +575,11 @@
 .session-delete-button {
   min-height: 44px;
   border: 1px solid var(--danger);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   padding: 10px 16px;
   color: var(--danger);
   background: var(--surface);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 @media (max-width: 480px) {
@@ -646,7 +643,6 @@
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow-sm);
   margin-top: 16px;
 }
 .water-view .feedback-summary {
@@ -674,8 +670,8 @@
   padding: 24px;
 }
 .focused-plan h1 {
-  font-size: clamp(2.2rem, 6vw, 3rem);
-  margin: 12px 0;
+  font-size: clamp(1.9rem, 6vw, 2.4rem);
+  margin: 4px 0 6px;
 }
 .focused-plan .water-spot {
   font-size: 0.94rem;
@@ -692,12 +688,12 @@
   scroll-margin-top: 95px;
 }
 .focused-plan .current-step:focus {
-  outline: 3px solid var(--mint);
+  outline: 3px solid var(--accent-light);
   outline-offset: 4px;
 }
 .focused-plan .current-step h2 {
-  margin: 12px 0;
-  font-size: 2rem;
+  margin: 4px 0 8px;
+  font-size: 1.5rem;
 }
 .focused-plan .current-step p {
   font-size: 1rem;
@@ -707,7 +703,7 @@
 .focused-plan .current-step small {
   display: block;
   font-size: 0.88rem;
-  color: #d0e4dd;
+  color: var(--on-deep-soft);
   line-height: 1.6;
 }
 .focused-plan .water-progress {
@@ -724,13 +720,13 @@
 .step-setup {
   position: relative;
   z-index: 1;
-  border-top: 1px solid #43645f;
+  border-top: 1px solid var(--deep-line);
 }
 .starting-setup summary,
 .step-setup summary {
   min-height: 48px;
   padding-block: 12px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.94rem;
   cursor: pointer;
   line-height: 1.5;
@@ -742,7 +738,7 @@
 .weight-hint {
   font-size: 0.85rem;
   line-height: 1.6;
-  color: #c6dcd5;
+  color: var(--on-deep-soft);
 }
 .focused-plan .water-specs {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -760,7 +756,7 @@
   padding-top: 16px;
 }
 .starting-setup h2 {
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   margin-bottom: 10px;
 }
 .starting-setup section p {
@@ -798,7 +794,7 @@
   line-height: 1.6;
 }
 .switch-setup h3 {
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   margin: 18px 0 8px;
 }
 .switch-setup p {
@@ -813,7 +809,7 @@
   min-height: 48px;
   padding-block: 12px;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.6;
   cursor: pointer;
 }
@@ -823,14 +819,14 @@
 .focused-plan .switch-setup .switch-spot,
 .focused-plan .switch-specs dt,
 .legacy-step-note {
-  color: #c6dcd5;
+  color: var(--on-deep-soft);
 }
 .focused-plan .switch-setup h3 {
-  color: #fff;
+  color: var(--on-deep);
 }
 .focused-plan .switch-setup .brief-compromise {
-  color: #fff0cf;
-  background: #533e24;
+  color: #f6e6bf;
+  background: #4a3a1c;
 }
 .legacy-step-note {
   font-size: 0.85rem;
@@ -881,7 +877,7 @@
 .session-feedback .water-feedback button {
   min-height: 52px;
   padding: 8px;
-  border-radius: 14px;
+  border-radius: var(--radius);
   background: var(--surface-raised);
   border: 1px solid var(--line);
   color: var(--ink);
@@ -936,7 +932,7 @@
   }
 }
 
-/* Step clock below the current instruction. */
+/* Step clock below the current instruction, on the dark water card. */
 .step-clock {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -944,56 +940,56 @@
   gap: 12px;
   margin: 12px 0 4px;
   padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--surface-raised);
+  border: 1px solid var(--deep-line);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--on-deep);
 }
 .step-clock > svg {
-  color: var(--forest);
+  color: var(--accent-light);
 }
 .step-clock strong {
   display: block;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.6rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.5rem;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 .step-clock small {
   display: block;
-  margin-top: 3px;
-  color: var(--ink-soft);
-  font-size: 0.74rem;
+  margin-top: 4px;
+  color: var(--on-deep-soft);
+  font-size: 0.8rem;
 }
 .step-clock-bar {
   display: block;
-  height: 4px;
+  height: 3px;
   margin-top: 8px;
-  border-radius: 999px;
-  background: var(--surface-soft);
+  background: var(--deep-line);
   overflow: hidden;
 }
 .step-clock-bar > span {
   display: block;
   height: 100%;
-  border-radius: inherit;
-  background: var(--forest);
+  background: var(--on-deep-soft);
   transition: width 0.9s linear;
 }
 .step-clock.reached {
-  border-color: color-mix(in srgb, var(--lime) 60%, var(--line));
+  border-color: var(--accent-light);
 }
 .step-clock.reached .step-clock-bar > span {
-  background: var(--lime);
+  background: var(--accent-light);
 }
 .step-clock-restart {
   min-height: 40px;
   padding: 6px 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  border: 1px solid var(--deep-line);
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--ink);
-  font-size: 0.74rem;
-  font-weight: 700;
+  color: var(--on-deep);
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -1015,20 +1011,20 @@
   justify-content: center;
   gap: 3px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--ink-soft);
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 .water-tool-toggles button.selected {
-  border-color: color-mix(in srgb, var(--forest) 55%, var(--line));
-  background: color-mix(in srgb, var(--forest) 9%, var(--surface));
+  border-color: color-mix(in srgb, var(--green) 55%, var(--line));
+  background: color-mix(in srgb, var(--green) 9%, var(--surface));
   color: var(--ink);
 }
 .water-tool-toggles button.selected svg {
-  color: var(--forest);
+  color: var(--green);
 }
 .water-tools-hint {
   display: block;
@@ -1044,7 +1040,7 @@
 }
 .large-feedback .water-feedback button {
   min-height: 84px;
-  border-radius: 22px;
+  border-radius: var(--radius);
   font-size: 1.15rem;
 }
 .large-feedback .water-feedback .advance-step {
@@ -1060,7 +1056,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background: rgb(3 12 11 / 0.48);
+  background: rgb(20 23 20 / 0.5);
   animation: sheet-fade 0.2s ease-out;
 }
 .sheet {
@@ -1068,7 +1064,7 @@
   max-height: 88dvh;
   overflow: auto;
   padding: 22px 20px max(22px, env(safe-area-inset-bottom));
-  border-radius: 26px 26px 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   background: var(--surface);
   color: var(--ink);
   box-shadow: var(--shadow-lg);
@@ -1080,7 +1076,7 @@
   width: 42px;
   height: 4px;
   margin: -8px auto 16px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--line);
 }
 @keyframes sheet-up {
@@ -1099,9 +1095,10 @@
   gap: 12px;
 }
 .feedback-details > strong {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.6rem;
-  line-height: 1;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.2;
 }
 .feedback-details > span {
   margin-top: -6px;
@@ -1112,13 +1109,13 @@
   display: grid;
   gap: 6px;
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 .feedback-details input {
   min-height: 48px;
   padding: 10px 14px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius);
   background: var(--bg);
   color: var(--ink);
   font-size: 1rem;
@@ -1139,7 +1136,7 @@
     align-items: center;
   }
   .sheet {
-    border-radius: 26px;
+    border-radius: var(--radius);
   }
 }
 
@@ -1173,11 +1170,11 @@
   gap: 6px;
   padding: 6px 12px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--ink);
   font-size: 0.74rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -1211,11 +1208,11 @@
   display: none;
 }
 .logbook-insights > summary > svg:first-child {
-  color: var(--forest);
+  color: var(--green);
 }
 .logbook-insights > summary span {
   display: grid;
-  font-weight: 700;
+  font-weight: 600;
 }
 .logbook-insights > summary small {
   color: var(--ink-soft);
@@ -1230,7 +1227,7 @@
 }
 .insight-highlight {
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   background: var(--surface-soft);
   font-size: 0.84rem;
 }
@@ -1261,15 +1258,15 @@
   display: flex;
   height: 4px;
   margin-top: 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
   overflow: hidden;
 }
 .insight-bar .catches {
-  background: var(--lime);
+  background: var(--accent);
 }
 .insight-bar .bites {
-  background: var(--forest);
+  background: var(--green);
   opacity: 0.55;
 }
 .insight-note {

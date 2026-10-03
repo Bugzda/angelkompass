@@ -16,8 +16,8 @@ export function SessionCompletion({ session }: { session: FishingSession }) {
   const bites = session.feedback.filter(item => item.outcome === 'bite').length
   return (
     <section className="completion-card" aria-labelledby="completion-heading">
-      <span className="overline">DEIN RÜCKBLICK</span>
-      <h2 id="completion-heading">Session abgeschlossen.</h2>
+      <span className="overline">Rückblick</span>
+      <h2 id="completion-heading">Session abgeschlossen</h2>
       <p>
         {fishLabel[session.conditions.targetFish]} · {bites} {bites === 1 ? 'Biss' : 'Bisse'} · {catches}{' '}
         {catches === 1 ? 'Fang' : 'Fänge'}. Dein Angelplan und die Rückmeldungen sind auf diesem Gerät gespeichert.

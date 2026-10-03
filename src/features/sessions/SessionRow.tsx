@@ -76,7 +76,7 @@ export function SessionRow({ session, index }: { session: FishingSession; index:
         }}
       >
         <span className="journal-index" aria-hidden="true">
-          {String(index + 1).padStart(2, '0')}
+          {index + 1}
         </span>
         <Link viewTransition to={`/session/${session.id}`}>
           <div>

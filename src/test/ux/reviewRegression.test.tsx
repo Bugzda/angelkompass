@@ -255,8 +255,8 @@ describe('Session und Logbuch', () => {
     expect(screen.queryByRole('link', { name: /Barsch ·/ })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Hecht ·/ })).toBeInTheDocument()
     const stats = screen.getByLabelText('Statistik der angezeigten Sessions')
-    expect(within(stats).getByText('Fänge').parentElement).toHaveTextContent('00')
-    expect(within(stats).getByText('Bisse').parentElement).toHaveTextContent('01')
+    expect(within(stats).getByText('Fänge').parentElement).toHaveTextContent(/^Fänge0$/)
+    expect(within(stats).getByText('Bisse').parentElement).toHaveTextContent(/^Bisse1$/)
   })
 
   it('exportiert vollständige Snapshots und Rückmeldungen unverändert', () => {
