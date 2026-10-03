@@ -1,3 +1,11 @@
+## UX-Modernisierung · 3. Oktober 2026
+
+Ausgangsstand: `main` bei `dfa28ac`. Umgesetzt wurden alle Punkte aus dem App-Review: ruhigerer App-Rahmen (Offline-Leiste nur offline, Farbschema als Symbolknopf, dunkler Startbildschirm, App-Shortcuts samt `/aktiv`), Am-Wasser-Werkzeuge (Wake Lock, Schrittuhr ohne automatisches Weiterschalten, Vibration, große Tasten, optionale Fanglänge und Notiz), gespeicherte Angelstellen inklusive Datensicherung, beschreibende Auswertung im Logbuch, Wind und Luftdruck als reine Information, Bedingungs-Chips mit Sprung zum Feld, segmentierte Bedingungsfelder, kompaktere Köderbox, Seitenübergänge sowie Prettier und nach Bereichen gegliedertes CSS. Keine Änderung an Fachregeln, Regelgewichten, Ranking oder vorhandenen Snapshots. Neue optionale Felder sind abwärtskompatibel.
+
+338 Tests in 25 Dateien, TypeScript, Produktions-/PWA-Build und Routing-Validierung erfolgreich. Mobiler Gesamtablauf im integrierten Browser mit Wegwerfdaten geprüft. Lokale Commits auf `main`, nicht gepusht und nicht veröffentlicht. Details: [`docs/ux-modernisierung-2026-10-03.md`](docs/ux-modernisierung-2026-10-03.md).
+
+---
+
 ## UI-/UX-Fokus · 8. September 2026
 
 Ausgangsstand: `main` und `origin/main` bei `bd05089`. Die aktuelle Überarbeitung verkürzt Bedingungen und Köderauswahl, zeigt jede vorhandene Empfehlung einmal und stellt die aktuelle Anweisung am Wasser in den Vordergrund. Nach einem Wechsel bleiben ursprüngliches Setup und Snapshot ausdrücklich als Startplan erhalten. Navigation: Planen/Aktiver Plan, Köderbox und Logbuch. Bewertungsdetails einschließlich Quellen sind aufklappbar.

@@ -6,7 +6,7 @@ Vollständiger Übergabestand für neue Chats: [`PROJECT_CHECKPOINT.md`](PROJECT
 
 Mobile, lokal speichernde Entscheidungshilfe für das Uferangeln auf Barsch, Hecht und Zander am See.
 
-Aktuelle UI-/UX-Überarbeitung: [`docs/ux-fokus-2026-09-08.md`](docs/ux-fokus-2026-09-08.md). Kompakte Bedingungen und Köderbox, eindeutige Empfehlungskarten mit aufklappbaren Quellen, aktueller Handlungsschritt im Vordergrund und direkter Zugang zum aktiven Plan. Der [geführte Einstieg](docs/ux-angelplan-2026-09-05.md) umfasst auch Abschluss und Wiederholungsstart.
+Aktuelle Modernisierung: [`docs/ux-modernisierung-2026-10-03.md`](docs/ux-modernisierung-2026-10-03.md) mit Am-Wasser-Werkzeugen (Bildschirm an, Schrittuhr, Vibration, große Tasten, Fang-Details), gespeicherten Angelstellen, Auswertung im Logbuch, Seitenübergängen und neu gegliedertem CSS. Vorherige UI-/UX-Überarbeitung: [`docs/ux-fokus-2026-09-08.md`](docs/ux-fokus-2026-09-08.md). Kompakte Bedingungen und Köderbox, eindeutige Empfehlungskarten mit aufklappbaren Quellen, aktueller Handlungsschritt im Vordergrund und direkter Zugang zum aktiven Plan. Der [geführte Einstieg](docs/ux-angelplan-2026-09-05.md) umfasst auch Abschluss und Wiederholungsstart.
 
 Aktuelles Code-, Daten- und UI-Review: [`docs/review-2026-09-07.md`](docs/review-2026-09-07.md). Frühere Prüfung: [`docs/review-2026-09-05.md`](docs/review-2026-09-05.md).
 
@@ -17,7 +17,7 @@ pnpm install
 pnpm dev
 ```
 
-Qualitätsprüfung: `pnpm lint`, `pnpm test` und `pnpm build`. Der Build prüft zusätzlich den erzeugten Service Worker auf Startfehler, widersprüchliche Cacheeinträge und fehlende Offline-Dateien. Für einen vorhandenen Build: `pnpm pwa:validate`.
+Qualitätsprüfung: `pnpm lint`, `pnpm test` und `pnpm build`. Formatierung: `pnpm format` (Prettier; `pnpm format:check` prüft nur). Styles liegen nach Bereichen unter `src/ui/theme/` (Tokens, Basis, App-Rahmen, Komponenten, je Seite sowie `motion.css`). Der Build prüft zusätzlich den erzeugten Service Worker auf Startfehler, widersprüchliche Cacheeinträge und fehlende Offline-Dateien. Für einen vorhandenen Build: `pnpm pwa:validate`.
 
 Die Fachlogik liegt unabhängig von React unter `src/domain`. Das Barschprofil umfasst drei Spot-Typen und zehn Ködertypen, das Hechtprofil vier Spot-Typen und neun Ködertypen, das Zanderprofil vier Spot-Typen und vier Ködertypen. Das Zander-Regelwerk und seine Quellen sind in [`docs/zander-research-v1.0.0.md`](docs/zander-research-v1.0.0.md) dokumentiert. Optional ergänzt Open-Meteo aktuelle Wettervorschläge; es gibt kein Backend. `pnpm lint` prüft beide TypeScript-Projekte.
 
@@ -37,7 +37,11 @@ Das vollständige Wissensarchiv unter `research/` bleibt Referenzmaterial und wi
 
 ## Optionale Wetterübernahme
 
-Auf der Bedingungsseite lassen sich über Standortfreigabe oder Ortssuche aktuelle Wetterdaten abrufen. Nach einer Vorschau ergänzt „Offene Angaben ergänzen“ unbekannte Tageszeit- und Lichtangaben. Eigene Angaben bleiben erhalten und jederzeit änderbar. Lufttemperatur ersetzt keine Wassertemperatur. Ohne Netz bleibt die manuelle Eingabe verfügbar. Details und Grenzen: [`docs/wetteruebernahme.md`](docs/wetteruebernahme.md).
+Auf der Bedingungsseite lassen sich über Standortfreigabe oder Ortssuche aktuelle Wetterdaten abrufen. Nach einer Vorschau ergänzt „Offene Angaben ergänzen“ unbekannte Tageszeit- und Lichtangaben. Windrichtung und Luftdrucktendenz werden nur zur Information angezeigt. Eigene Angaben bleiben erhalten und jederzeit änderbar. Lufttemperatur ersetzt keine Wassertemperatur. Ohne Netz bleibt die manuelle Eingabe verfügbar. Details und Grenzen: [`docs/wetteruebernahme.md`](docs/wetteruebernahme.md).
+
+## Angelstellen
+
+Auf der Bedingungsseite lassen sich Trübung, Tiefe, Kraut und Struktur als Angelstelle merken und später vorausfüllen. Zeit, Licht, Temperatur und Aktivität werden jedes Mal neu erfasst. Die gewählte Stelle läuft neben den Bedingungen durch den Ablauf, erreicht aber weder die Engine noch die gespeicherten Bedingungen. Neue Sessions speichern nur eine Kopie des Namens.
 
 ## Lokale Sessions
 
@@ -47,13 +51,15 @@ Neue Angelpläne speichern Köder, vorhandene Größe, Beschwerung oder Köderge
 
 Nach dem letzten Wechselschritt bleibt die Session bis zum bewussten Abschluss aktiv. Bisse und Fänge können weiter erfasst und rückgängig gemacht werden; weitere Fortschaltungen sind gesperrt. Späte Rückmeldungen erscheinen in den Sessiondetails als „Nach dem Wechselplan“. Beim Rückgängigmachen eines späteren Bisses oder Fangs bleibt der Plan ausgeschöpft; erst die Rücknahme des letzten Wechsels führt zurück zu Schritt drei.
 
-Die letzte Rückmeldung einer aktiven Session lässt sich einschließlich des Phasenwechsels rückgängig machen. Das Logbuch bietet Filter nach Zielfisch, Biss-/Fangzähler und einen JSON-Export aller Session-Snapshots. Zum Löschen eines Eintrags nach links wischen oder das Drei-Punkte-Menü öffnen und „Endgültig löschen“ bestätigen. „Abbrechen“ erhält den Eintrag; die Bestätigung erfolgt innerhalb der App ohne Browserdialog. Bei einem Speicherfehler bleibt die Session erhalten und das Löschen kann erneut versucht werden. Die Köderbox bietet Suche, Zielfischfilter und eine Bestandsübersicht. Beim Bearbeiten der Bedingungen und beim Browser-Zurück bleiben Eingaben im Verlauf des aktuellen Tabs erhalten.
+Die Am-Wasser-Karte hält den Bildschirm wach, solange sie geöffnet ist (abschaltbar). Sie zeigt die Zeit im aktuellen Schritt und erinnert einmalig mit Vibration, wenn die im Schritt geplanten Minuten erreicht sind. Der Plan schaltet nie automatisch weiter. Große Tasten sind optional. Nach Biss oder Fang können Länge (nur beim Fang) und Notiz ergänzt werden, auch später auf der Sessionseite.
+
+Die letzte Rückmeldung einer aktiven Session lässt sich einschließlich des Phasenwechsels rückgängig machen. Das Logbuch bietet Filter nach Zielfisch, Biss-/Fangzähler und eine aufklappbare Auswertung nach Köder, Angelstelle, Trübung und Tageszeit. Sie ist rein beschreibend und verändert keine Empfehlungen. Der reine JSON-Export aller Session-Snapshots liegt unter Datensicherung. Zum Löschen eines Eintrags nach links wischen oder das Drei-Punkte-Menü öffnen und „Endgültig löschen“ bestätigen. „Abbrechen“ erhält den Eintrag; die Bestätigung erfolgt innerhalb der App ohne Browserdialog. Bei einem Speicherfehler bleibt die Session erhalten und das Löschen kann erneut versucht werden. Die Köderbox bietet Suche, Zielfischfilter und eine Bestandsübersicht. Beim Bearbeiten der Bedingungen und beim Browser-Zurück bleiben Eingaben im Verlauf des aktuellen Tabs erhalten.
 
 ## Datensicherung
 
-„Datensicherung & Wiederherstellung“ ist über Köderbox und Logbuch erreichbar, auch ohne vorhandene Sessions. Eine vollständige JSON-Sicherung enthält Bestand, Sessions und die ursprünglichen Speicherwerte einschließlich nicht lesbarer Einträge. Der Import unterstützt auch bisherige reine Session-Exporte. Nach einer Vorschau ergänzt er Ködergrößen und neue Sessions; lokale Sessions mit gleicher ID bleiben unverändert. Ist bereits ein Plan aktiv, werden zusätzlich importierte aktive Pläne als abgeschlossen übernommen.
+„Datensicherung & Wiederherstellung“ ist über Köderbox und Logbuch erreichbar, auch ohne vorhandene Sessions. Eine vollständige JSON-Sicherung enthält Bestand, Sessions, Angelstellen und die ursprünglichen Speicherwerte einschließlich nicht lesbarer Einträge. Ältere Sicherungen ohne Angelstellen bleiben lesbar. Der Import unterstützt auch bisherige reine Session-Exporte. Nach einer Vorschau ergänzt er Ködergrößen und neue Sessions; lokale Sessions mit gleicher ID bleiben unverändert. Ist bereits ein Plan aktiv, werden zusätzlich importierte aktive Pläne als abgeschlossen übernommen.
 
-Die App nutzt weiterhin lokalen Browser-Speicher (Bestand v3, Sessions v1) ohne Konto oder Serverdatenbank. Die Wiederherstellung prüft Änderungen seit der Vorschau und verwendet eine Rücksicherung für Schreibfehler und unterbrochene Importe. Nicht lesbare Originaleinträge bleiben erhalten, werden aber nicht automatisch aus einer Sicherung aktiviert. Browserdaten können vom Nutzer oder Betriebssystem gelöscht werden; wichtige Sicherungen deshalb außerhalb des Browsers aufbewahren. Format, Konfliktverhalten und Grenzen stehen im [aktuellen Review](docs/review-2026-09-07.md).
+Die App nutzt weiterhin lokalen Browser-Speicher (Bestand v3, Sessions v1, Angelstellen v1) ohne Konto oder Serverdatenbank. Die Wiederherstellung prüft Änderungen seit der Vorschau und verwendet eine Rücksicherung für Schreibfehler und unterbrochene Importe. Nicht lesbare Originaleinträge bleiben erhalten, werden aber nicht automatisch aus einer Sicherung aktiviert. Browserdaten können vom Nutzer oder Betriebssystem gelöscht werden; wichtige Sicherungen deshalb außerhalb des Browsers aufbewahren. Format, Konfliktverhalten und Grenzen stehen im [aktuellen Review](docs/review-2026-09-07.md).
 
 ## Veröffentlichung
 
