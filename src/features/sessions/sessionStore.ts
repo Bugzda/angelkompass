@@ -153,7 +153,13 @@ export function isSession(value: unknown): value is FishingSession {
     validStatus &&
     validDate(value.createdAt) &&
     validDate(value.updatedAt) &&
-    (value.completedAt === undefined || validDate(value.completedAt))
+    (value.completedAt === undefined || validDate(value.completedAt)) &&
+    (value.spot === undefined ||
+      (isRecord(value.spot) &&
+        typeof value.spot.id === 'string' &&
+        typeof value.spot.name === 'string' &&
+        value.spot.name.length > 0 &&
+        value.spot.name.length <= 60))
   )
 }
 
@@ -244,7 +250,11 @@ export const sessionStore = {
     cache = [...current()]
     listeners.forEach(listener => listener())
   },
-  create(conditions: Conditions, recommendation: Recommendation): FishingSession | undefined {
+  create(
+    conditions: Conditions,
+    recommendation: Recommendation,
+    spot?: { id: string; name: string },
+  ): FishingSession | undefined {
     emit()
     if (!isConditions(conditions) || !isRecommendation(recommendation)) return undefined
     if (current().some(session => session.status === 'active')) return undefined
@@ -260,6 +270,7 @@ export const sessionStore = {
       status: 'active',
       createdAt: now,
       updatedAt: now,
+      ...(spot && { spot: { id: spot.id, name: spot.name.slice(0, 60) } }),
     }
     return persist([session, ...current()]) ? session : undefined
   },

@@ -1,7 +1,7 @@
-import { INVENTORY_KEY, SESSION_KEY, RESTORE_JOURNAL_KEY } from './storageKeys'
+import { INVENTORY_KEY, SESSION_KEY, SPOT_KEY, RESTORE_JOURNAL_KEY } from './storageKeys'
 import { isRecord } from '../../domain/models/validation'
 
-export const DATA_KEYS = [INVENTORY_KEY, SESSION_KEY] as const
+export const DATA_KEYS = [INVENTORY_KEY, SESSION_KEY, SPOT_KEY] as const
 export type DataKey = (typeof DATA_KEYS)[number]
 export type StorageSnapshot = Record<DataKey, string | null>
 const JOURNAL_KEY = RESTORE_JOURNAL_KEY
@@ -15,7 +15,11 @@ export function assertStorageReady() {
 
 export function storageSnapshot(): StorageSnapshot {
   assertStorageReady()
-  return { [INVENTORY_KEY]: localStorage.getItem(INVENTORY_KEY), [SESSION_KEY]: localStorage.getItem(SESSION_KEY) }
+  return {
+    [INVENTORY_KEY]: localStorage.getItem(INVENTORY_KEY),
+    [SESSION_KEY]: localStorage.getItem(SESSION_KEY),
+    [SPOT_KEY]: localStorage.getItem(SPOT_KEY),
+  }
 }
 
 /** A write-ahead rollback journal also covers a tab closing between the two writes. */
@@ -31,10 +35,20 @@ export function recoverPendingRestore(): void {
   if (!isRecord(journal) || journal.schemaVersion !== 1 || !isRecord(journal.before))
     throw new Error('Die unterbrochene Wiederherstellung ist nicht lesbar.')
   const before = journal.before
-  if (!DATA_KEYS.every(key => before[key] === null || typeof before[key] === 'string'))
+  // Journals written before spots existed only cover inventory and sessions; absent keys stay untouched.
+  const required: readonly string[] = [INVENTORY_KEY, SESSION_KEY]
+  if (
+    !DATA_KEYS.every(
+      key =>
+        before[key] === null ||
+        typeof before[key] === 'string' ||
+        (before[key] === undefined && !required.includes(key)),
+    )
+  )
     throw new Error('Die unterbrochene Wiederherstellung ist unvollständig.')
   for (const key of DATA_KEYS) {
     const value = before[key]
+    if (value === undefined) continue
     if (value === null) localStorage.removeItem(key)
     else localStorage.setItem(key, value as string)
   }

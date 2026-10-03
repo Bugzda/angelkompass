@@ -229,4 +229,6 @@ export interface FishingSession {
   createdAt: string
   updatedAt: string
   completedAt?: string
+  /** Optional saved fishing spot chosen while planning; a name snapshot, independent of later edits. */
+  spot?: { id: string; name: string }
 }

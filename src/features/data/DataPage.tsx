@@ -4,6 +4,7 @@ import { Icon } from '../../ui/components/Icon'
 import { useInventory } from '../inventory/useInventory'
 import { useSessions } from '../sessions/useSessions'
 import { downloadSessions } from '../sessions/sessionExport'
+import { useSpots } from '../spots/spotStore'
 import {
   downloadBackup,
   parseBackup,
@@ -16,6 +17,7 @@ import {
 export function DataPage() {
   const { inventory, error: inventoryError } = useInventory()
   const { sessions, error: sessionError } = useSessions()
+  const { spots } = useSpots()
   const [preview, setPreview] = useState<{ name: string; backup: BackupData; plan: RestorePlan }>()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string>()
@@ -55,7 +57,7 @@ export function DataPage() {
     try {
       restoreBackup(preview.plan)
       setMessage(
-        `${preview.plan.addedSessions} Sessions und ${preview.plan.addedSizes} Ködergrößen ergänzt. Deine bisherigen Einträge bleiben erhalten.`,
+        `${preview.plan.addedSessions} Sessions, ${preview.plan.addedSizes} Ködergrößen und ${preview.plan.addedSpots} Angelstellen ergänzt. Deine bisherigen Einträge bleiben erhalten.`,
       )
       setPreview(undefined)
       setError(undefined)
@@ -93,14 +95,19 @@ export function DataPage() {
         <span>
           <strong>{sessions.length}</strong> {sessions.length === 1 ? 'Session' : 'Sessions'}
         </span>
+        {spots.length > 0 && (
+          <span>
+            <strong>{spots.length}</strong> {spots.length === 1 ? 'Angelstelle' : 'Angelstellen'}
+          </span>
+        )}
         <span className="local-badge">Auf diesem Gerät</span>
       </div>
       <article className="data-card">
         <span className="overline">01 · SICHERN</span>
         <h2>Alles in einer Datei.</h2>
         <p>
-          Speichere deine Ködergrößen, Angelpläne und Rückmeldungen. Eine Kopie außerhalb des Browsers bleibt auch nach
-          dem Löschen der Browserdaten erhalten.
+          Speichere deine Ködergrößen, Angelstellen, Angelpläne und Rückmeldungen. Eine Kopie außerhalb des Browsers
+          bleibt auch nach dem Löschen der Browserdaten erhalten.
         </p>
         <button
           className="primary"
@@ -164,6 +171,7 @@ export function DataPage() {
             <ul>
               <li>{preview.plan.addedSessions} neue Sessions</li>
               <li>{preview.plan.addedSizes} zusätzliche Ködergrößen</li>
+              {preview.plan.addedSpots > 0 && <li>{preview.plan.addedSpots} neue Angelstellen</li>}
               <li>{preview.plan.skippedSessions} vorhandene Sessions bleiben unverändert</li>
             </ul>
             {preview.plan.archivedSessions > 0 && (
@@ -181,7 +189,7 @@ export function DataPage() {
             <div className="action-row">
               <button
                 className="primary"
-                disabled={!preview.plan.addedSessions && !preview.plan.addedSizes}
+                disabled={!preview.plan.addedSessions && !preview.plan.addedSizes && !preview.plan.addedSpots}
                 onClick={restore}
               >
                 Daten ergänzen

@@ -3,7 +3,11 @@ import type { FishingSession } from '../../domain/models/types'
 import { fishLabel } from '../../domain/species/profiles'
 
 export function repeatConditions(session: FishingSession) {
-  return { ...session.conditions, pikeSafetyConfirmed: session.conditions.targetFish === 'pike' ? false : undefined }
+  return {
+    ...session.conditions,
+    pikeSafetyConfirmed: session.conditions.targetFish === 'pike' ? false : undefined,
+    ...(session.spot && { spotRef: session.spot }),
+  }
 }
 
 export function SessionCompletion({ session }: { session: FishingSession }) {

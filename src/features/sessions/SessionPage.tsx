@@ -1,4 +1,4 @@
-import { SessionCompletion } from './SessionCompletion'
+import { SessionCompletion, repeatConditions } from './SessionCompletion'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { FeedbackOutcome, FishingSession } from '../../domain/models/types'
@@ -69,12 +69,7 @@ function SessionDetails({ session }: { session: FishingSession }) {
   }, [session.progress])
   const restart = () => {
     if (sessionStore.complete(session.id))
-      navigate(`/neu/${session.conditions.targetFish}`, {
-        state: {
-          ...session.conditions,
-          pikeSafetyConfirmed: session.conditions.targetFish === 'pike' ? false : undefined,
-        },
-      })
+      navigate(`/neu/${session.conditions.targetFish}`, { state: repeatConditions(session) })
   }
   const presentation = presentationForDisplay(session.recommendation.setup)
   return (
@@ -87,6 +82,12 @@ function SessionDetails({ session }: { session: FishingSession }) {
           <p>
             {session.recommendation.spot.spot.label} · Rang {session.recommendation.rank}
           </p>
+          {session.spot && (
+            <p className="session-spot">
+              <Icon name="pin" size={16} />
+              {session.spot.name}
+            </p>
+          )}
         </div>
         <span className={`session-status ${session.status}`}>{active ? 'Aktiv' : 'Abgeschlossen'}</span>
       </div>

@@ -12,6 +12,10 @@ export interface WeatherSuggestion {
   temperature: number | null
   wind: number | null
   precipitation: number | null
+  /** Information only: shown to the angler, never passed to the recommendation engine. */
+  windDirection?: number | null
+  pressure?: number | null
+  pressureTrend?: 'rising' | 'falling' | 'steady' | null
 }
 const record = (value: unknown): Record<string, unknown> =>
   value !== null && typeof value === 'object' ? (value as Record<string, unknown>) : {}
@@ -53,8 +57,29 @@ export function parseWeather(value: unknown, now = Date.now()): WeatherSuggestio
     temperature: number(current.temperature_2m),
     wind: number(current.wind_speed_10m),
     precipitation: number(current.precipitation),
+    windDirection: number(current.wind_direction_10m),
+    pressure: number(current.pressure_msl),
+    pressureTrend: pressureTrend(record(data.hourly), timestamp, number(current.pressure_msl)),
   }
 }
+
+/** Three-hour pressure tendency from hourly model values; ±1 hPa counts as steady. */
+export function pressureTrend(hourly: Record<string, unknown>, timestamp: number, pressure: number | null) {
+  if (pressure === null || !Array.isArray(hourly.time) || !Array.isArray(hourly.pressure_msl)) return null
+  let best: { delta: number; value: number } | undefined
+  hourly.time.forEach((time, index) => {
+    const value = number((hourly.pressure_msl as unknown[])[index])
+    if (typeof time !== 'number' || value === null) return
+    const delta = Math.abs(timestamp - time - 3 * 3600)
+    if (delta <= 3600 && (!best || delta < best.delta)) best = { delta, value }
+  })
+  if (!best) return null
+  const change = pressure - best.value
+  return change >= 1 ? 'rising' : change <= -1 ? 'falling' : 'steady'
+}
+
+const directions = ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW']
+export const compassLabel = (degrees: number) => directions[Math.round((((degrees % 360) + 360) % 360) / 45) % 8]
 
 export function applyWeather(conditions: Conditions, suggestion: WeatherSuggestion): Conditions {
   return {
@@ -98,7 +123,9 @@ export async function loadWeather(place: WeatherPlace, signal: AbortSignal): Pro
   url.search = new URLSearchParams({
     latitude: place.latitude.toFixed(2),
     longitude: place.longitude.toFixed(2),
-    current: 'temperature_2m,cloud_cover,is_day,wind_speed_10m,precipitation',
+    current: 'temperature_2m,cloud_cover,is_day,wind_speed_10m,wind_direction_10m,precipitation,pressure_msl',
+    hourly: 'pressure_msl',
+    past_hours: '4',
     daily: 'sunrise,sunset',
     timezone: 'auto',
     timeformat: 'unixtime',

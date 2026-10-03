@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { timeDefaults } from './timeDefaults'
 import { WeatherAssist } from './WeatherAssist'
@@ -9,83 +9,11 @@ import { fishLabel } from '../../domain/species/profiles'
 import type { ActivitySign, Conditions, ObservableStructure, TargetFish } from '../../domain/models/types'
 import { Icon } from '../../ui/components/Icon'
 import { isConditions } from '../../domain/models/validation'
+import { ChoiceField } from './ChoiceField'
+import { type ChoiceKey, activityOptions, choices, structures } from './conditionOptions'
+import { conditionsOnly, readSpotRef, withSpot } from '../spots/planningState'
+import { SpotPicker } from '../spots/SpotPicker'
 
-const choices = {
-  season: [
-    ['spring', 'Frühling'],
-    ['summer', 'Sommer'],
-    ['autumn', 'Herbst'],
-    ['winter', 'Winter'],
-  ],
-  timeOfDay: [
-    ['dawn', 'Morgen'],
-    ['day', 'Tag'],
-    ['dusk', 'Abend'],
-    ['night', 'Nacht'],
-    ['unknown', 'Unbekannt'],
-  ],
-  turbidity: [
-    ['clear', 'Klar'],
-    ['slightly_turbid', 'Leicht trüb'],
-    ['turbid', 'Trüb'],
-    ['unknown', 'Unbekannt'],
-  ],
-  depth: [
-    ['shallow', 'Flach'],
-    ['medium', 'Mittel'],
-    ['deep', 'Tief'],
-    ['unknown', 'Unbekannt'],
-  ],
-  waterTemperature: [
-    ['cold', 'Kalt · bis 8 °C'],
-    ['cool', 'Kühl · 9–12 °C'],
-    ['mild', 'Mild · 13–18 °C'],
-    ['warm', 'Warm · 19–23 °C'],
-    ['hot', 'Heiß · über 23 °C'],
-    ['unknown', 'Unbekannt'],
-  ],
-  light: [
-    ['bright', 'Hell'],
-    ['diffuse', 'Diffus/bewölkt'],
-    ['dark', 'Dunkel'],
-    ['unknown', 'Unbekannt'],
-  ],
-  vegetation: [
-    ['none', 'Kein Kraut'],
-    ['edgeOrGaps', 'Lockere Kante/Lücken'],
-    ['dense', 'Sehr dicht'],
-    ['unknown', 'Unbekannt'],
-  ],
-} as const
-const labels = {
-  season: 'Jahreszeit',
-  timeOfDay: 'Tageszeit',
-  turbidity: 'Wassertrübung',
-  depth: 'Angeltiefe',
-  waterTemperature: 'Wassertemperatur',
-  light: 'Lichtverhältnis',
-  vegetation: 'Krautbild',
-} as const
-const structures = (fish: TargetFish): Array<[ObservableStructure, string]> => [
-  ['shallow', 'Flachzone'],
-  ['dropoff', 'Tiefenkante'],
-  ...(fish !== 'perch'
-    ? [
-        ['hardCover', fish === 'zander' ? 'Steinpackung oder harter Grund' : 'Holz, Steg oder harte Deckung'] as [
-          ObservableStructure,
-          string,
-        ],
-      ]
-    : []),
-]
-const activityOptions = (fish: TargetFish): Array<[ActivitySign, string]> => [
-  ['baitfish', 'Kleinfisch sichtbar'],
-  [
-    fish === 'pike' ? 'pikeContact' : fish === 'zander' ? 'zanderContact' : 'huntingPerch',
-    fish === 'pike' ? 'Hecht/Raubfischkontakt' : fish === 'zander' ? 'Zanderkontakt' : 'Jagende Barsche',
-  ],
-  ['surfaceActivity', 'Oberflächenaktivität'],
-]
 const initial = (fish: TargetFish): Conditions => ({
   targetFish: fish,
   waterType: 'lake',
@@ -112,42 +40,37 @@ function SituationForm({ fish }: { fish: TargetFish }) {
   const navigate = useNavigate()
   const { inventory, error: inventoryError } = useInventory()
   const fishInventory = inventory.filter(item => item.targetFish === fish)
-  const [conditions, setConditions] = useState(() =>
-    isConditions(location.state) && location.state.targetFish === fish ? location.state : initial(fish),
+  const [conditions, setConditions] = useState<Conditions>(() =>
+    isConditions(location.state) && location.state.targetFish === fish ? conditionsOnly(location.state) : initial(fish),
   )
+  const [spot, setSpot] = useState(() =>
+    isConditions(location.state) && location.state.targetFish === fish ? readSpotRef(location.state) : undefined,
+  )
+  const initialHash = useRef(location.hash.slice(1))
   const [automaticTime, setAutomaticTime] = useState(
     () => !(isConditions(location.state) && location.state.targetFish === fish),
   )
-  const [timeExpanded, setTimeExpanded] = useState(false)
+  const [timeExpanded, setTimeExpanded] = useState(() => ['season', 'timeOfDay'].includes(initialHash.current))
+  const planningState = withSpot(conditions, spot)
   useEffect(() => {
-    navigate(location.pathname, { replace: true, state: conditions })
-  }, [conditions, location.pathname, navigate])
+    navigate(location.pathname, { replace: true, state: withSpot(conditions, spot) })
+  }, [conditions, spot, location.pathname, navigate])
+  // Deep links from the plan summary (e.g. #turbidity) open the matching field directly.
+  useEffect(() => {
+    const target = initialHash.current && document.getElementById(`field-${initialHash.current}`)
+    if (!target) return
+    target.scrollIntoView?.({ block: 'center' })
+    const focusTarget =
+      target.querySelector<HTMLElement>('button[aria-pressed="true"]') ?? target.querySelector<HTMLElement>('button')
+    focusTarget?.focus({ preventScroll: true })
+  }, [])
 
-  const select = (key: keyof typeof choices, value: string) => {
+  const select = (key: ChoiceKey, value: string) => {
     if (key === 'timeOfDay') setAutomaticTime(false)
     setConditions(current => ({ ...current, [key]: value }))
   }
-  const choiceField = (key: keyof typeof choices) => (
-    <fieldset key={key}>
-      <legend>{labels[key]}</legend>
-      <div className="chips">
-        {choices[key].map(([value, label]) => {
-          const selected = conditions[key] === value
-          return (
-            <button
-              type="button"
-              key={value}
-              aria-pressed={selected}
-              className={selected ? 'selected' : ''}
-              onClick={() => select(key, value)}
-            >
-              {selected && <Icon name="check" size={15} />}
-              <span>{label}</span>
-            </button>
-          )
-        })}
-      </div>
-    </fieldset>
+  const choiceField = (key: ChoiceKey) => (
+    <ChoiceField key={key} field={key} value={conditions[key]} onSelect={value => select(key, value)} />
   )
   const toggleStructure = (value: ObservableStructure) =>
     setConditions(current => {
@@ -185,7 +108,7 @@ function SituationForm({ fish }: { fish: TargetFish }) {
             ? `${fishInventory.length} ${fishInventory.length === 1 ? 'Ködertyp' : 'Ködertypen'} bereit`
             : 'Noch keine Köder ausgewählt'}
         </span>
-        <Link to="/bestand" state={{ draftConditions: conditions }}>
+        <Link to="/bestand" state={{ draftConditions: planningState }}>
           {fishInventory.length ? 'Köder prüfen' : 'Köder auswählen'}
           <Icon name="arrow-right" size={18} />
         </Link>
@@ -219,6 +142,14 @@ function SituationForm({ fish }: { fish: TargetFish }) {
           </p>
         </div>
       </section>
+      <SpotPicker
+        conditions={conditions}
+        spot={spot}
+        onChange={(next, nextSpot) => {
+          setConditions(next)
+          setSpot(nextSpot)
+        }}
+      />
       <div className="form-grid">
         <section className="observation-group">
           <header>
@@ -230,7 +161,7 @@ function SituationForm({ fish }: { fish: TargetFish }) {
           <header>
             <h2>Direkte Beobachtungen</h2>
           </header>
-          <fieldset>
+          <fieldset id="field-activity" tabIndex={-1}>
             <legend>
               Aktivitätsanzeichen <small>mehrfach möglich</small>
             </legend>
@@ -267,7 +198,7 @@ function SituationForm({ fish }: { fish: TargetFish }) {
               ))}
             </div>
           </fieldset>
-          <fieldset>
+          <fieldset id="field-structure" tabIndex={-1}>
             <legend>
               Weitere sichtbare Struktur <small>optional, mehrfach</small>
             </legend>
@@ -328,7 +259,7 @@ function SituationForm({ fish }: { fish: TargetFish }) {
       <button
         className="primary sticky-action"
         disabled={fish === 'pike' && !conditions.pikeSafetyConfirmed}
-        onClick={() => navigate('/empfehlung', { state: conditions })}
+        onClick={() => navigate('/empfehlung', { state: planningState })}
       >
         Empfehlungen berechnen →
       </button>

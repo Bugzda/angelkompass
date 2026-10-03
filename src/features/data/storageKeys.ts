@@ -1,3 +1,4 @@
 export const INVENTORY_KEY = 'angelkompass.inventory.v3'
 export const SESSION_KEY = 'angelkompass.sessions.v1'
 export const RESTORE_JOURNAL_KEY = 'angelkompass.restore.pending.v1'
+export const SPOT_KEY = 'angelkompass.spots.v1'

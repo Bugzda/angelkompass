@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { loadWeather, searchPlaces, type WeatherPlace, type WeatherSuggestion } from './weather'
+import { compassLabel, loadWeather, searchPlaces, type WeatherPlace, type WeatherSuggestion } from './weather'
 import { Icon } from '../../ui/components/Icon'
+
+const trendLabels = { rising: 'steigend', falling: 'fallend', steady: 'gleichbleibend' } as const
 
 export function WeatherAssist({ onApply }: { onApply: (suggestion: WeatherSuggestion) => void }) {
   const [expanded, setExpanded] = useState(false)
@@ -176,11 +178,53 @@ export function WeatherAssist({ onApply }: { onApply: (suggestion: WeatherSugges
               Wettermodell · Stand {new Date(result.weather.timestamp * 1000).toLocaleString('de-DE')} (deine
               Gerätezeit)
             </p>
-            <p>
-              {result.weather.temperature !== null && `Luft ${result.weather.temperature} °C · `}
-              {result.weather.wind !== null && `Wind ${result.weather.wind} km/h · `}
-              {result.weather.precipitation !== null && `Niederschlag ${result.weather.precipitation} mm`}
-            </p>
+            <dl className="weather-facts">
+              {result.weather.temperature !== null && (
+                <div>
+                  <dt>
+                    <Icon name="thermo" size={16} />
+                    Luft
+                  </dt>
+                  <dd>{result.weather.temperature} °C</dd>
+                </div>
+              )}
+              {result.weather.wind !== null && (
+                <div>
+                  <dt>
+                    <Icon name="wind" size={16} />
+                    Wind
+                  </dt>
+                  <dd>
+                    {result.weather.wind} km/h
+                    {result.weather.windDirection != null && ` aus ${compassLabel(result.weather.windDirection)}`}
+                  </dd>
+                </div>
+              )}
+              {result.weather.pressure != null && (
+                <div>
+                  <dt>
+                    <Icon name="gauge" size={16} />
+                    Luftdruck
+                  </dt>
+                  <dd>
+                    {Math.round(result.weather.pressure)} hPa
+                    {result.weather.pressureTrend && ` · ${trendLabels[result.weather.pressureTrend]}`}
+                  </dd>
+                </div>
+              )}
+              {result.weather.precipitation !== null && (
+                <div>
+                  <dt>
+                    <Icon name="drop" size={16} />
+                    Niederschlag
+                  </dt>
+                  <dd>{result.weather.precipitation} mm</dd>
+                </div>
+              )}
+            </dl>
+            <small className="weather-info-note">
+              Wind und Luftdruck sind nur zur Information und fließen nicht in die Empfehlung ein.
+            </small>
             <p>
               Vorschlag: {labels[result.weather.timeOfDay]} · {labels[result.weather.light]}
             </p>

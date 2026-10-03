@@ -329,3 +329,43 @@
 .option-heading .inventory-status {
   font-size: 0.75rem;
 }
+
+/* Condition recap; each chip links back to its field. */
+.condition-chips {
+  display: flex;
+  gap: 6px;
+  margin: -14px 0 22px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  mask-image: linear-gradient(90deg, #000 88%, transparent);
+}
+.condition-chips::-webkit-scrollbar {
+  display: none;
+}
+.condition-chips a {
+  flex: none;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.condition-chips a:hover {
+  border-color: var(--forest);
+}
+.condition-chips a.unknown {
+  border-style: dashed;
+  color: var(--ink-soft);
+}
+.condition-chips .condition-edit {
+  width: 36px;
+  justify-content: center;
+  padding: 0;
+  margin-right: 24px;
+}

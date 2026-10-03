@@ -1180,3 +1180,102 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+.session-spot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+/* Personal logbook insights. */
+.logbook-insights {
+  margin: 18px 0 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.logbook-insights > summary {
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  list-style: none;
+}
+.logbook-insights > summary::-webkit-details-marker {
+  display: none;
+}
+.logbook-insights > summary > svg:first-child {
+  color: var(--forest);
+}
+.logbook-insights > summary span {
+  display: grid;
+  font-weight: 700;
+}
+.logbook-insights > summary small {
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+.logbook-insights[open] > summary > svg:last-child {
+  transform: rotate(180deg);
+}
+.logbook-insights > :not(summary) {
+  margin-inline: 18px;
+}
+.insight-highlight {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  font-size: 0.84rem;
+}
+.insight-table {
+  width: calc(100% - 36px);
+  margin-top: 12px;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.insight-table th,
+.insight-table td {
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.insight-table thead th {
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.insight-table th:first-child {
+  width: 52%;
+  text-align: left;
+}
+.insight-bar {
+  display: flex;
+  height: 4px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  overflow: hidden;
+}
+.insight-bar .catches {
+  background: var(--lime);
+}
+.insight-bar .bites {
+  background: var(--forest);
+  opacity: 0.55;
+}
+.insight-note {
+  display: block;
+  margin-block: 12px 16px;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}

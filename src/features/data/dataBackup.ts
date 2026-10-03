@@ -10,11 +10,14 @@ import {
 } from '../inventory/inventoryStorage'
 import { SESSION_KEY, isSession, parseSessions, sessionStore } from '../sessions/sessionStore'
 import { downloadJson } from './downloadJson'
+import { SPOT_KEY } from './storageKeys'
+import { type FishingSpot, isSpot, parseSpots, spotStore } from '../spots/spotStore'
 import { storageSnapshot, writeDataTransaction, type StorageSnapshot } from './storageTransaction'
 
 export interface BackupData {
   inventory: InventoryItem[]
   sessions: FishingSession[]
+  spots: FishingSpot[]
   exportedAt: string
   hasRecoveryData: boolean
 }
@@ -25,13 +28,15 @@ export interface RestorePlan {
   skippedSessions: number
   archivedSessions: number
   addedSizes: number
+  addedSpots: number
 }
 
 export function serializeBackup(): string {
   const originalStorage: Record<string, string | null> = { ...storageSnapshot() }
   for (const key of LEGACY_INVENTORY_KEYS) originalStorage[key] = localStorage.getItem(key)
   let inventory: InventoryItem[] = [],
-    sessions: FishingSession[] = []
+    sessions: FishingSession[] = [],
+    spots: FishingSpot[] = []
   try {
     inventory = loadInventory().items
   } catch {
@@ -39,6 +44,11 @@ export function serializeBackup(): string {
   }
   try {
     sessions = parseSessions(originalStorage[SESSION_KEY] ?? '{"schemaVersion":1,"sessions":[]}').sessions
+  } catch {
+    /* raw data is included below */
+  }
+  try {
+    spots = parseSpots(originalStorage[SPOT_KEY] ?? '{"schemaVersion":1,"spots":[]}').spots
   } catch {
     /* raw data is included below */
   }
@@ -50,6 +60,7 @@ export function serializeBackup(): string {
       exportedAt: new Date().toISOString(),
       inventory,
       sessions,
+      spots,
       originalStorage,
     },
     null,
@@ -85,11 +96,16 @@ export function parseBackup(raw: string): BackupData {
     throw new Error('Die Sicherung enthält ungültige Köderangaben.')
   if (new Set(value.sessions.map(session => session.id)).size !== value.sessions.length)
     throw new Error('Die Sicherung enthält doppelte Session-IDs.')
+  // Backups created before spots existed simply have no spot list.
+  const spots: unknown = value.format === 'full-backup' && value.spots !== undefined ? value.spots : []
+  if (!Array.isArray(spots) || !spots.every(isSpot) || new Set(spots.map(spot => spot.id)).size !== spots.length)
+    throw new Error('Die Sicherung enthält ungültige Angelstellen.')
   let hasRecoveryData = false
   if (isRecord(value.originalStorage)) {
     for (const [key, parse] of [
       [INVENTORY_KEY, parseInventory],
       [SESSION_KEY, parseSessions],
+      [SPOT_KEY, parseSpots],
     ] as const) {
       const original = value.originalStorage[key]
       if (typeof original !== 'string') continue
@@ -103,6 +119,7 @@ export function parseBackup(raw: string): BackupData {
   return {
     inventory: mergeInventory(inventory),
     sessions: value.sessions,
+    spots,
     exportedAt: value.exportedAt,
     hasRecoveryData,
   }
@@ -141,12 +158,23 @@ export function planRestore(backup: BackupData): RestorePlan {
     }
     addedSessions++
   }
+  const localSpots = parseSpots(before[SPOT_KEY] ?? '{"schemaVersion":1,"spots":[]}')
+  const spotIds = new Set(
+    [...localSpots.spots, ...localSpots.retained].flatMap(item =>
+      isRecord(item) && typeof item.id === 'string' ? [item.id] : [],
+    ),
+  )
+  const newSpots = backup.spots.filter(spot => !spotIds.has(spot.id))
   return {
     before,
     after: {
       [INVENTORY_KEY]: JSON.stringify({ schemaVersion: 3, items: [...mergedInventory, ...inventory.retained] }),
       [SESSION_KEY]: JSON.stringify({ schemaVersion: 1, sessions: [...sessions, ...local.retained] }),
+      [SPOT_KEY]: newSpots.length
+        ? JSON.stringify({ schemaVersion: 1, spots: [...localSpots.spots, ...newSpots, ...localSpots.retained] })
+        : before[SPOT_KEY],
     },
+    addedSpots: newSpots.length,
     addedSessions,
     skippedSessions,
     archivedSessions,
@@ -160,5 +188,6 @@ export function restoreBackup(plan: RestorePlan) {
   } finally {
     window.dispatchEvent(new Event('angelkompass:inventory'))
     sessionStore.refresh()
+    spotStore.refresh()
   }
 }
