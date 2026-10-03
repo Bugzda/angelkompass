@@ -9,6 +9,7 @@ import {
   parseInventory,
 } from '../inventory/inventoryStorage'
 import { SESSION_KEY, isSession, parseSessions, sessionStore } from '../sessions/sessionStore'
+import { markBackupCreated } from './backupStatus'
 import { downloadJson } from './downloadJson'
 import { SPOT_KEY } from './storageKeys'
 import { type FishingSpot, isSpot, parseSpots, spotStore } from '../spots/spotStore'
@@ -68,8 +69,37 @@ export function serializeBackup(): string {
   )
 }
 
+const backupFilename = () => `angelkompass-sicherung-${new Date().toISOString().slice(0, 10)}.json`
+
 export function downloadBackup() {
-  downloadJson(serializeBackup(), `angelkompass-sicherung-${new Date().toISOString().slice(0, 10)}.json`)
+  downloadJson(serializeBackup(), backupFilename())
+  markBackupCreated()
+}
+
+/** True when the system share sheet accepts a JSON file (e.g. „In Dateien sichern“ on iOS). */
+export function canShareBackup() {
+  try {
+    return (
+      typeof navigator.share === 'function' &&
+      typeof navigator.canShare === 'function' &&
+      navigator.canShare({ files: [new File(['{}'], 'probe.json', { type: 'application/json' })] })
+    )
+  } catch {
+    return false
+  }
+}
+
+/** Opens the share sheet with the full backup. Resolves false when the user closes the sheet. */
+export async function shareBackup(): Promise<boolean> {
+  const file = new File([serializeBackup()], backupFilename(), { type: 'application/json' })
+  try {
+    await navigator.share({ files: [file], title: 'Angelkompass-Sicherung' })
+  } catch (cause) {
+    if (cause instanceof DOMException && cause.name === 'AbortError') return false
+    throw cause
+  }
+  markBackupCreated()
+  return true
 }
 
 export function parseBackup(raw: string): BackupData {

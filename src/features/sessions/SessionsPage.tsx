@@ -6,6 +6,7 @@ import { useState } from 'react'
 import type { TargetFish } from '../../domain/models/types'
 import { LogbookInsights } from './LogbookInsights'
 import { SessionRow } from './SessionRow'
+import { BackupReminder } from '../data/BackupReminder'
 
 export function SessionsPage() {
   const { sessions, error } = useSessions()
@@ -32,6 +33,7 @@ export function SessionsPage() {
           {error}
         </p>
       )}
+      <BackupReminder />
       {sessions.length > 0 && (
         <>
           <div className="collection-toolbar">

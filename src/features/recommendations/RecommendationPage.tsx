@@ -1,3 +1,4 @@
+import { requestPersistenceOnce } from '../data/storagePersistence'
 import { useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PlanProgress } from '../../ui/components/PlanProgress'
@@ -38,7 +39,10 @@ export function RecommendationPage() {
     )
   const start = (recommendation: Recommendation) => {
     const session = sessionStore.create(conditions, recommendation, spot)
-    if (session) navigate(`/session/${session.id}/karte`, { viewTransition: true })
+    if (!session) return
+    // The first saved session is real user data: ask the browser not to evict it under storage pressure.
+    requestPersistenceOnce()
+    navigate(`/session/${session.id}/karte`, { viewTransition: true })
   }
   const planningState = withSpot(conditions, spot)
   return (

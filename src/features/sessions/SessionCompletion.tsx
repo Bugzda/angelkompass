@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { FishingSession } from '../../domain/models/types'
 import { fishLabel } from '../../domain/species/profiles'
+import { BackupReminder } from '../data/BackupReminder'
 
 export function repeatConditions(session: FishingSession) {
   return {
@@ -35,6 +36,7 @@ export function SessionCompletion({ session }: { session: FishingSession }) {
         </Link>
       </div>
       <small>Prüfe vor dem nächsten Start, was sich am Wasser verändert hat.</small>
+      <BackupReminder />
     </section>
   )
 }

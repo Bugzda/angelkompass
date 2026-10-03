@@ -5,11 +5,15 @@ import { useInventory } from '../inventory/useInventory'
 import { useSessions } from '../sessions/useSessions'
 import { downloadSessions } from '../sessions/sessionExport'
 import { useSpots } from '../spots/spotStore'
+import { useBackupStatus } from './backupStatus'
+import { persistenceState, requestPersistence, type PersistenceState } from './storagePersistence'
 import {
+  canShareBackup,
   downloadBackup,
   parseBackup,
   planRestore,
   restoreBackup,
+  shareBackup,
   type BackupData,
   type RestorePlan,
 } from './dataBackup'
@@ -23,12 +27,19 @@ export function DataPage() {
   const [error, setError] = useState<string>()
   const [message, setMessage] = useState<string>()
   const request = useRef(0)
-  useEffect(
-    () => () => {
+  const { lastBackupAt } = useBackupStatus()
+  const [shareable] = useState(canShareBackup)
+  const [persistence, setPersistence] = useState<PersistenceState>()
+  useEffect(() => {
+    let active = true
+    void persistenceState().then(state => {
+      if (active) setPersistence(state)
+    })
+    return () => {
+      active = false
       request.current++
-    },
-    [],
-  )
+    }
+  }, [])
   const failure = (cause: unknown) =>
     setError(cause instanceof Error ? cause.message : 'Die Datei konnte nicht verarbeitet werden.')
   async function inspect(file?: File) {
@@ -109,8 +120,33 @@ export function DataPage() {
           Speichere deine Ködergrößen, Angelstellen, Angelpläne und Rückmeldungen. Eine Kopie außerhalb des Browsers
           bleibt auch nach dem Löschen der Browserdaten erhalten.
         </p>
+        <p className="backup-last" role="status">
+          <Icon name={lastBackupAt ? 'check' : 'help'} size={16} />
+          {lastBackupAt
+            ? `Letzte Sicherung: ${new Date(lastBackupAt).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' })}`
+            : 'Auf diesem Gerät wurde noch keine Sicherung erstellt.'}
+        </p>
+        {shareable && (
+          <button
+            className="primary"
+            onClick={async () => {
+              try {
+                if (await shareBackup()) {
+                  setError(undefined)
+                  setMessage(
+                    'Sicherung übergeben. Lege sie am besten in Dateien, iCloud Drive oder einem anderen Speicher ab.',
+                  )
+                }
+              } catch {
+                setError('Die Sicherung konnte nicht geteilt werden. Versuche den Download.')
+              }
+            }}
+          >
+            <Icon name="share" size={18} /> Sicherung teilen oder in Dateien sichern
+          </button>
+        )}
         <button
-          className="primary"
+          className={shareable ? 'secondary backup-download' : 'primary'}
           onClick={() => {
             try {
               downloadBackup()
@@ -201,6 +237,32 @@ export function DataPage() {
           </div>
         )}
       </article>
+      {persistence && persistence !== 'unsupported' && (
+        <article className="data-card storage-protection">
+          <span className="overline">03 · SPEICHERSCHUTZ</span>
+          <h2>{persistence === 'persisted' ? 'Vor dem Aufräumen geschützt.' : 'Noch nicht geschützt.'}</h2>
+          <p>
+            {persistence === 'persisted'
+              ? 'Der Browser hat zugesagt, die Daten von Angelkompass nicht automatisch zu löschen, wenn der Speicher knapp wird. Manuelles Löschen der Browserdaten entfernt sie trotzdem. Eine Sicherung bleibt sinnvoll.'
+              : 'Bei knappem Speicher oder längerer Nichtnutzung darf der Browser Websitedaten automatisch löschen. Installiert auf dem Home-Bildschirm und mit Speicherschutz ist das Risiko deutlich geringer.'}
+          </p>
+          {persistence === 'best-effort' && (
+            <button
+              className="secondary"
+              onClick={async () => {
+                const state = await requestPersistence()
+                setPersistence(state)
+                if (state === 'best-effort')
+                  setMessage(
+                    'Der Browser hat den Speicherschutz noch nicht gewährt. Er entscheidet selbst, oft nach Installation oder häufiger Nutzung. Sichere deine Daten regelmäßig.',
+                  )
+              }}
+            >
+              <Icon name="shield" size={18} /> Speicherschutz anfordern
+            </button>
+          )}
+        </article>
+      )}
       {error && (
         <p className="storage-error" role="alert">
           {error}

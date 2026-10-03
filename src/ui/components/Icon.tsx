@@ -41,6 +41,8 @@ export type IconName =
   | 'help'
   | 'wind'
   | 'gauge'
+  | 'share'
+  | 'shield'
 
 type SvgComponentProps = Omit<SVGProps<SVGSVGElement>, 'children' | 'height' | 'title' | 'width'>
 
@@ -194,6 +196,19 @@ function IconGlyph({ name }: Pick<IconProps, 'name'>) {
         <>
           <path d="M4.5 17a8.5 8.5 0 1 1 15 0" />
           <path d="m12 13 3.5-4" />
+        </>
+      )
+    case 'share':
+      return (
+        <>
+          <path d="M12 15V3m-4 4 4-4 4 4M8 11H5v10h14V11h-3" />
+        </>
+      )
+    case 'shield':
+      return (
+        <>
+          <path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6z" />
+          <path d="m9 12 2 2 4-4" />
         </>
       )
     case 'download':

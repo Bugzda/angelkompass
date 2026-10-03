@@ -111,3 +111,55 @@
   margin-top: 16px;
   font-size: 0.83rem;
 }
+.backup-last {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.data-card p.backup-last {
+  color: var(--ink);
+}
+.backup-last svg {
+  flex-shrink: 0;
+  color: var(--forest);
+}
+.data-card .backup-download {
+  margin-top: 12px;
+  font-size: 0.83rem;
+}
+.storage-protection .secondary {
+  font-size: 0.83rem;
+}
+@media (max-width: 480px) {
+  .data-card .backup-download,
+  .storage-protection .secondary {
+    width: 100%;
+  }
+}
+
+/* Backup reminder in the logbook and after a session. */
+.backup-reminder {
+  display: grid;
+  gap: 12px;
+  margin-block: 18px;
+}
+.backup-reminder strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.backup-reminder .action-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.backup-reminder .action-row > * {
+  flex: 1 1 auto;
+  min-height: 44px;
+  padding-block: 10px;
+  font-size: 0.78rem;
+}
