@@ -76,9 +76,7 @@ export function spotDefaultsFrom(conditions: Conditions): SpotDefaults {
 
 /** Applies only the stored spot features; season, time, light and activity stay as observed today. */
 export function applySpotDefaults(conditions: Conditions, defaults: SpotDefaults): Conditions {
-  // Structures are species specific: hard cover is not offered for perch.
-  const allowed = conditions.targetFish === 'perch' ? ['shallow', 'dropoff'] : ['shallow', 'dropoff', 'hardCover']
-  const structure = defaults.observedStructure?.filter(item => allowed.includes(item))
+  const structure = defaults.observedStructure?.filter(item => ['shallow', 'dropoff', 'hardCover'].includes(item))
   return {
     ...conditions,
     ...(defaults.turbidity && { turbidity: defaults.turbidity }),

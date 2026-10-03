@@ -25,4 +25,13 @@ export const spots: SpotType[] = [
     depthAffinity: ['shallow'],
     priority: 3,
   },
+  {
+    id: 'hardCover',
+    label: 'Steine, Totholz oder harter Grund',
+    description:
+      'Bestätigte Steinpackung, Totholz oder Kies-/Muschelgrund mit benthischer Beute und klaren Übergängen.',
+    seasonalAffinity: ['spring', 'summer', 'autumn', 'winter'],
+    depthAffinity: ['shallow', 'medium', 'deep'],
+    priority: 4,
+  },
 ]

@@ -43,11 +43,11 @@ const sample = (fish: TargetFish, step = 37) => analysisScenarios(fish).filter((
 describe('Köderbox-Analyse', () => {
   it('rechnet ein festes, plausibles Situationsraster ohne Aktivitätsannahme', () => {
     const perch = analysisScenarios('perch')
-    expect(perch).toHaveLength(2970)
+    expect(perch).toHaveLength(4455)
     expect(analysisScenarios('pike')).toHaveLength(4455)
     expect(perch.every(item => item.activity.status === 'unknown')).toBe(true)
     expect(perch.some(item => item.season === 'winter' && item.waterTemperature === 'hot')).toBe(false)
-    expect(perch.some(item => item.observedStructure.includes('hardCover'))).toBe(false)
+    expect(perch.some(item => item.observedStructure.includes('hardCover'))).toBe(true)
     expect(analysisScenarios('pike').every(item => item.pikeSafetyConfirmed === true)).toBe(true)
   })
 

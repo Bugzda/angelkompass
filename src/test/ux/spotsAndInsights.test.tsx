@@ -54,8 +54,7 @@ describe('Angelstellen', () => {
     })!
     const applied = applySpotDefaults({ ...conditions, light: 'bright' }, spot.defaults)
     expect(applied).toMatchObject({ turbidity: 'turbid', depth: 'deep', light: 'bright', season: 'summer' })
-    // Hard cover is not part of the perch form and is ignored there.
-    expect(applied.observedStructure).toEqual([])
+    expect(applied.observedStructure).toEqual(['hardCover'])
     expect(applySpotDefaults({ ...conditions, targetFish: 'pike' }, spot.defaults).observedStructure).toEqual([
       'hardCover',
     ])

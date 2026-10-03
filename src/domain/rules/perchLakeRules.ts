@@ -174,6 +174,19 @@ export const spotRules: ScoringRule[] = [
     matches: x => x.conditions.waterTemperature === 'hot',
   },
   {
+    id: 'PL025',
+    sourceRuleId: 'R015',
+    target: 'spot',
+    group: 'habitatObservation',
+    evidenceClass: 'science',
+    confidence: 0.86,
+    effect: 2,
+    reasonCode: 'HARD_COVER_HABITAT',
+    sourceIds: ['S02', 'S20'],
+    // Only a confirmed hard structure is rated; an unseen one stays neutral.
+    matches: x => spot(x, 'hardCover') && x.conditions.observedStructure.includes('hardCover'),
+  },
+  {
     id: 'PL019',
     sourceRuleId: 'R002',
     target: 'spot',
@@ -473,6 +486,18 @@ export const setupRules: ScoringRule[] = [
     matches: x =>
       x.spotId === 'shallow' &&
       setup(x, 'twitchbait', 'spinner', 'crankbait', 'chatterbait', 'spinnerbait', 'tail-spinner'),
+  },
+  {
+    id: 'PL052',
+    sourceRuleId: 'R030',
+    target: 'setup',
+    group: 'presentation',
+    evidenceClass: 'experience',
+    confidence: 0.8,
+    effect: 2,
+    reasonCode: 'HARD_COVER_CONTACT',
+    sourceIds: ['S15', 'S16'],
+    matches: x => x.spotId === 'hardCover' && setup(x, 'jig', 'ned'),
   },
   {
     id: 'FIT003',

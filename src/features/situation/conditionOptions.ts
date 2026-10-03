@@ -68,17 +68,16 @@ export const choiceIcons: Partial<Record<ChoiceKey, Record<string, IconName>>> =
   light: { bright: 'theme-light', diffuse: 'cloud', dark: 'theme-dark', unknown: 'help' },
 }
 
+const hardCoverLabels: Record<TargetFish, string> = {
+  perch: 'Steine, Totholz oder harter Grund',
+  pike: 'Holz, Steg oder harte Deckung',
+  zander: 'Steinpackung oder harter Grund',
+}
+
 export const structures = (fish: TargetFish): Array<[ObservableStructure, string]> => [
   ['shallow', 'Flachzone'],
   ['dropoff', 'Tiefenkante'],
-  ...(fish !== 'perch'
-    ? [
-        ['hardCover', fish === 'zander' ? 'Steinpackung oder harter Grund' : 'Holz, Steg oder harte Deckung'] as [
-          ObservableStructure,
-          string,
-        ],
-      ]
-    : []),
+  ['hardCover', hardCoverLabels[fish]],
 ]
 
 export const activityOptions = (fish: TargetFish): Array<[ActivitySign, string]> => [

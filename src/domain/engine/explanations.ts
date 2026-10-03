@@ -46,6 +46,10 @@ const texts: Record<string, string> = {
     'Dichtes Kraut bietet Habitat; befischt werden vor allem Außenkante, Taschen und freie Bahnen.',
   VEGETATION_RIG_MISMATCH:
     'Für diese Krautlage und Tiefe ist keine passende Montage dieses Köders vorgesehen; Hänger und Laufstörungen werden wahrscheinlicher.',
+  HARD_COVER_HABITAT:
+    'Steine, Totholz und harter Grund werden von großen Barschen bevorzugt genutzt und bieten Bodennahrung.',
+  HARD_COVER_CONTACT:
+    'Eine grundnahe, hängerarme Montage lässt sich an Steinen und hartem Grund kontrolliert anbieten.',
   DEPTH_MATCH: 'Spot und geschätzte Angeltiefe passen zusammen.',
   COLD_DROPOFF: 'Kaltes Wasser spricht häufiger für erreichbare Tiefenkanten.',
   COLD_SHALLOW_PENALTY: 'Flaches Wasser wird bei sehr kaltem Wasser vorsichtiger bewertet.',

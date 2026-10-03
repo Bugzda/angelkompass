@@ -31,6 +31,8 @@ function selectProfile(conditions: Conditions, lure: LureType, spot: RankedSpot)
   if (lure.id === 'jig' && conditions.targetFish === 'perch') {
     if (['edgeOrGaps', 'dense'].includes(conditions.vegetation))
       return profiles.find(item => item.id === 'texas-offset') ?? profiles[0]
+    // Stones and wood snag open hooks; the offset rig keeps the point covered.
+    if (spot.spot.id === 'hardCover') return profiles.find(item => item.id === 'texas-offset') ?? profiles[0]
     if (spot.spot.id === 'dropoff' && conditions.vegetation === 'none')
       return profiles.find(item => item.id === 'carolina') ?? profiles[0]
   }

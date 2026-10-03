@@ -184,13 +184,31 @@ const scenarios: Scenario[] = [
     },
   },
   {
+    name: 'bestätigte Steinpackung im Sommer',
+    conditions: { ...base, observedStructure: ['hardCover'] },
+    expectedSpot: 'hardCover',
+    allowedTopLures: ['jig', 'ned'],
+  },
+  {
+    name: 'Totholz oder harter Grund im kühlen Frühjahr',
+    conditions: {
+      ...base,
+      season: 'spring',
+      waterTemperature: 'cool',
+      depth: 'shallow',
+      observedStructure: ['hardCover'],
+    },
+    expectedSpot: 'hardCover',
+    allowedTopLures: ['jig', 'ned'],
+  },
+  {
     name: 'widersprüchliche Saison und Temperatur',
     conditions: { ...base, season: 'summer', waterTemperature: 'cold', depth: 'medium' },
     expectedSpot: 'dropoff',
   },
 ]
 
-describe('24 fachliche See-/Ufer-Szenarien', () => {
+describe('25 fachliche See-/Ufer-Szenarien', () => {
   it.each(scenarios)('$name', ({ conditions, expectedSpot, allowedTopLures, hotWarning }) => {
     const decision = createRecommendationDecision(conditions, [])
     expect(decision.expertRanking).toHaveLength(3)
@@ -199,6 +217,21 @@ describe('24 fachliche See-/Ufer-Szenarien', () => {
     if (expectedSpot) expect(decision.expertRanking[0].spot.spot.id).toBe(expectedSpot)
     if (allowedTopLures) expect(allowedTopLures).toContain(decision.expertRanking[0].setup.lure.id)
     if (hotWarning) expect(decision.hotWaterWarning).toBeTruthy()
+  })
+})
+
+describe('Harte Deckung beim Barsch', () => {
+  it('bewertet harte Deckung nur nach Beobachtung und nutzt dort die hängerarme Offsetmontage', () => {
+    const unseen = evaluateSpots(base).find(item => item.spot.id === 'hardCover')!
+    expect(unseen.reasons.map(item => item.reasonCode)).not.toContain('HARD_COVER_HABITAT')
+    const observed = { ...base, observedStructure: ['hardCover'] } satisfies Conditions
+    const spot = evaluateSpots(observed).find(item => item.spot.id === 'hardCover')!
+    expect(spot.reasons.map(item => item.reasonCode)).toEqual(
+      expect.arrayContaining(['OBSERVED_STRUCTURE', 'HARD_COVER_HABITAT']),
+    )
+    const jig = evaluateSetups(observed, spot).find(item => item.lure.id === 'jig')!
+    expect(jig.resolvedPresentation?.profileId).toBe('texas-offset')
+    expect(createRecommendationDecision(observed, []).expertRanking[0].spot.spot.id).toBe('hardCover')
   })
 })
 

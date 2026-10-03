@@ -36,12 +36,8 @@ const turbidities = ['clear', 'slightly_turbid', 'turbid'] as const
 const depths = ['shallow', 'medium', 'deep'] as const
 const vegetations = ['none', 'edgeOrGaps', 'dense'] as const
 
-/** Observed structures offered by the planning form; the perch form has no hard cover. */
-const structureOptions = (fish: TargetFish): ObservableStructure[][] => [
-  [],
-  ['dropoff'],
-  ...(fish === 'perch' ? [] : [['hardCover'] as ObservableStructure[]]),
-]
+/** Observed structures offered by the planning form. */
+const structureOptions: ObservableStructure[][] = [[], ['dropoff'], ['hardCover']]
 
 export function analysisScenarios(fish: TargetFish): Conditions[] {
   const scenarios: Conditions[] = []
@@ -51,7 +47,7 @@ export function analysisScenarios(fish: TargetFish): Conditions[] {
         for (const turbidity of turbidities)
           for (const depth of depths)
             for (const vegetation of vegetations)
-              for (const observedStructure of structureOptions(fish))
+              for (const observedStructure of structureOptions)
                 scenarios.push({
                   targetFish: fish,
                   waterType: 'lake',
