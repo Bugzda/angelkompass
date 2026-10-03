@@ -24,7 +24,7 @@ Ausgangsstand: `main` bei `dfa28ac`. Umgesetzt wurden alle Punkte aus dem App-Re
 ## Angelstellen
 
 - Gemerkt werden Trübung, Tiefe, Kraut und Struktur (`angelkompass.spots.v1`, Schema 1). Zeit, Licht, Temperatur und Aktivität werden jedes Mal neu erfasst.
-- Die Auswahl einer Stelle füllt nur diese Merkmale vor. Harte Deckung wird beim Barsch nicht übernommen, weil das Barschformular sie nicht anbietet.
+- Die Auswahl einer Stelle füllt nur diese Merkmale vor. Harte Deckung wird seit der Datenbankprüfung vom 3. Oktober 2026 auch beim Barsch übernommen.
 - Nach Änderungen kann die gewählte Stelle aktualisiert werden. Löschen erfolgt über „Angelstellen verwalten“ mit Bestätigung in der App.
 - Die Stelle wird als `spotRef` neben den Bedingungen durch den Planungsablauf gereicht. Engine und gespeicherte Bedingungen sehen diesen Wert nie (`conditionsOnly`). Neue Sessions speichern eine Namenskopie (`session.spot`); spätere Umbenennungen oder Löschungen ändern alte Sessions nicht.
 

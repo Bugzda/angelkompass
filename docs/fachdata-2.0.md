@@ -13,11 +13,12 @@ Stand: 12. Juli 2026. Scope: Europäischer Barsch und Hecht, See, Uferangeln, Ku
 
 ## Rulesets und Quellen
 
-- Barsch: `perch-lake-2.0.0`
-- Hecht: `pike-lake-2.0.0`
+- Barsch: `perch-lake-2.1.0` (seit 3. Oktober 2026, siehe `docs/datenbank-audit-2026-10-03.md`)
+- Hecht: `pike-lake-2.1.0`
+- Zander: `zander-lake-1.1.0`
 - Das produktive Quellenregister liegt unter `src/domain/research/productSources.ts`. Jede Quelle enthält Autoren, Jahr, URL, Evidenztyp, Scope und Prüfdatum.
 - P01 wurde auf Niemi et al. (2023), DOI `10.1016/j.fishres.2023.106621`, korrigiert. P02 ist Nilsson et al. (2023) und wird nur vorsichtig für juvenile Habitate verwendet. Praxiswissen von Westin und Sportfiskarna bleibt `experience` beziehungsweise `official-guidance`.
-- `pnpm research:validate` prüft neben dem breiteren Research-Archiv auch das produktive Register, alle Regelreferenzen und Science-Regeln auf wissenschaftliche Quellen.
+- `pnpm research:validate` prüft neben dem breiteren Research-Archiv auch das produktive Register, alle Regelreferenzen, Quellenpflicht für Erfahrungs-, Schwach- und Science-Regeln sowie Science-Regeln auf ausschließlich wissenschaftliche Quellen.
 
 ## Bestandsmigration
 

@@ -1,3 +1,9 @@
+## Prüfung der Fischarten-Datenbank · 3. Oktober 2026
+
+Ausgangsstand: `main` bei `2073bbb`. `pnpm research:validate` prüft die formatierten Regeldateien jetzt tatsächlich (vorher keine einzige Regel). FIT001/FIT002 zitieren S15/S16. Neue Krautregeln FIT003 (Barsch) und PKL022 (Hecht) werten Köder ohne zur Krautlage passende Montage ab; Spinnerbaits gelten auch im krautfreien Wasser. Barsch kennt harte Deckung („Steine, Totholz oder harter Grund“) mit PL025/PL052, nur bei Bestätigung wirksam. Beim Zander wird der freie Wasserbereich bei sichtbarem Kleinfisch zum praktischen Suchbereich. Regelversionen `perch-lake-2.1.0`, `pike-lake-2.1.0`, `zander-lake-1.1.0`; alte Snapshots unverändert. 373 Tests erfolgreich, nicht veröffentlicht. Details: [`docs/datenbank-audit-2026-10-03.md`](docs/datenbank-audit-2026-10-03.md).
+
+---
+
 ## Redesign · 3. Oktober 2026
 
 Ausgangsstand: `main` bei `a666d31`, Umsetzung auf Branch `design/feldbuch`. Gegen den generischen „AI-Look“ wurden Typografie, Flächen, Struktur und Texte überarbeitet: Source Serif 4 für Überschriften, IBM Plex Sans/Mono, flache Flächen mit Linien statt Schatten, feste Reiterleiste, Fischliste mit wissenschaftlichen Namen, sachlichere Texte ohne Versalien-Kicker und Schlusspunkte. Die Startseite zeigt das Seefoto jetzt randlos und weitgehend unverdeckt. Ein Zwischenentwurf mit Papier-/Orange-Palette wurde auf Wunsch verworfen: Farbpalette, App-Icon und Hero-Bild bleiben wie bisher. Keine Änderung an Fachregeln, Ranking, Datenformaten oder Snapshots.

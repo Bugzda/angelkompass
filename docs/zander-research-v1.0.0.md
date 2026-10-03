@@ -22,3 +22,7 @@ Keine externe Datenbank vorhanden. Die produktiven TypeScript-Kataloge, das Quel
 ## Verifikation
 
 Szenarien prüfen unbekannte Eingaben, nächtliches Flachwasser, explizite Lichtbeobachtung, Tiefe, Kraut, artspezifischen Bestand, Größenkompromisse und Quellenauflösung. Ein UI-Ablauf führt von der Zander-URL über Empfehlung und Session bis zum erneuten Laden, Logbuchfilter und JSON-Export. Die Bestandsmatrix umfasst alle drei Fischarten.
+
+## Ergänzung 3. Oktober 2026
+
+Regelversion `zander-lake-1.1.0`: Bei sichtbarem Kleinfisch gilt der Katalog-Spot „Freier Wasserbereich“ als praktischer Suchbereich (Begründung ZANDER_PREY) und ist nach bestätigter Kante das Spotwechselziel. Regeln unverändert. Szenarien: `src/test/scenarios/zanderGoldenScenarios.test.ts`.
