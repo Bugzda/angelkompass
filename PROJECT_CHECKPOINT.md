@@ -2,7 +2,7 @@
 
 Ausgangsstand: `main` bei `a666d31`, Umsetzung auf Branch `design/feldbuch`. Gegen den generischen „AI-Look“ wurden Typografie, Flächen, Struktur und Texte überarbeitet: Source Serif 4 für Überschriften, IBM Plex Sans/Mono, flache Flächen mit Linien statt Schatten, feste Reiterleiste, Fischliste mit wissenschaftlichen Namen, sachlichere Texte ohne Versalien-Kicker und Schlusspunkte. Die Startseite zeigt das Seefoto jetzt randlos und weitgehend unverdeckt. Ein Zwischenentwurf mit Papier-/Orange-Palette wurde auf Wunsch verworfen: Farbpalette, App-Icon und Hero-Bild bleiben wie bisher. Keine Änderung an Fachregeln, Ranking, Datenformaten oder Snapshots.
 
-353 Tests in 26 Dateien, TypeScript, Prettier, Produktions-/PWA-Build (Hero-Bild wieder im Offline-Cache) und Routing-Validierung erfolgreich. Mobil (375 px) hell und dunkel sowie Desktop im integrierten Browser auf eigenem Ursprung mit Wegwerfdaten geprüft. Lokale Commits, nicht gepusht und nicht veröffentlicht. Details: [`docs/design/redesign-2026-10-03.md`](docs/design/redesign-2026-10-03.md).
+353 Tests in 26 Dateien, TypeScript, Prettier, Produktions-/PWA-Build (Hero-Bild wieder im Offline-Cache) und Routing-Validierung erfolgreich. Mobil (375 px) hell und dunkel sowie Desktop im integrierten Browser auf eigenem Ursprung mit Wegwerfdaten geprüft. Am 3. Oktober 2026 nach `main` übernommen (`6ddcbaf`), gepusht und über GitHub Pages veröffentlicht (https://bugzda.github.io/angelkompass/); Auslieferung live geprüft. Details: [`docs/design/redesign-2026-10-03.md`](docs/design/redesign-2026-10-03.md).
 
 ---
 
