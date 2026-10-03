@@ -117,6 +117,8 @@ function isRecommendation(value: unknown): value is Recommendation {
   )
 }
 
+export const MAX_NOTE_LENGTH = 280
+
 function isFeedback(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -126,9 +128,13 @@ function isFeedback(value: unknown): boolean {
     validDate(value.createdAt) &&
     (value.progressBefore === undefined ||
       value.progressBefore === value.phase ||
-      (value.progressBefore === 'exhausted' && value.phase === 'move' && value.outcome !== 'no_success'))
+      (value.progressBefore === 'exhausted' && value.phase === 'move' && value.outcome !== 'no_success')) &&
+    (value.lengthCm === undefined || (value.outcome === 'catch' && isLength(value.lengthCm))) &&
+    (value.note === undefined || (typeof value.note === 'string' && value.note.length <= MAX_NOTE_LENGTH))
   )
 }
+
+const isLength = (value: unknown) => typeof value === 'number' && Number.isFinite(value) && value > 0 && value <= 200
 
 export function isSession(value: unknown): value is FishingSession {
   if (!isRecord(value)) return false
@@ -312,6 +318,32 @@ export const sessionStore = {
               ...item,
               progress: last.progressBefore ?? last.phase,
               feedback: item.feedback.slice(0, -1),
+              updatedAt: new Date().toISOString(),
+            }
+          : item,
+      ),
+    )
+  },
+  /** Adds or clears optional details of a bite or catch without touching progress or order. */
+  updateFeedbackDetails(id: string, feedbackId: string, details: { lengthCm?: number; note?: string }): boolean {
+    emit()
+    const session = current().find(item => item.id === id)
+    const target = session?.feedback.find(item => item.id === feedbackId)
+    if (!session || !target || target.outcome === 'no_success') return false
+    const note = details.note?.trim().slice(0, MAX_NOTE_LENGTH) || undefined
+    const lengthCm =
+      target.outcome === 'catch' && details.lengthCm !== undefined && isLength(details.lengthCm)
+        ? Math.round(details.lengthCm * 10) / 10
+        : undefined
+    const updated = { ...target, lengthCm, note }
+    if (updated.lengthCm === undefined) delete updated.lengthCm
+    if (updated.note === undefined) delete updated.note
+    return persist(
+      current().map(item =>
+        item.id === id
+          ? {
+              ...item,
+              feedback: item.feedback.map(entry => (entry.id === feedbackId ? updated : entry)),
               updatedAt: new Date().toISOString(),
             }
           : item,

@@ -935,3 +935,248 @@
     font-size: 0.75rem;
   }
 }
+
+/* Step clock below the current instruction. */
+.step-clock {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-raised);
+}
+.step-clock > svg {
+  color: var(--forest);
+}
+.step-clock strong {
+  display: block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.step-clock small {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+}
+.step-clock-bar {
+  display: block;
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  overflow: hidden;
+}
+.step-clock-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--forest);
+  transition: width 0.9s linear;
+}
+.step-clock.reached {
+  border-color: color-mix(in srgb, var(--lime) 60%, var(--line));
+}
+.step-clock.reached .step-clock-bar > span {
+  background: var(--lime);
+}
+.step-clock-restart {
+  min-height: 40px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* On-water switches. */
+.water-tools {
+  margin: 18px 0 6px;
+}
+.water-tool-toggles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.water-tool-toggles button {
+  min-height: 48px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.water-tool-toggles button.selected {
+  border-color: color-mix(in srgb, var(--forest) 55%, var(--line));
+  background: color-mix(in srgb, var(--forest) 9%, var(--surface));
+  color: var(--ink);
+}
+.water-tool-toggles button.selected svg {
+  color: var(--forest);
+}
+.water-tools-hint {
+  display: block;
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+}
+
+/* Large buttons for wet hands or gloves. */
+.large-feedback .water-feedback {
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.large-feedback .water-feedback button {
+  min-height: 84px;
+  border-radius: 22px;
+  font-size: 1.15rem;
+}
+.large-feedback .water-feedback .advance-step {
+  grid-column: 1 / -1;
+  min-height: 72px;
+}
+
+/* Bottom sheet for optional bite and catch details. */
+.sheet-backdrop {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(3 12 11 / 0.48);
+  animation: sheet-fade 0.2s ease-out;
+}
+.sheet {
+  width: min(100%, 560px);
+  max-height: 88dvh;
+  overflow: auto;
+  padding: 22px 20px max(22px, env(safe-area-inset-bottom));
+  border-radius: 26px 26px 0 0;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-lg);
+  animation: sheet-up 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sheet::before {
+  content: '';
+  display: block;
+  width: 42px;
+  height: 4px;
+  margin: -8px auto 16px;
+  border-radius: 999px;
+  background: var(--line);
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+.feedback-details {
+  display: grid;
+  gap: 12px;
+}
+.feedback-details > strong {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.feedback-details > span {
+  margin-top: -6px;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+.feedback-details label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.feedback-details input {
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 1rem;
+}
+.feedback-details p {
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+.feedback-details > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+@media (min-width: 760px) {
+  .sheet-backdrop {
+    align-items: center;
+  }
+  .sheet {
+    border-radius: 26px;
+  }
+}
+
+/* Feedback log entries with optional details. */
+.feedback-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.feedback-entry > p {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  flex-wrap: wrap;
+}
+.feedback-note {
+  grid-column: 1;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+.feedback-edit {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}

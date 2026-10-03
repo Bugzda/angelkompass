@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { type ReactNode, useEffect, useRef } from 'react'
 import { fishLabel } from '../../domain/species/profiles'
 import type { Recommendation, SessionProgress, TargetFish } from '../../domain/models/types'
 import { presentationForDisplay } from '../../domain/engine/presentation'
@@ -11,11 +11,14 @@ export function CompactRecommendation({
   fish,
   progress = 'initial',
   completed = false,
+  stepAddon,
 }: {
   recommendation: Recommendation
   fish: TargetFish
   progress?: SessionProgress
   completed?: boolean
+  /** Rendered directly below the current step, e.g. the step clock. */
+  stepAddon?: ReactNode
 }) {
   const current = recommendation.switchPlan.find(step => step.phase === progress)
   const stepIndex = recommendation.switchPlan.findIndex(step => step.phase === progress)
@@ -78,6 +81,7 @@ export function CompactRecommendation({
         </p>
         {current && !completed && <small>{current.limit}</small>}
       </section>
+      {stepAddon}
 
       <ol className="water-progress" aria-label="Wechselplan">
         {recommendation.switchPlan.map((step, index) => (

@@ -4,11 +4,15 @@ import { useSessions } from './useSessions'
 import { sessionStore } from './sessionStore'
 import { SessionCompletion } from './SessionCompletion'
 import { SessionFeedback } from './SessionFeedback'
+import { StepClock } from '../water/StepClock'
+import { WaterTools } from '../water/WaterTools'
+import { useWaterPreferences } from '../water/waterPreferences'
 
 export function WaterCardPage() {
   const { id } = useParams()
   const { sessions, error } = useSessions()
   const session = sessions.find(item => item.id === id)
+  const { largeButtons } = useWaterPreferences()
   if (!session)
     return (
       <section className="page-shell empty-state">
@@ -25,7 +29,7 @@ export function WaterCardPage() {
       </section>
     )
   return (
-    <section className="water-view">
+    <section className={`water-view${largeButtons && session.status === 'active' ? ' large-feedback' : ''}`}>
       {error && (
         <p className="storage-error" role="alert">
           {error}
@@ -36,6 +40,7 @@ export function WaterCardPage() {
         fish={session.conditions.targetFish}
         progress={session.progress}
         completed={session.status === 'completed'}
+        stepAddon={session.status === 'active' ? <StepClock session={session} /> : undefined}
       />
       {session.status === 'completed' ? (
         <SessionCompletion session={session} />
@@ -46,6 +51,7 @@ export function WaterCardPage() {
               Angelplan auf diesem Gerät gespeichert · Rückmeldungen werden direkt gesichert.
             </p>
           )}
+          <WaterTools active />
           <SessionFeedback session={session} compact />
           <div className="water-actions">
             <button className="secondary" onClick={() => sessionStore.complete(session.id)}>

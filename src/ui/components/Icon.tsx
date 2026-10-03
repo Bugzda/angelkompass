@@ -19,6 +19,28 @@ export type IconName =
   | 'update'
   | 'download'
   | 'search'
+  | 'screen'
+  | 'vibrate'
+  | 'touch'
+  | 'timer'
+  | 'note'
+  | 'chart'
+  | 'pin'
+  | 'trash'
+  | 'drop'
+  | 'drop-half'
+  | 'drop-full'
+  | 'cloud'
+  | 'weed'
+  | 'depth-shallow'
+  | 'depth-medium'
+  | 'depth-deep'
+  | 'thermo'
+  | 'fish'
+  | 'eye'
+  | 'help'
+  | 'wind'
+  | 'gauge'
 
 type SvgComponentProps = Omit<SVGProps<SVGSVGElement>, 'children' | 'height' | 'title' | 'width'>
 
@@ -30,6 +52,150 @@ export type IconProps = SvgComponentProps & {
 
 function IconGlyph({ name }: Pick<IconProps, 'name'>) {
   switch (name) {
+    case 'screen':
+      return (
+        <>
+          <rect x="7" y="3" width="10" height="18" rx="2.2" />
+          <path d="M11 18h2M3.5 8.5l1.5.8M3.5 15.5l1.5-.8M20.5 8.5l-1.5.8M20.5 15.5l-1.5-.8" />
+        </>
+      )
+    case 'vibrate':
+      return (
+        <>
+          <rect x="8" y="5" width="8" height="14" rx="1.8" />
+          <path d="M4.5 9v6M19.5 9v6M2 10.5v3M22 10.5v3" />
+        </>
+      )
+    case 'touch':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8.5" />
+          <circle cx="12" cy="12" r="3.5" />
+        </>
+      )
+    case 'timer':
+      return (
+        <>
+          <circle cx="12" cy="13.5" r="7.5" />
+          <path d="M12 9.5v4l2.5 1.5M9.5 3h5" />
+        </>
+      )
+    case 'note':
+      return (
+        <>
+          <path d="M5 4h10l4 4v12H5z" />
+          <path d="M15 4v4h4M8.5 12.5h7M8.5 16h5" />
+        </>
+      )
+    case 'chart':
+      return (
+        <>
+          <path d="M4 20h16M7 16v-5M12 16V7M17 16v-8" />
+        </>
+      )
+    case 'pin':
+      return (
+        <>
+          <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z" />
+          <circle cx="12" cy="10" r="2.4" />
+        </>
+      )
+    case 'trash':
+      return (
+        <>
+          <path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13" />
+        </>
+      )
+    case 'drop':
+      return (
+        <>
+          <path d="M12 3.5s-6 6.6-6 11a6 6 0 0 0 12 0c0-4.4-6-11-6-11Z" />
+        </>
+      )
+    case 'drop-half':
+      return (
+        <>
+          <path d="M12 3.5s-6 6.6-6 11a6 6 0 0 0 12 0c0-4.4-6-11-6-11Z" />
+          <path d="M6.3 15.5h11.4" />
+        </>
+      )
+    case 'drop-full':
+      return (
+        <>
+          <path d="M12 3.5s-6 6.6-6 11a6 6 0 0 0 12 0c0-4.4-6-11-6-11Z" fill="currentColor" fillOpacity=".35" />
+        </>
+      )
+    case 'cloud':
+      return (
+        <>
+          <path d="M7.5 18.5h9.5a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.6 1.5 3.3 3.3 0 0 0 .7 6.5Z" />
+        </>
+      )
+    case 'weed':
+      return (
+        <>
+          <path d="M12 21V9M12 13c-3 0-5-2-5-5M12 11c3 0 5-2 5-5M8 21c0-3 1.5-5 4-6M16 21c0-3-1.5-5-4-6" />
+        </>
+      )
+    case 'depth-shallow':
+      return (
+        <>
+          <path d="M3 7h18M7 11h10" />
+        </>
+      )
+    case 'depth-medium':
+      return (
+        <>
+          <path d="M3 6h18M7 10h10M9 14h6" />
+        </>
+      )
+    case 'depth-deep':
+      return (
+        <>
+          <path d="M3 5h18M7 9h10M9 13h6M11 17h2" />
+        </>
+      )
+    case 'thermo':
+      return (
+        <>
+          <path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0Z" />
+          <path d="M12 9v7" />
+        </>
+      )
+    case 'fish':
+      return (
+        <>
+          <path d="M3 12c3-4 7.5-5.5 12-3.5L20 5v14l-5-3.5C10.5 17.5 6 16 3 12Z" />
+          <circle cx="8" cy="11" r=".8" fill="currentColor" />
+        </>
+      )
+    case 'eye':
+      return (
+        <>
+          <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+          <circle cx="12" cy="12" r="3" />
+        </>
+      )
+    case 'help':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M9.6 9.4a2.5 2.5 0 0 1 4.8 1c0 1.7-2.4 2-2.4 3.6M12 17h.01" />
+        </>
+      )
+    case 'wind':
+      return (
+        <>
+          <path d="M3 9h11a2.5 2.5 0 1 0-2.5-2.5M3 13h15a2.5 2.5 0 1 1-2.5 2.5M3 17h7" />
+        </>
+      )
+    case 'gauge':
+      return (
+        <>
+          <path d="M4.5 17a8.5 8.5 0 1 1 15 0" />
+          <path d="m12 13 3.5-4" />
+        </>
+      )
     case 'download':
       return (
         <>

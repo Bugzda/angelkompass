@@ -1,10 +1,27 @@
-import type { FishingSession } from '../../domain/models/types'
+import { useState } from 'react'
+import type { FeedbackOutcome, FishingSession } from '../../domain/models/types'
+import { vibrate } from '../water/waterPreferences'
+import { FeedbackDetailsForm } from './FeedbackDetailsForm'
 import { sessionStore } from './sessionStore'
+
+const haptics: Record<FeedbackOutcome, number | number[]> = { bite: 40, catch: [60, 40, 60], no_success: 25 }
 
 export function SessionFeedback({ session, compact = false }: { session: FishingSession; compact?: boolean }) {
   const bites = session.feedback.filter(item => item.outcome === 'bite').length
   const catches = session.feedback.filter(item => item.outcome === 'catch').length
   const active = session.status === 'active'
+  const [detailsId, setDetailsId] = useState<string>()
+  const details = session.feedback.find(item => item.id === detailsId)
+  const record = (outcome: FeedbackOutcome) => {
+    if (!sessionStore.addFeedback(session.id, outcome)) return
+    vibrate(haptics[outcome])
+    if (outcome === 'no_success') return
+    const saved = sessionStore
+      .getSnapshot()
+      .find(item => item.id === session.id)
+      ?.feedback.at(-1)
+    setDetailsId(saved?.id)
+  }
   return (
     <div className={`session-feedback${compact ? ' compact-feedback' : ''}`}>
       <div className="feedback-toolbar">
@@ -31,8 +48,8 @@ export function SessionFeedback({ session, compact = false }: { session: Fishing
           className={`${compact ? 'water-feedback' : 'feedback'}${session.progress === 'exhausted' ? ' ongoing-feedback' : ''}`}
         >
           <legend className="sr-only">Rückmeldung erfassen</legend>
-          <button onClick={() => sessionStore.addFeedback(session.id, 'bite')}>Biss</button>
-          <button onClick={() => sessionStore.addFeedback(session.id, 'catch')}>Fang</button>
+          <button onClick={() => record('bite')}>Biss</button>
+          <button onClick={() => record('catch')}>Fang</button>
           {session.progress !== 'exhausted' && (
             <button
               className="advance-step"
@@ -41,13 +58,16 @@ export function SessionFeedback({ session, compact = false }: { session: Fishing
                   ? 'Ohne Kontakt → letzten Schritt beenden'
                   : 'Ohne Kontakt → nächster Schritt'
               }
-              onClick={() => sessionStore.addFeedback(session.id, 'no_success')}
+              onClick={() => record('no_success')}
             >
               <span>Ohne Kontakt</span>
               <small>{session.progress === 'move' ? 'Schritt beenden →' : 'Nächster Schritt →'}</small>
             </button>
           )}
         </fieldset>
+      )}
+      {details && (
+        <FeedbackDetailsForm sessionId={session.id} feedback={details} onDone={() => setDetailsId(undefined)} />
       )}
     </div>
   )

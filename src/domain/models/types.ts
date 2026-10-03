@@ -211,6 +211,10 @@ export interface SessionFeedback {
   phase: Exclude<SessionProgress, 'exhausted'>
   progressBefore?: SessionProgress
   createdAt: string
+  /** Optional catch length in centimetres, entered after a catch. */
+  lengthCm?: number
+  /** Optional free-text note for a bite or catch. */
+  note?: string
 }
 
 export interface FishingSession {

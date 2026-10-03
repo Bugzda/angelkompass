@@ -1,5 +1,5 @@
 import { SessionCompletion } from './SessionCompletion'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { FeedbackOutcome, FishingSession } from '../../domain/models/types'
 import { sessionStore } from './sessionStore'
@@ -7,6 +7,7 @@ import { useSessions } from './useSessions'
 import { Icon } from '../../ui/components/Icon'
 import { presentationForDisplay } from '../../domain/engine/presentation'
 import { SessionFeedback } from './SessionFeedback'
+import { FeedbackDetailsForm } from './FeedbackDetailsForm'
 import { SwitchSetupDetails } from '../recommendations/SwitchSetupDetails'
 
 const outcomeLabels: Record<FeedbackOutcome, string> = { bite: 'Biss', catch: 'Fang', no_success: 'Kein Erfolg' }
@@ -57,6 +58,8 @@ function SessionDetails({ session }: { session: FishingSession }) {
   const attemptsRef = useRef<HTMLDivElement>(null)
   const exhaustedRef = useRef<HTMLElement>(null)
   const previousProgress = useRef(session.progress)
+  const [editing, setEditing] = useState<string>()
+  const editingFeedback = session.feedback.find(item => item.id === editing)
   useEffect(() => {
     if (previousProgress.current === session.progress) return
     previousProgress.current = session.progress
@@ -202,16 +205,40 @@ function SessionDetails({ session }: { session: FishingSession }) {
         <div className="feedback-log">
           <h2>Rückmeldungen</h2>
           {[...session.feedback].reverse().map(item => (
-            <p key={item.id}>
-              <strong>{outcomeLabels[item.outcome]}</strong>
-              <span>
-                {date(item.createdAt)} ·{' '}
-                {item.progressBefore === 'exhausted'
-                  ? 'Nach dem Wechselplan'
-                  : `Phase ${phaseOrder.indexOf(item.phase) + 1}`}
-              </span>
-            </p>
+            <div className="feedback-entry" key={item.id}>
+              <p>
+                <strong>
+                  {outcomeLabels[item.outcome]}
+                  {item.lengthCm !== undefined && ` · ${String(item.lengthCm).replace('.', ',')} cm`}
+                </strong>
+                <span>
+                  {date(item.createdAt)} ·{' '}
+                  {item.progressBefore === 'exhausted'
+                    ? 'Nach dem Wechselplan'
+                    : `Phase ${phaseOrder.indexOf(item.phase) + 1}`}
+                </span>
+              </p>
+              {item.note && <small className="feedback-note">{item.note}</small>}
+              {item.outcome !== 'no_success' && (
+                <button
+                  type="button"
+                  className="feedback-edit"
+                  aria-label={`${outcomeLabels[item.outcome]} vom ${date(item.createdAt)}: Details ${item.note || item.lengthCm ? 'bearbeiten' : 'ergänzen'}`}
+                  onClick={() => setEditing(item.id)}
+                >
+                  <Icon name="note" size={16} />
+                  {item.note || item.lengthCm ? 'Bearbeiten' : 'Details'}
+                </button>
+              )}
+            </div>
           ))}
+          {editingFeedback && (
+            <FeedbackDetailsForm
+              sessionId={session.id}
+              feedback={editingFeedback}
+              onDone={() => setEditing(undefined)}
+            />
+          )}
         </div>
       )}
       {active && (
