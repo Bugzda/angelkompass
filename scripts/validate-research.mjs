@@ -52,14 +52,19 @@ for(const line of sourceLines){
   productSources.set(id,{evidenceType,url})
 }
 
+let checkedRules=0
 for(const ruleFile of ['src/domain/rules/perchLakeRules.ts','src/domain/rules/pikeLakeRules.ts','src/domain/rules/zanderLakeRules.ts']){
   const text=await readFile(resolve(ruleFile),'utf8')
-  for(const line of text.split('\n').filter(value=>value.includes('sourceIds:['))){
-    const ruleId=line.match(/\bid:'([^']+)'/)?.[1]
-    const evidenceClass=line.match(/\bevidenceClass:'([^']+)'/)?.[1]
-    const ids=[...line.matchAll(/'([SPZ]\d+)'/g)].map(match=>match[1])
+  // Rule objects span several formatted lines; read each object up to its sourceIds array.
+  const blocks=[...text.matchAll(/\{\s*id:\s*'([^']+)'([\s\S]*?)sourceIds:\s*\[([^\]]*)\]/g)]
+  if(!blocks.length)errors.push(`${ruleFile}: keine Regeln mit sourceIds gefunden`)
+  for(const [,ruleId,body,list] of blocks){
+    checkedRules++
+    const evidenceClass=body.match(/\bevidenceClass:\s*'([^']+)'/)?.[1]
+    const ids=[...list.matchAll(/'([^']+)'/g)].map(match=>match[1])
+    if(!evidenceClass)errors.push(`${ruleId}: evidenceClass fehlt`)
     for(const id of ids)if(!productSources.has(id))errors.push(`${ruleId}: unbekannte produktive Quelle ${id}`)
-    if(evidenceClass==='science'&&!ids.some(id=>productSources.get(id)?.evidenceType==='science'))errors.push(`${ruleId}: Science-Regel ohne wissenschaftliche Quelle`)
+    if(['science','experience','weak'].includes(evidenceClass)&&!ids.length)errors.push(`${ruleId}: ${evidenceClass}-Regel ohne Quelle`)
     if(evidenceClass==='science'&&ids.some(id=>productSources.get(id)?.evidenceType!=='science'))errors.push(`${ruleId}: Science-Regel referenziert eine nichtwissenschaftliche Quelle`)
   }
 }
@@ -70,4 +75,4 @@ if(errors.length){
   for(const error of errors)console.error(`- ${error}`)
   process.exit(1)
 }
-console.log(`Produktives Quellenregister gültig: ${productSources.size} Quellen; alle Regelreferenzen aufgelöst.`)
+console.log(`Produktives Quellenregister gültig: ${productSources.size} Quellen; ${checkedRules} Regelreferenzen geprüft.`)
