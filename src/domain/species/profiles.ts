@@ -36,7 +36,7 @@ export const speciesProfiles: Record<TargetFish, SpeciesProfile> = {
   zander: {
     targetFish: 'zander',
     label: 'Zander',
-    rulesetVersion: 'zander-lake-1.0.0',
+    rulesetVersion: 'zander-lake-1.1.0',
     lures: zanderLures,
     spots: zanderSpots,
     spotRules: zanderSpotRules,

@@ -41,7 +41,7 @@ describe('Zander-Regelwerk', () => {
   it('bleibt bei unbekannten Beobachtungen neutral und verwendet ein eigenes Regelwerk', () => {
     expect(canRecommend(conditions)).toBe(true)
     expect(evaluateSpots(conditions).every(item => item.score === 50 && item.reasons.length === 0)).toBe(true)
-    expect(profileFor('zander').rulesetVersion).toBe('zander-lake-1.0.0')
+    expect(profileFor('zander').rulesetVersion).toBe('zander-lake-1.1.0')
   })
   it('bevorzugt nachts im Flachen den Wobbler und respektiert explizit helles Licht', () => {
     const night = { ...conditions, timeOfDay: 'night' as const, depth: 'shallow' as const, vegetation: 'none' as const }
@@ -144,7 +144,7 @@ describe('Zander-Nutzerablauf und Speicherung', () => {
     expect(screen.getByText(/Zander · Schritt 1 von 3/)).toBeInTheDocument()
     const saved = sessionStore.getSnapshot()[0]
     expect(saved.conditions.activity.signs).toEqual(['zanderContact'])
-    expect(saved.rulesetVersion).toBe('zander-lake-1.0.0')
+    expect(saved.rulesetVersion).toBe('zander-lake-1.1.0')
     act(() => {
       sessionStore.addFeedback(saved.id, 'catch')
       sessionStore.complete(saved.id)
