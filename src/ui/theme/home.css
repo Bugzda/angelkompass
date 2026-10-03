@@ -1,13 +1,70 @@
 /* Start page: intro, field-guide species list, session block and further sections. */
-.home-intro {
-  margin-bottom: 8px;
+/* Hero: the lake photo runs edge to edge on phones; only the lower part carries a scrim for the heading. */
+.home-hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  width: min(calc(100vw - 40px), var(--wide));
+  min-height: 380px;
+  margin-left: 50%;
+  translate: -50% 0;
+  border-radius: var(--radius-lg);
+  background: #3d4f49;
 }
-.home-intro h1 {
-  font-size: clamp(2.1rem, 7vw, 3rem);
-  margin-bottom: 12px;
+.home-hero-media,
+.home-hero-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
-.home-intro .lead {
-  margin-bottom: 20px;
+.home-hero-media img {
+  object-fit: cover;
+  object-position: 62% 58%;
+}
+.home-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgb(6 28 25 / 0.82) 0%, rgb(6 28 25 / 0.45) 38%, rgb(6 28 25 / 0) 68%);
+}
+.home-hero-copy {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: calc(var(--content) + 40px);
+  padding: 0 clamp(20px, 5vw, 40px) clamp(20px, 4vw, 34px);
+}
+.home-hero .eyebrow {
+  color: #d3e4df;
+}
+.home-hero h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(2.2rem, 7.5vw, 3.4rem);
+  text-shadow: 0 1px 16px rgb(0 0 0 / 0.25);
+}
+.home-lead {
+  margin: 20px 0 22px;
+}
+.home-hero + .home-session,
+.home-hero + .storage-error {
+  margin-top: 20px;
+}
+:root[data-theme='dark'] .home-hero-media img {
+  filter: brightness(0.62) saturate(0.8);
+}
+:root[data-theme='dark'] .home-hero::after {
+  background: linear-gradient(0deg, rgb(3 12 11 / 0.9) 0%, rgb(3 12 11 / 0.5) 40%, rgb(3 12 11 / 0.1) 75%);
+}
+@media (max-width: 759px) {
+  .home-hero {
+    width: 100vw;
+    min-height: clamp(300px, 82vw, 440px);
+    margin-top: -24px;
+    border-radius: 0;
+  }
 }
 .home-section-title {
   margin: 28px 0 4px;

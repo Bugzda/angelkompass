@@ -43,16 +43,22 @@ export function HomePage() {
   )
   return (
     <section className="home page-shell">
-      <header className="home-intro">
-        <p className="eyebrow">Raubfisch vom Ufer · See</p>
-        <h1>{activeSession ? 'Du bist am Wasser' : 'Was befischst du heute?'}</h1>
-        {!activeSession && (
-          <p className="lead">
-            Beschreibe, was du am See siehst. Angelkompass schlägt dir einen passenden Köder aus deiner Box vor und gibt
-            dir einen Plan für die nächsten Würfe.
-          </p>
-        )}
+      <header className="home-hero">
+        <picture className="home-hero-media" aria-hidden="true">
+          <source srcSet={`${import.meta.env.BASE_URL}assets/terrain/lake-morning.avif`} type="image/avif" />
+          <img src={`${import.meta.env.BASE_URL}assets/terrain/lake-morning.webp`} alt="" />
+        </picture>
+        <div className="home-hero-copy">
+          <p className="eyebrow">Raubfisch vom Ufer · See</p>
+          <h1>{activeSession ? 'Du bist am Wasser' : 'Was befischst du heute?'}</h1>
+        </div>
       </header>
+      {!activeSession && (
+        <p className="lead home-lead">
+          Beschreibe, was du am See siehst. Angelkompass schlägt dir einen passenden Köder aus deiner Box vor und gibt
+          dir einen Plan für die nächsten Würfe.
+        </p>
+      )}
       {(inventoryError || sessionError) && (
         <p className="storage-error" role="alert">
           {inventoryError ?? sessionError}{' '}

@@ -2,7 +2,7 @@
 
 Stand: 12. Juli 2026
 
-> **Historisch.** Seit dem 3. Oktober 2026 gilt das Feldbuch-Design: [`feldbuch-redesign-2026-10-03.md`](feldbuch-redesign-2026-10-03.md). Tokens, Schriften und das Hero-Bild `lake-morning` aus diesem Dokument werden nicht mehr verwendet; die Fischzeichnungen bleiben.
+> **Teilweise abgelöst.** Seit dem 3. Oktober 2026 gelten Typografie, Flächen und Startseiten-Aufbau aus [`redesign-2026-10-03.md`](redesign-2026-10-03.md). Farbpalette, Fischzeichnungen und das Hero-Bild `lake-morning` aus diesem Dokument bleiben in Gebrauch; die Schriften Barlow Condensed und Manrope werden nicht mehr verwendet.
 
 ## Gestaltungsprinzip
 

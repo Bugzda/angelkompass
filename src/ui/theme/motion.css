@@ -70,6 +70,7 @@
 }
 
 /* Images fade in instead of popping. */
+.home-hero-media img,
 .species-row img {
   animation: image-in 0.45s ease-out both;
 }

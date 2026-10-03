@@ -1276,3 +1276,8 @@
   font-size: 0.74rem;
   line-height: 1.5;
 }
+
+/* Dark theme: the water card sits on an equally dark ground, so it gets a hairline edge. */
+:root[data-theme='dark'] .water-card {
+  border: 1px solid var(--deep-line);
+}

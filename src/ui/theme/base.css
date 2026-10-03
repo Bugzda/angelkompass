@@ -51,6 +51,7 @@ a > svg {
 }
 .app {
   min-height: 100dvh;
+  overflow-x: clip;
   padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 .app-main {
