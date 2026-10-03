@@ -2,7 +2,11 @@ import type { FishingSession } from '../../domain/models/types'
 import { downloadJson } from '../data/downloadJson'
 
 export function serializeSessions(sessions: readonly FishingSession[], exportedAt = new Date()) {
-  return JSON.stringify({ schemaVersion: 1, app: 'Angelkompass', exportedAt: exportedAt.toISOString(), sessions }, null, 2)
+  return JSON.stringify(
+    { schemaVersion: 1, app: 'Angelkompass', exportedAt: exportedAt.toISOString(), sessions },
+    null,
+    2,
+  )
 }
 
 export function downloadSessions(sessions: readonly FishingSession[]) {

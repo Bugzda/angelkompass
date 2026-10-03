@@ -6,14 +6,25 @@ import { InventoryPage } from '../../features/inventory/InventoryPage'
 const storageKey = 'angelkompass.inventory.v3'
 const group = () => within(screen.getByRole('region', { name: 'Barsch' }))
 const button = (size: string) => group().getByRole('button', { name: `Barsch Softbait / Gummifisch: ${size}` })
-const storedSizes = () => JSON.parse(localStorage.getItem(storageKey)!).items.find((item: { targetFish: string; lureTypeId: string }) => item.targetFish === 'perch' && item.lureTypeId === 'jig')?.sizes
+const storedSizes = () =>
+  JSON.parse(localStorage.getItem(storageKey)!).items.find(
+    (item: { targetFish: string; lureTypeId: string }) => item.targetFish === 'perch' && item.lureTypeId === 'jig',
+  )?.sizes
 
 beforeEach(() => localStorage.clear())
 afterEach(cleanup)
 
 describe('Eindeutige Größenauswahl in der Köderbox', () => {
-  it.each([['Klein · 3–5 cm', 'small', 'Klein'], ['Mittel · 5–8 cm', 'medium', 'Mittel'], ['Groß · 8–12 cm', 'large', 'Groß']])('speichert nur %s und zeigt dieselbe Auswahl nach erneutem Öffnen', (label, size, summary) => {
-    const view = render(<MemoryRouter><InventoryPage/></MemoryRouter>)
+  it.each([
+    ['Klein · 3–5 cm', 'small', 'Klein'],
+    ['Mittel · 5–8 cm', 'medium', 'Mittel'],
+    ['Groß · 8–12 cm', 'large', 'Groß'],
+  ])('speichert nur %s und zeigt dieselbe Auswahl nach erneutem Öffnen', (label, size, summary) => {
+    const view = render(
+      <MemoryRouter>
+        <InventoryPage />
+      </MemoryRouter>,
+    )
     fireEvent.click(button(label))
     expect(storedSizes()).toEqual([size])
     expect(button('Alle Größen')).toHaveAttribute('aria-pressed', 'false')
@@ -22,14 +33,22 @@ describe('Eindeutige Größenauswahl in der Köderbox', () => {
     expect(button(label).querySelector('svg')).not.toBeNull()
     expect(group().getByText(`Gespeichert: ${summary}`)).toBeInTheDocument()
     view.unmount()
-    render(<MemoryRouter><InventoryPage/></MemoryRouter>)
+    render(
+      <MemoryRouter>
+        <InventoryPage />
+      </MemoryRouter>,
+    )
     expect(group().getByText(`Gespeichert: ${summary}`)).toBeInTheDocument()
     expect(button(label)).toHaveAttribute('aria-pressed', 'true')
     expect(button('Alle Größen')).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('unterscheidet alle Größen von einer Teilmenge und entfernt die letzte Größe', () => {
-    render(<MemoryRouter><InventoryPage/></MemoryRouter>)
+    render(
+      <MemoryRouter>
+        <InventoryPage />
+      </MemoryRouter>,
+    )
     fireEvent.click(button('Alle Größen'))
     expect(storedSizes()).toEqual(['small', 'medium', 'large'])
     expect(button('Alle Größen')).toHaveAttribute('aria-pressed', 'true')

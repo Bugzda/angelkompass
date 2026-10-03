@@ -13,15 +13,36 @@ import { sessionStore } from '../../features/sessions/sessionStore'
 import { serializeSessions, downloadSessions } from '../../features/sessions/sessionExport'
 import { useTheme } from '../../ui/hooks/useTheme'
 
-const conditions: Conditions = { targetFish: 'perch', waterType: 'lake', season: 'autumn', timeOfDay: 'dusk', turbidity: 'clear', depth: 'medium', waterTemperature: 'mild', light: 'diffuse', activity: { status: 'observed', signs: ['baitfish'] }, vegetation: 'edgeOrGaps', observedStructure: ['dropoff'] }
+const conditions: Conditions = {
+  targetFish: 'perch',
+  waterType: 'lake',
+  season: 'autumn',
+  timeOfDay: 'dusk',
+  turbidity: 'clear',
+  depth: 'medium',
+  waterTemperature: 'mild',
+  light: 'diffuse',
+  activity: { status: 'observed', signs: ['baitfish'] },
+  vegetation: 'edgeOrGaps',
+  observedStructure: ['dropoff'],
+}
 const inventoryKey = 'angelkompass.inventory.v3'
 const sessionsKey = 'angelkompass.sessions.v1'
 
 beforeEach(() => {
-  localStorage.clear(); sessionStore.resetForTests()
-  vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }))
+  localStorage.clear()
+  sessionStore.resetForTests()
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn().mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }),
+  )
 })
-afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.useRealTimers() })
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+  vi.unstubAllGlobals()
+  vi.useRealTimers()
+})
 
 describe('Bestand und gesperrter Speicher', () => {
   it('entfernt beim Abwählen der letzten Größe das ganze Profil', () => {
@@ -43,7 +64,10 @@ describe('Bestand und gesperrter Speicher', () => {
 
   it('liest die aktuelle Auswahl eines anderen Tabs vor einer Änderung', () => {
     const { result } = renderHook(() => useInventory())
-    localStorage.setItem(inventoryKey, JSON.stringify({ schemaVersion: 3, items: [{ targetFish: 'pike', lureTypeId: 'jig', sizes: ['large'] }] }))
+    localStorage.setItem(
+      inventoryKey,
+      JSON.stringify({ schemaVersion: 3, items: [{ targetFish: 'pike', lureTypeId: 'jig', sizes: ['large'] }] }),
+    )
     act(() => result.current.toggleSize('perch', 'jig', 'medium'))
     expect(result.current.inventory).toHaveLength(2)
     localStorage.setItem(inventoryKey, JSON.stringify({ schemaVersion: 3, items: [] }))
@@ -53,7 +77,9 @@ describe('Bestand und gesperrter Speicher', () => {
 
   it('übernimmt bei vollem Speicher keine scheinbar gespeicherte Auswahl', () => {
     const { result } = renderHook(() => useInventory())
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Quota', 'QuotaExceededError') })
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Quota', 'QuotaExceededError')
+    })
     act(() => result.current.toggleSize('perch', 'jig', 'medium'))
     expect(result.current.inventory).toEqual([])
     expect(result.current.error).toMatch(/nicht übernommen/)
@@ -68,8 +94,12 @@ describe('Bestand und gesperrter Speicher', () => {
   })
 
   it('kann ohne lesbaren oder schreibbaren Speicher das Farbschema wechseln', () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new DOMException('Blocked', 'SecurityError') })
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Blocked', 'SecurityError') })
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new DOMException('Blocked', 'SecurityError')
+    })
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Blocked', 'SecurityError')
+    })
     const { result } = renderHook(() => useTheme())
     expect(result.current.preference).toBe('system')
     act(() => result.current.setPreference('dark'))
@@ -77,19 +107,36 @@ describe('Bestand und gesperrter Speicher', () => {
   })
 })
 
-function BackButton() { const navigate = useNavigate(); return <button onClick={() => navigate(-1)}>Browser zurück</button> }
+function BackButton() {
+  const navigate = useNavigate()
+  return <button onClick={() => navigate(-1)}>Browser zurück</button>
+}
 function Flow({ state = conditions }: { state?: unknown }) {
-  return <MemoryRouter initialEntries={[{ pathname: '/empfehlung', state }]}><BackButton/><Routes><Route path="/empfehlung" element={<RecommendationPage/>}/><Route path="/neu/:fish" element={<SituationPage/>}/><Route path="/bestand" element={<InventoryPage/>}/></Routes></MemoryRouter>
+  return (
+    <MemoryRouter initialEntries={[{ pathname: '/empfehlung', state }]}>
+      <BackButton />
+      <Routes>
+        <Route path="/empfehlung" element={<RecommendationPage />} />
+        <Route path="/neu/:fish" element={<SituationPage />} />
+        <Route path="/bestand" element={<InventoryPage />} />
+      </Routes>
+    </MemoryRouter>
+  )
 }
 
 describe('Eingabeerhalt und Navigation', () => {
-  it.each([{}, { targetFish: 'zander' }, { ...conditions, activity: null }, { ...conditions, targetFish: 'pike', pikeSafetyConfirmed: false }])('fängt ungültigen Router-State ab: %j', state => {
-    render(<Flow state={state}/>)
+  it.each([
+    {},
+    { targetFish: 'zander' },
+    { ...conditions, activity: null },
+    { ...conditions, targetFish: 'pike', pikeSafetyConfirmed: false },
+  ])('fängt ungültigen Router-State ab: %j', state => {
+    render(<Flow state={state} />)
     expect(screen.getByRole('heading', { name: 'Keine Berechnung vorhanden' })).toBeInTheDocument()
   })
 
   it('behält Bedingungen beim Bearbeiten und bei Browser-Zurück', () => {
-    render(<Flow/>)
+    render(<Flow />)
     fireEvent.click(screen.getByRole('link', { name: 'Bedingungen ändern' }))
     fireEvent.click(screen.getByRole('button', { name: /Zeit ändern:/ }))
     expect(screen.getByRole('button', { name: 'Herbst' })).toHaveAttribute('aria-pressed', 'true')
@@ -101,7 +148,7 @@ describe('Eingabeerhalt und Navigation', () => {
   })
 
   it('führt nach einer Bestandsänderung mit denselben Eingaben zum Ergebnis', () => {
-    render(<Flow/>)
+    render(<Flow />)
     fireEvent.click(screen.getByRole('link', { name: 'Köderbox bearbeiten' }))
     fireEvent.click(screen.getByRole('button', { name: 'Barsch Softbait / Gummifisch: Alle Größen' }))
     fireEvent.click(screen.getByRole('link', { name: /Zurück zum Angelplan/ }))
@@ -111,16 +158,29 @@ describe('Eingabeerhalt und Navigation', () => {
   })
 
   it('erfindet bei einer neuen Session keine Wasserbeobachtungen', () => {
-    render(<MemoryRouter initialEntries={['/neu/perch']}><Routes><Route path="/neu/:fish" element={<SituationPage/>}/></Routes></MemoryRouter>)
-    expect(within(screen.getByRole('group', { name: 'Wassertrübung' })).getByRole('button', { name: 'Unbekannt' })).toHaveAttribute('aria-pressed', 'true')
-    expect(within(screen.getByRole('group', { name: 'Angeltiefe' })).getByRole('button', { name: 'Unbekannt' })).toHaveAttribute('aria-pressed', 'true')
+    render(
+      <MemoryRouter initialEntries={['/neu/perch']}>
+        <Routes>
+          <Route path="/neu/:fish" element={<SituationPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    expect(
+      within(screen.getByRole('group', { name: 'Wassertrübung' })).getByRole('button', { name: 'Unbekannt' }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(
+      within(screen.getByRole('group', { name: 'Angeltiefe' })).getByRole('button', { name: 'Unbekannt' }),
+    ).toHaveAttribute('aria-pressed', 'true')
   })
 })
 
 describe('Session und Logbuch', () => {
   it('verwirft ungültige Datumsangaben vor der Darstellung', () => {
     const session = sessionStore.create(conditions, createRecommendations(conditions)[0])!
-    localStorage.setItem(sessionsKey, JSON.stringify({ schemaVersion: 1, sessions: [{ ...session, createdAt: 'kein Datum' }] }))
+    localStorage.setItem(
+      sessionsKey,
+      JSON.stringify({ schemaVersion: 1, sessions: [{ ...session, createdAt: 'kein Datum' }] }),
+    )
     sessionStore.resetForTests()
     expect(sessionStore.getSnapshot()).toEqual([])
   })
@@ -142,7 +202,10 @@ describe('Session und Logbuch', () => {
     const first = sessionStore.create(conditions, createRecommendations(conditions)[0])!
     const listener = vi.fn()
     const unsubscribe = sessionStore.subscribe(listener)
-    localStorage.setItem(sessionsKey, JSON.stringify({ schemaVersion: 1, sessions: [{ ...first, status: 'completed' }] }))
+    localStorage.setItem(
+      sessionsKey,
+      JSON.stringify({ schemaVersion: 1, sessions: [{ ...first, status: 'completed' }] }),
+    )
     window.dispatchEvent(new StorageEvent('storage', { key: sessionsKey }))
     expect(sessionStore.getSnapshot()[0].status).toBe('completed')
     expect(listener).toHaveBeenCalledOnce()
@@ -151,7 +214,7 @@ describe('Session und Logbuch', () => {
 
   it('setzt beim Rückgängigmachen den ausgeschöpften Plan auf die vorherige Phase', () => {
     const session = sessionStore.create(conditions, createRecommendations(conditions)[0])!
-    for (let i=0; i<3; i++) sessionStore.addFeedback(session.id, 'no_success')
+    for (let i = 0; i < 3; i++) sessionStore.addFeedback(session.id, 'no_success')
     expect(sessionStore.undoFeedback(session.id)).toBe(true)
     expect(sessionStore.getSnapshot()[0].progress).toBe('move')
     expect(sessionStore.getSnapshot()[0].feedback).toHaveLength(2)
@@ -161,8 +224,16 @@ describe('Session und Logbuch', () => {
 
   it('zeigt Schreibfehler auf der Am-Wasser-Karte und bestätigt keinen Fang', () => {
     const session = sessionStore.create(conditions, createRecommendations(conditions)[0])!
-    render(<MemoryRouter initialEntries={[`/session/${session.id}/karte`]}><Routes><Route path="/session/:id/karte" element={<WaterCardPage/>}/></Routes></MemoryRouter>)
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Quota', 'QuotaExceededError') })
+    render(
+      <MemoryRouter initialEntries={[`/session/${session.id}/karte`]}>
+        <Routes>
+          <Route path="/session/:id/karte" element={<WaterCardPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Quota', 'QuotaExceededError')
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Fang' }))
     expect(screen.getByRole('alert')).toHaveTextContent('nicht lokal gespeichert')
     expect(sessionStore.getSnapshot()[0].feedback).toHaveLength(0)
@@ -170,11 +241,16 @@ describe('Session und Logbuch', () => {
 
   it('filtert Sessions und die Statistik gemeinsam nach Fischart', () => {
     const perch = sessionStore.create(conditions, createRecommendations(conditions)[0])!
-    sessionStore.addFeedback(perch.id, 'catch'); sessionStore.complete(perch.id)
+    sessionStore.addFeedback(perch.id, 'catch')
+    sessionStore.complete(perch.id)
     const pikeConditions: Conditions = { ...conditions, targetFish: 'pike', pikeSafetyConfirmed: true }
     const pike = sessionStore.create(pikeConditions, createRecommendations(pikeConditions)[0])!
     sessionStore.addFeedback(pike.id, 'bite')
-    render(<MemoryRouter><SessionsPage/></MemoryRouter>)
+    render(
+      <MemoryRouter>
+        <SessionsPage />
+      </MemoryRouter>,
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Hecht' }))
     expect(screen.queryByRole('link', { name: /Barsch ·/ })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Hecht ·/ })).toBeInTheDocument()
@@ -210,11 +286,23 @@ describe('Session und Logbuch', () => {
 })
 
 describe('Temperatur vor Kalenderfallback', () => {
-  it.each(['cold','cool','mild','warm','hot','unknown'] as const)('nutzt beim Hecht die Sommerannahme nur ohne Temperaturmessung: %s', waterTemperature => {
-    const observed: Conditions = { ...conditions, targetFish: 'pike', season: 'summer', depth: 'shallow', waterTemperature, pikeSafetyConfirmed: true }
-    const popper = evaluateSetups(observed, evaluateSpots(observed)[0]).find(item => item.lure.id === 'popper')!
-    expect(popper.reasons.some(reason => reason.ruleId === 'PKL019')).toBe(!['warm','unknown'].includes(waterTemperature))
-  })
+  it.each(['cold', 'cool', 'mild', 'warm', 'hot', 'unknown'] as const)(
+    'nutzt beim Hecht die Sommerannahme nur ohne Temperaturmessung: %s',
+    waterTemperature => {
+      const observed: Conditions = {
+        ...conditions,
+        targetFish: 'pike',
+        season: 'summer',
+        depth: 'shallow',
+        waterTemperature,
+        pikeSafetyConfirmed: true,
+      }
+      const popper = evaluateSetups(observed, evaluateSpots(observed)[0]).find(item => item.lure.id === 'popper')!
+      expect(popper.reasons.some(reason => reason.ruleId === 'PKL019')).toBe(
+        !['warm', 'unknown'].includes(waterTemperature),
+      )
+    },
+  )
 
   it('nutzt bei gemessenem mildem Winterwasser die passende Größe und aktive Führung', () => {
     const winter: Conditions = { ...conditions, season: 'winter' }

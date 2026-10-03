@@ -1,83 +1,525 @@
-import { describe,expect,it } from 'vitest'
-import { applyRuleGroups,calculateInputCoverage,createRecommendationDecision,createRecommendations,evaluateSetups,evaluateSpots } from '../../domain/engine/scoring'
+import { describe, expect, it } from 'vitest'
+import {
+  applyRuleGroups,
+  calculateInputCoverage,
+  createRecommendationDecision,
+  createRecommendations,
+  evaluateSetups,
+  evaluateSpots,
+} from '../../domain/engine/scoring'
 import { buildColorGuidance } from '../../domain/engine/colorGuidance'
 import { knownReasonCodes } from '../../domain/engine/explanations'
 import type { Conditions } from '../../domain/models/types'
-import { allRules,groupCaps,spotRules } from '../../domain/rules/perchLakeRules'
+import { allRules, groupCaps, spotRules } from '../../domain/rules/perchLakeRules'
 import { lures } from '../../domain/catalogs/lures'
 
-const base:Conditions={targetFish:'perch',waterType:'lake',season:'summer',timeOfDay:'day',turbidity:'slightly_turbid',depth:'medium',waterTemperature:'mild',light:'diffuse',activity:{status:'none',signs:[]},vegetation:'none',observedStructure:[]}
-type Scenario={name:string;conditions:Conditions;expectedSpot?:string;allowedTopLures?:string[];hotWarning?:boolean}
-const scenarios:Scenario[]=[
- {name:'kalter Wintersee mit tiefer Kante',conditions:{...base,season:'winter',waterTemperature:'cold',depth:'deep',observedStructure:['dropoff']},expectedSpot:'dropoff',allowedTopLures:['jig']},
- {name:'kalter Wintersee mit unbekannter Tiefe',conditions:{...base,season:'winter',waterTemperature:'cold',depth:'unknown'},expectedSpot:'dropoff',allowedTopLures:['jig','ned']},
- {name:'kühler Frühjahrssee mit lockerer Krautkante',conditions:{...base,season:'spring',waterTemperature:'cool',vegetation:'edgeOrGaps'},expectedSpot:'vegetation'},
- {name:'kühles Wasser trotz kalenderischem Sommer',conditions:{...base,season:'summer',waterTemperature:'cool',depth:'medium'},expectedSpot:'dropoff'},
- {name:'milder Frühjahrssee mit Krautlücken',conditions:{...base,season:'spring',waterTemperature:'mild',vegetation:'edgeOrGaps'},expectedSpot:'vegetation'},
- {name:'milder Herbstsee mit sichtbarem Kleinfisch',conditions:{...base,season:'autumn',activity:{status:'observed',signs:['baitfish']},vegetation:'edgeOrGaps'},expectedSpot:'vegetation'},
- {name:'warmer Sommersee mit jagenden Barschen im Flachen',conditions:{...base,waterTemperature:'warm',depth:'shallow',activity:{status:'observed',signs:['huntingPerch']},observedStructure:['shallow']},expectedSpot:'shallow',allowedTopLures:['twitchbait','spinner','chatterbait']},
- {name:'warmer Sommersee ohne Aktivitätszeichen',conditions:{...base,waterTemperature:'warm',activity:{status:'none',signs:[]}},allowedTopLures:['jig','twitchbait','chatterbait']},
- {name:'heißer flacher See mit Stresshinweis',conditions:{...base,waterTemperature:'hot',depth:'shallow',observedStructure:['shallow']},hotWarning:true},
- {name:'heißer See mit unbekannter Tiefe',conditions:{...base,waterTemperature:'hot',depth:'unknown'},hotWarning:true},
- {name:'klarer heller Sommermittag',conditions:{...base,turbidity:'clear',light:'bright'},expectedSpot:'dropoff'},
- {name:'klarer See bei diffusem Licht',conditions:{...base,turbidity:'clear',light:'diffuse'}},
- {name:'trüber See bei hellem Licht',conditions:{...base,turbidity:'turbid',light:'bright'},allowedTopLures:['twitchbait','spinner']},
- {name:'trüber See mit sichtbarer Jagd',conditions:{...base,turbidity:'turbid',activity:{status:'observed',signs:['huntingPerch']}},allowedTopLures:['twitchbait','spinner']},
- {name:'dunkle Situation ohne Aktivität',conditions:{...base,timeOfDay:'night',light:'dark',activity:{status:'none',signs:[]}},allowedTopLures:['jig','ned']},
- {name:'Dämmerung außerhalb des Hochsommers',conditions:{...base,season:'spring',waterTemperature:'unknown',timeOfDay:'dusk',turbidity:'clear',depth:'shallow',observedStructure:['shallow']},expectedSpot:'shallow'},
- {name:'Hochsommerdämmerung ohne pauschalen Bonus',conditions:{...base,season:'summer',waterTemperature:'unknown',timeOfDay:'dusk',depth:'shallow'},expectedSpot:'vegetation'},
- {name:'lockere Krautkante',conditions:{...base,vegetation:'edgeOrGaps'},expectedSpot:'vegetation',allowedTopLures:['twitchbait','spinner','spinnerbait']},
- {name:'sehr dichtes Kraut mit Präzisionsstrategie',conditions:{...base,vegetation:'dense'},expectedSpot:'vegetation',allowedTopLures:['ned']},
- {name:'sehr dichtes Kraut ohne sichtbare Lücken',conditions:{...base,vegetation:'dense',depth:'shallow'},expectedSpot:'vegetation'},
- {name:'Kleinfisch sichtbar aber keine Jagd',conditions:{...base,activity:{status:'observed',signs:['baitfish']},vegetation:'edgeOrGaps'},expectedSpot:'vegetation'},
- {name:'Jagd und Oberflächenaktivität gleichzeitig',conditions:{...base,depth:'shallow',activity:{status:'observed',signs:['huntingPerch','surfaceActivity']},observedStructure:['shallow']},expectedSpot:'shallow',allowedTopLures:['twitchbait','spinner']},
- {name:'vollständig unbekannte neue Eingaben',conditions:{...base,timeOfDay:'unknown',turbidity:'unknown',depth:'unknown',waterTemperature:'unknown',light:'unknown',activity:{status:'unknown',signs:[]},vegetation:'unknown'}},
- {name:'widersprüchliche Saison und Temperatur',conditions:{...base,season:'summer',waterTemperature:'cold',depth:'medium'},expectedSpot:'dropoff'},
+const base: Conditions = {
+  targetFish: 'perch',
+  waterType: 'lake',
+  season: 'summer',
+  timeOfDay: 'day',
+  turbidity: 'slightly_turbid',
+  depth: 'medium',
+  waterTemperature: 'mild',
+  light: 'diffuse',
+  activity: { status: 'none', signs: [] },
+  vegetation: 'none',
+  observedStructure: [],
+}
+type Scenario = {
+  name: string
+  conditions: Conditions
+  expectedSpot?: string
+  allowedTopLures?: string[]
+  hotWarning?: boolean
+}
+const scenarios: Scenario[] = [
+  {
+    name: 'kalter Wintersee mit tiefer Kante',
+    conditions: { ...base, season: 'winter', waterTemperature: 'cold', depth: 'deep', observedStructure: ['dropoff'] },
+    expectedSpot: 'dropoff',
+    allowedTopLures: ['jig'],
+  },
+  {
+    name: 'kalter Wintersee mit unbekannter Tiefe',
+    conditions: { ...base, season: 'winter', waterTemperature: 'cold', depth: 'unknown' },
+    expectedSpot: 'dropoff',
+    allowedTopLures: ['jig', 'ned'],
+  },
+  {
+    name: 'kühler Frühjahrssee mit lockerer Krautkante',
+    conditions: { ...base, season: 'spring', waterTemperature: 'cool', vegetation: 'edgeOrGaps' },
+    expectedSpot: 'vegetation',
+  },
+  {
+    name: 'kühles Wasser trotz kalenderischem Sommer',
+    conditions: { ...base, season: 'summer', waterTemperature: 'cool', depth: 'medium' },
+    expectedSpot: 'dropoff',
+  },
+  {
+    name: 'milder Frühjahrssee mit Krautlücken',
+    conditions: { ...base, season: 'spring', waterTemperature: 'mild', vegetation: 'edgeOrGaps' },
+    expectedSpot: 'vegetation',
+  },
+  {
+    name: 'milder Herbstsee mit sichtbarem Kleinfisch',
+    conditions: {
+      ...base,
+      season: 'autumn',
+      activity: { status: 'observed', signs: ['baitfish'] },
+      vegetation: 'edgeOrGaps',
+    },
+    expectedSpot: 'vegetation',
+  },
+  {
+    name: 'warmer Sommersee mit jagenden Barschen im Flachen',
+    conditions: {
+      ...base,
+      waterTemperature: 'warm',
+      depth: 'shallow',
+      activity: { status: 'observed', signs: ['huntingPerch'] },
+      observedStructure: ['shallow'],
+    },
+    expectedSpot: 'shallow',
+    allowedTopLures: ['twitchbait', 'spinner', 'chatterbait'],
+  },
+  {
+    name: 'warmer Sommersee ohne Aktivitätszeichen',
+    conditions: { ...base, waterTemperature: 'warm', activity: { status: 'none', signs: [] } },
+    allowedTopLures: ['jig', 'twitchbait', 'chatterbait'],
+  },
+  {
+    name: 'heißer flacher See mit Stresshinweis',
+    conditions: { ...base, waterTemperature: 'hot', depth: 'shallow', observedStructure: ['shallow'] },
+    hotWarning: true,
+  },
+  {
+    name: 'heißer See mit unbekannter Tiefe',
+    conditions: { ...base, waterTemperature: 'hot', depth: 'unknown' },
+    hotWarning: true,
+  },
+  {
+    name: 'klarer heller Sommermittag',
+    conditions: { ...base, turbidity: 'clear', light: 'bright' },
+    expectedSpot: 'dropoff',
+  },
+  { name: 'klarer See bei diffusem Licht', conditions: { ...base, turbidity: 'clear', light: 'diffuse' } },
+  {
+    name: 'trüber See bei hellem Licht',
+    conditions: { ...base, turbidity: 'turbid', light: 'bright' },
+    allowedTopLures: ['twitchbait', 'spinner'],
+  },
+  {
+    name: 'trüber See mit sichtbarer Jagd',
+    conditions: { ...base, turbidity: 'turbid', activity: { status: 'observed', signs: ['huntingPerch'] } },
+    allowedTopLures: ['twitchbait', 'spinner'],
+  },
+  {
+    name: 'dunkle Situation ohne Aktivität',
+    conditions: { ...base, timeOfDay: 'night', light: 'dark', activity: { status: 'none', signs: [] } },
+    allowedTopLures: ['jig', 'ned'],
+  },
+  {
+    name: 'Dämmerung außerhalb des Hochsommers',
+    conditions: {
+      ...base,
+      season: 'spring',
+      waterTemperature: 'unknown',
+      timeOfDay: 'dusk',
+      turbidity: 'clear',
+      depth: 'shallow',
+      observedStructure: ['shallow'],
+    },
+    expectedSpot: 'shallow',
+  },
+  {
+    name: 'Hochsommerdämmerung ohne pauschalen Bonus',
+    conditions: { ...base, season: 'summer', waterTemperature: 'unknown', timeOfDay: 'dusk', depth: 'shallow' },
+    expectedSpot: 'vegetation',
+  },
+  {
+    name: 'lockere Krautkante',
+    conditions: { ...base, vegetation: 'edgeOrGaps' },
+    expectedSpot: 'vegetation',
+    allowedTopLures: ['twitchbait', 'spinner', 'spinnerbait'],
+  },
+  {
+    name: 'sehr dichtes Kraut mit Präzisionsstrategie',
+    conditions: { ...base, vegetation: 'dense' },
+    expectedSpot: 'vegetation',
+    allowedTopLures: ['ned'],
+  },
+  {
+    name: 'sehr dichtes Kraut ohne sichtbare Lücken',
+    conditions: { ...base, vegetation: 'dense', depth: 'shallow' },
+    expectedSpot: 'vegetation',
+  },
+  {
+    name: 'Kleinfisch sichtbar aber keine Jagd',
+    conditions: { ...base, activity: { status: 'observed', signs: ['baitfish'] }, vegetation: 'edgeOrGaps' },
+    expectedSpot: 'vegetation',
+  },
+  {
+    name: 'Jagd und Oberflächenaktivität gleichzeitig',
+    conditions: {
+      ...base,
+      depth: 'shallow',
+      activity: { status: 'observed', signs: ['huntingPerch', 'surfaceActivity'] },
+      observedStructure: ['shallow'],
+    },
+    expectedSpot: 'shallow',
+    allowedTopLures: ['twitchbait', 'spinner'],
+  },
+  {
+    name: 'vollständig unbekannte neue Eingaben',
+    conditions: {
+      ...base,
+      timeOfDay: 'unknown',
+      turbidity: 'unknown',
+      depth: 'unknown',
+      waterTemperature: 'unknown',
+      light: 'unknown',
+      activity: { status: 'unknown', signs: [] },
+      vegetation: 'unknown',
+    },
+  },
+  {
+    name: 'widersprüchliche Saison und Temperatur',
+    conditions: { ...base, season: 'summer', waterTemperature: 'cold', depth: 'medium' },
+    expectedSpot: 'dropoff',
+  },
 ]
 
-describe('24 fachliche See-/Ufer-Szenarien',()=>{it.each(scenarios)('$name',({conditions,expectedSpot,allowedTopLures,hotWarning})=>{const decision=createRecommendationDecision(conditions,[]);expect(decision.expertRanking).toHaveLength(3);expect(decision.expertRanking.every(item=>item.reasons.length>0)).toBe(true);expect(decision.expertRanking.every(item=>item.switchPlan.length===3)).toBe(true);if(expectedSpot)expect(decision.expertRanking[0].spot.spot.id).toBe(expectedSpot);if(allowedTopLures)expect(allowedTopLures).toContain(decision.expertRanking[0].setup.lure.id);if(hotWarning)expect(decision.hotWaterWarning).toBeTruthy()})})
-
-describe('Regelpipeline und Konfidenz',()=>{
- it('zeigt den Heißwasserhinweis ausschließlich bei hot',()=>{expect(createRecommendationDecision({...base,waterTemperature:'hot',depth:'unknown'},[]).hotWaterWarning).toBeTruthy();for(const waterTemperature of ['cold','cool','mild','warm','unknown'] as const)expect(createRecommendationDecision({...base,waterTemperature},[]).hotWaterWarning).toBeUndefined()})
- it('begrenzt jede Regelgruppe',()=>{for(const recommendation of createRecommendations({...base,activity:{status:'observed',signs:['baitfish','huntingPerch','surfaceActivity']},vegetation:'edgeOrGaps'})){const sums=new Map<string,number>();for(const reason of [...recommendation.spot.reasons,...recommendation.setup.reasons])sums.set(reason.group,(sums.get(reason.group)??0)+reason.appliedDelta);for(const[group,sum]of sums){const cap=groupCaps[group as keyof typeof groupCaps];expect(sum).toBeGreaterThanOrEqual(cap.min);expect(sum).toBeLessThanOrEqual(cap.max)}}})
- it('reduziert Beiträge durch Caps, verstärkt sie aber nie',()=>{const contributions=applyRuleGroups(spotRules,{conditions:{...base,activity:{status:'observed',signs:['baitfish','huntingPerch','surfaceActivity']},vegetation:'edgeOrGaps',depth:'shallow',observedStructure:['shallow']},candidateId:'shallow'});expect(contributions.every(item=>Math.abs(item.appliedDelta)<=Math.abs(item.rawDelta))).toBe(true);expect(contributions.some(item=>item.appliedDelta!==item.rawDelta)).toBe(true)})
- it('ist deterministisch und hält Scores im Bereich',()=>{expect(createRecommendations(base)).toEqual(createRecommendations(base));const spotScores=evaluateSpots(base);const setupScores=evaluateSetups(base,spotScores[0]);expect([...spotScores,...setupScores].every(item=>item.score>=0&&item.score<=100)).toBe(true)})
- it('nutzt nur bekannte Reason Codes und eindeutige Regel-IDs',()=>{expect(new Set(allRules.map(rule=>rule.id)).size).toBe(allRules.length);expect(allRules.every(rule=>knownReasonCodes.has(rule.reasonCode))).toBe(true)})
- it('senkt Abdeckung bei unbekannten Angaben ohne direkten Scoreeffekt',()=>{const assessed:Conditions={...base,activity:{status:'none',signs:[]}};const unknown:Conditions={...base,activity:{status:'unknown',signs:[]}};expect(calculateInputCoverage(unknown).value).toBeLessThan(calculateInputCoverage(assessed).value);expect(createRecommendations(unknown).map(x=>x.spot.score+x.setup.score)).toEqual(createRecommendations(assessed).map(x=>x.spot.score+x.setup.score))})
- it('ändert Evidenz durch Beobachtung bei gleicher Abdeckung',()=>{const none=createRecommendations({...base,activity:{status:'none',signs:[]}})[0];const active=createRecommendations({...base,activity:{status:'observed',signs:['huntingPerch']}})[0];expect(none.inputCoverage.value).toBe(active.inputCoverage.value);expect(none.evidenceQuality.value).not.toBe(active.evidenceQuality.value)})
+describe('24 fachliche See-/Ufer-Szenarien', () => {
+  it.each(scenarios)('$name', ({ conditions, expectedSpot, allowedTopLures, hotWarning }) => {
+    const decision = createRecommendationDecision(conditions, [])
+    expect(decision.expertRanking).toHaveLength(3)
+    expect(decision.expertRanking.every(item => item.reasons.length > 0)).toBe(true)
+    expect(decision.expertRanking.every(item => item.switchPlan.length === 3)).toBe(true)
+    if (expectedSpot) expect(decision.expertRanking[0].spot.spot.id).toBe(expectedSpot)
+    if (allowedTopLures) expect(allowedTopLures).toContain(decision.expertRanking[0].setup.lure.id)
+    if (hotWarning) expect(decision.hotWaterWarning).toBeTruthy()
+  })
 })
 
-describe('Bestand und Scope',()=>{
- it('verändert der Bestand niemals das Fachranking',()=>{const item=(lureTypeId:(typeof lures)[number]['id'])=>({targetFish:'perch' as const,lureTypeId,sizes:['medium' as const]});const inventories=[[],[item('spinner')],[item('jig'),item('ned'),item('twitchbait'),item('spinner')]];const expected=createRecommendationDecision(base,[]).expertRanking;for(const inventory of inventories)expect(createRecommendationDecision(base,inventory).expertRanking).toEqual(expected)})
- it('wählt vorhandene Köder nur an bestätigten oder ableitbaren Spots',()=>{const decision=createRecommendationDecision({...base,turbidity:'clear',observedStructure:['dropoff']},[{targetFish:'perch',lureTypeId:'spinner',sizes:['medium']},{targetFish:'perch',lureTypeId:'jig',sizes:['medium']}]);expect(decision.practicalPrimary?.setup.lure.id).toBe('jig');expect(decision.optionalLureTip?.setup.lure.id).not.toBe('jig')})
- it('nutzt ohne bestätigte Struktur einen neutralen Wasserbereich',()=>{const conditions={...base,targetFish:'pike' as const,pikeSafetyConfirmed:true,depth:'medium' as const,observedStructure:[]};const inventory=[{targetFish:'pike' as const,lureTypeId:'spinnerbait' as const,sizes:['large' as const]}];const decision=createRecommendationDecision(conditions,inventory);expect(decision.practicalRanking).toHaveLength(1);expect(decision.practicalPrimary?.spot.spot.id).toBe('openWater');expect(decision.optionalSpotTip).toBeDefined()})
- it('liefert für den warmen tiefen Barschfall immer eine Reihenfolge',()=>{const conditions={...base,timeOfDay:'day' as const,turbidity:'turbid' as const,light:'diffuse' as const,waterTemperature:'warm' as const,depth:'deep' as const,activity:{status:'none' as const,signs:[]},vegetation:'none' as const,observedStructure:[],structureStatus:'none' as const};const decision=createRecommendationDecision(conditions,[{targetFish:'perch',lureTypeId:'jig',sizes:['medium']}]);expect(decision.practicalRanking).toHaveLength(1);expect(decision.practicalRanking.every(item=>item.spot.spot.id==='openWater')).toBe(true);expect(decision.practicalPrimary?.setup.lure.id).toBe('jig');expect(decision.optionalLureTip).toBeDefined()})
+describe('Regelpipeline und Konfidenz', () => {
+  it('zeigt den Heißwasserhinweis ausschließlich bei hot', () => {
+    expect(
+      createRecommendationDecision({ ...base, waterTemperature: 'hot', depth: 'unknown' }, []).hotWaterWarning,
+    ).toBeTruthy()
+    for (const waterTemperature of ['cold', 'cool', 'mild', 'warm', 'unknown'] as const)
+      expect(createRecommendationDecision({ ...base, waterTemperature }, []).hotWaterWarning).toBeUndefined()
+  })
+  it('begrenzt jede Regelgruppe', () => {
+    for (const recommendation of createRecommendations({
+      ...base,
+      activity: { status: 'observed', signs: ['baitfish', 'huntingPerch', 'surfaceActivity'] },
+      vegetation: 'edgeOrGaps',
+    })) {
+      const sums = new Map<string, number>()
+      for (const reason of [...recommendation.spot.reasons, ...recommendation.setup.reasons])
+        sums.set(reason.group, (sums.get(reason.group) ?? 0) + reason.appliedDelta)
+      for (const [group, sum] of sums) {
+        const cap = groupCaps[group as keyof typeof groupCaps]
+        expect(sum).toBeGreaterThanOrEqual(cap.min)
+        expect(sum).toBeLessThanOrEqual(cap.max)
+      }
+    }
+  })
+  it('reduziert Beiträge durch Caps, verstärkt sie aber nie', () => {
+    const contributions = applyRuleGroups(spotRules, {
+      conditions: {
+        ...base,
+        activity: { status: 'observed', signs: ['baitfish', 'huntingPerch', 'surfaceActivity'] },
+        vegetation: 'edgeOrGaps',
+        depth: 'shallow',
+        observedStructure: ['shallow'],
+      },
+      candidateId: 'shallow',
+    })
+    expect(contributions.every(item => Math.abs(item.appliedDelta) <= Math.abs(item.rawDelta))).toBe(true)
+    expect(contributions.some(item => item.appliedDelta !== item.rawDelta)).toBe(true)
+  })
+  it('ist deterministisch und hält Scores im Bereich', () => {
+    expect(createRecommendations(base)).toEqual(createRecommendations(base))
+    const spotScores = evaluateSpots(base)
+    const setupScores = evaluateSetups(base, spotScores[0])
+    expect([...spotScores, ...setupScores].every(item => item.score >= 0 && item.score <= 100)).toBe(true)
+  })
+  it('nutzt nur bekannte Reason Codes und eindeutige Regel-IDs', () => {
+    expect(new Set(allRules.map(rule => rule.id)).size).toBe(allRules.length)
+    expect(allRules.every(rule => knownReasonCodes.has(rule.reasonCode))).toBe(true)
+  })
+  it('senkt Abdeckung bei unbekannten Angaben ohne direkten Scoreeffekt', () => {
+    const assessed: Conditions = { ...base, activity: { status: 'none', signs: [] } }
+    const unknown: Conditions = { ...base, activity: { status: 'unknown', signs: [] } }
+    expect(calculateInputCoverage(unknown).value).toBeLessThan(calculateInputCoverage(assessed).value)
+    expect(createRecommendations(unknown).map(x => x.spot.score + x.setup.score)).toEqual(
+      createRecommendations(assessed).map(x => x.spot.score + x.setup.score),
+    )
+  })
+  it('ändert Evidenz durch Beobachtung bei gleicher Abdeckung', () => {
+    const none = createRecommendations({ ...base, activity: { status: 'none', signs: [] } })[0]
+    const active = createRecommendations({ ...base, activity: { status: 'observed', signs: ['huntingPerch'] } })[0]
+    expect(none.inputCoverage.value).toBe(active.inputCoverage.value)
+    expect(none.evidenceQuality.value).not.toBe(active.evidenceQuality.value)
+  })
 })
 
-describe('Farbanzeige ohne Rankingeinfluss',()=>{
- it('liefert für jede Farbfamilie vier generische Beispiele',()=>{for(const family of ['natural','transparent','contrast'] as const){const guidance=buildColorGuidance(family,base);expect(guidance.family).toBe(family);expect(guidance.familyLabel.length).toBeGreaterThan(3);expect(guidance.examples).toHaveLength(4);expect(guidance.reason.length).toBeGreaterThan(30)}})
- it('erklärt klare, trübe und dunkle Situationen unterschiedlich',()=>{const clear=buildColorGuidance('natural',{...base,turbidity:'clear'});const turbid=buildColorGuidance('contrast',{...base,turbidity:'turbid'});const dark=buildColorGuidance('contrast',{...base,turbidity:'unknown',light:'dark'});expect(new Set([clear.reason,turbid.reason,dark.reason]).size).toBe(3)})
- it('ist eine reine Projektion und verändert Ranking oder Scores nicht',()=>{const before=createRecommendations(base).map(item=>[item.rank,item.spot.spot.id,item.setup.lure.id,item.spot.score,item.setup.score]);for(const family of ['natural','transparent','contrast'] as const)buildColorGuidance(family,base);const after=createRecommendations(base).map(item=>[item.rank,item.spot.spot.id,item.setup.lure.id,item.spot.score,item.setup.score]);expect(after).toEqual(before)})
+describe('Bestand und Scope', () => {
+  it('verändert der Bestand niemals das Fachranking', () => {
+    const item = (lureTypeId: (typeof lures)[number]['id']) => ({
+      targetFish: 'perch' as const,
+      lureTypeId,
+      sizes: ['medium' as const],
+    })
+    const inventories = [[], [item('spinner')], [item('jig'), item('ned'), item('twitchbait'), item('spinner')]]
+    const expected = createRecommendationDecision(base, []).expertRanking
+    for (const inventory of inventories)
+      expect(createRecommendationDecision(base, inventory).expertRanking).toEqual(expected)
+  })
+  it('wählt vorhandene Köder nur an bestätigten oder ableitbaren Spots', () => {
+    const decision = createRecommendationDecision({ ...base, turbidity: 'clear', observedStructure: ['dropoff'] }, [
+      { targetFish: 'perch', lureTypeId: 'spinner', sizes: ['medium'] },
+      { targetFish: 'perch', lureTypeId: 'jig', sizes: ['medium'] },
+    ])
+    expect(decision.practicalPrimary?.setup.lure.id).toBe('jig')
+    expect(decision.optionalLureTip?.setup.lure.id).not.toBe('jig')
+  })
+  it('nutzt ohne bestätigte Struktur einen neutralen Wasserbereich', () => {
+    const conditions = {
+      ...base,
+      targetFish: 'pike' as const,
+      pikeSafetyConfirmed: true,
+      depth: 'medium' as const,
+      observedStructure: [],
+    }
+    const inventory = [{ targetFish: 'pike' as const, lureTypeId: 'spinnerbait' as const, sizes: ['large' as const] }]
+    const decision = createRecommendationDecision(conditions, inventory)
+    expect(decision.practicalRanking).toHaveLength(1)
+    expect(decision.practicalPrimary?.spot.spot.id).toBe('openWater')
+    expect(decision.optionalSpotTip).toBeDefined()
+  })
+  it('liefert für den warmen tiefen Barschfall immer eine Reihenfolge', () => {
+    const conditions = {
+      ...base,
+      timeOfDay: 'day' as const,
+      turbidity: 'turbid' as const,
+      light: 'diffuse' as const,
+      waterTemperature: 'warm' as const,
+      depth: 'deep' as const,
+      activity: { status: 'none' as const, signs: [] },
+      vegetation: 'none' as const,
+      observedStructure: [],
+      structureStatus: 'none' as const,
+    }
+    const decision = createRecommendationDecision(conditions, [
+      { targetFish: 'perch', lureTypeId: 'jig', sizes: ['medium'] },
+    ])
+    expect(decision.practicalRanking).toHaveLength(1)
+    expect(decision.practicalRanking.every(item => item.spot.spot.id === 'openWater')).toBe(true)
+    expect(decision.practicalPrimary?.setup.lure.id).toBe('jig')
+    expect(decision.optionalLureTip).toBeDefined()
+  })
 })
 
-describe('12 Golden-Szenarien der Ködererweiterung',()=>{
- const topIds=(conditions:Conditions)=>createRecommendations(conditions).map(item=>item.setup.lure.id)
- it('setzt Crankbait am milden Frühjahrs-Krautsaum in die Top 3',()=>expect(topIds({...base,season:'spring',timeOfDay:'dawn',turbidity:'clear',depth:'shallow',waterTemperature:'mild',vegetation:'edgeOrGaps'})).toContain('crankbait'))
- it('setzt Crankbait an der herbstlichen mittleren Kante in die Top 3',()=>expect(topIds({...base,season:'autumn',depth:'medium',waterTemperature:'cool',observedStructure:['dropoff']})).toContain('crankbait'))
- it('setzt Chatterbait im trüben warmen Flachwasser in die Top 3',()=>expect(topIds({...base,turbidity:'turbid',depth:'shallow',waterTemperature:'warm',observedStructure:['shallow']})).toContain('chatterbait'))
- it('setzt Chatterbait bei warmer sichtbarer Jagd in die Top 3',()=>expect(topIds({...base,depth:'shallow',waterTemperature:'warm',activity:{status:'observed',signs:['huntingPerch']},observedStructure:['shallow']})).toContain('chatterbait'))
- it('ordnet Blade Bait im kalten Tiefwasser hinter den kontrollierten Grundoptionen ein',()=>{const ids=topIds({...base,season:'winter',depth:'deep',waterTemperature:'cold',observedStructure:['dropoff']});expect(ids[0]).toBe('jig');expect(ids.indexOf('blade-bait')).toBeGreaterThan(ids.indexOf('ned'))})
- it('setzt Blade Bait an der herbstlichen tiefen Kante in die Top 3',()=>expect(topIds({...base,season:'autumn',depth:'deep',waterTemperature:'cool',observedStructure:['dropoff']})).toContain('blade-bait'))
- it('setzt Spinnerbait an der trüben lockeren Krautkante in die Top 3',()=>expect(topIds({...base,turbidity:'turbid',depth:'shallow',waterTemperature:'mild',vegetation:'edgeOrGaps'})).toContain('spinnerbait'))
- it('bestraft Crank- und Chatterbait im dichten Kraut stärker als Spinnerbait',()=>{const conditions:Conditions={...base,depth:'shallow',vegetation:'dense'};const vegetationSpot=evaluateSpots(conditions).find(item=>item.spot.id==='vegetation')!;const scores=new Map(evaluateSetups(conditions,vegetationSpot).map(item=>[item.lure.id,item.score]));expect(scores.get('spinnerbait')).toBeGreaterThan(scores.get('crankbait')!);expect(scores.get('spinnerbait')).toBeGreaterThan(scores.get('chatterbait')!)})
- it('setzt Popper bei warmem flachem Oberflächenfenster in die Top 3',()=>expect(topIds({...base,timeOfDay:'dusk',depth:'shallow',waterTemperature:'warm',light:'diffuse',activity:{status:'observed',signs:['surfaceActivity']},observedStructure:['shallow']})).toContain('popper'))
- it('gibt Popper ohne Oberflächenaktivität keinen Top-3-Platz',()=>expect(topIds({...base,timeOfDay:'dusk',depth:'shallow',waterTemperature:'warm',light:'diffuse',activity:{status:'none',signs:[]}})).not.toContain('popper'))
- it('wertet Popper im kalten Flachwasser aus den Top 3',()=>expect(topIds({...base,season:'winter',depth:'shallow',waterTemperature:'cold',light:'diffuse',activity:{status:'observed',signs:['surfaceActivity']}})).not.toContain('popper'))
- it('hält die Tiefenkompatibilität aller fünf neuen Typen ein',()=>{const deep=evaluateSetups({...base,depth:'deep'},evaluateSpots({...base,depth:'deep'})[0]).map(item=>item.lure.id);expect(deep).toContain('blade-bait');for(const id of ['crankbait','chatterbait','spinnerbait','popper'])expect(deep).not.toContain(id);const shallow=evaluateSetups({...base,depth:'shallow'},evaluateSpots({...base,depth:'shallow'})[0]).map(item=>item.lure.id);expect(shallow).not.toContain('blade-bait');expect(shallow).toContain('popper')})
+describe('Farbanzeige ohne Rankingeinfluss', () => {
+  it('liefert für jede Farbfamilie vier generische Beispiele', () => {
+    for (const family of ['natural', 'transparent', 'contrast'] as const) {
+      const guidance = buildColorGuidance(family, base)
+      expect(guidance.family).toBe(family)
+      expect(guidance.familyLabel.length).toBeGreaterThan(3)
+      expect(guidance.examples).toHaveLength(4)
+      expect(guidance.reason.length).toBeGreaterThan(30)
+    }
+  })
+  it('erklärt klare, trübe und dunkle Situationen unterschiedlich', () => {
+    const clear = buildColorGuidance('natural', { ...base, turbidity: 'clear' })
+    const turbid = buildColorGuidance('contrast', { ...base, turbidity: 'turbid' })
+    const dark = buildColorGuidance('contrast', { ...base, turbidity: 'unknown', light: 'dark' })
+    expect(new Set([clear.reason, turbid.reason, dark.reason]).size).toBe(3)
+  })
+  it('ist eine reine Projektion und verändert Ranking oder Scores nicht', () => {
+    const before = createRecommendations(base).map(item => [
+      item.rank,
+      item.spot.spot.id,
+      item.setup.lure.id,
+      item.spot.score,
+      item.setup.score,
+    ])
+    for (const family of ['natural', 'transparent', 'contrast'] as const) buildColorGuidance(family, base)
+    const after = createRecommendations(base).map(item => [
+      item.rank,
+      item.spot.spot.id,
+      item.setup.lure.id,
+      item.spot.score,
+      item.setup.score,
+    ])
+    expect(after).toEqual(before)
+  })
 })
 
-describe('Katalog- und Wechselinvarianten der Erweiterung',()=>{
- it('enthält genau zehn eindeutige und vollständige Ködertypen',()=>{expect(lures).toHaveLength(10);expect(new Set(lures.map(lure=>lure.id)).size).toBe(10);expect(lures.every(lure=>lure.sizes.length&&lure.depths.length&&lure.mounting&&lure.guidance&&lure.sizeRangesCm&&lure.presentations?.length)).toBe(true)})
- it('erstellt für jeden neuen Typ Farbhilfe und drei Wechselphasen',()=>{const conditions:Conditions={...base,depth:'unknown',waterTemperature:'warm',activity:{status:'observed',signs:['surfaceActivity','huntingPerch']}};const decision=createRecommendationDecision(conditions,lures.map(lure=>({targetFish:'perch',lureTypeId:lure.id,sizes:[...lure.sizes]})));const allRanked=[...decision.expertRanking,decision.practicalPrimary,decision.optionalLureTip].filter(Boolean);expect(allRanked.every(item=>item!.colorGuidance.examples.length===4&&item!.switchPlan.length===3)).toBe(true)})
- it('wählt Popper- und Blade-Alternativen aus dem fachlichen Gegenstil',()=>{const popper=createRecommendations({...base,timeOfDay:'dusk',depth:'shallow',waterTemperature:'warm',light:'diffuse',activity:{status:'observed',signs:['surfaceActivity']}}).find(item=>item.setup.lure.id==='popper');expect(popper?.switchPlan[1].change).toMatch(/Twitchbait|Spinnerbait|Crankbait/);const blade=createRecommendations({...base,season:'autumn',depth:'deep',waterTemperature:'cool',observedStructure:['dropoff']}).find(item=>item.setup.lure.id==='blade-bait');expect(blade?.switchPlan[1].change).toMatch(/Gummifisch/)})
+describe('12 Golden-Szenarien der Ködererweiterung', () => {
+  const topIds = (conditions: Conditions) => createRecommendations(conditions).map(item => item.setup.lure.id)
+  it('setzt Crankbait am milden Frühjahrs-Krautsaum in die Top 3', () =>
+    expect(
+      topIds({
+        ...base,
+        season: 'spring',
+        timeOfDay: 'dawn',
+        turbidity: 'clear',
+        depth: 'shallow',
+        waterTemperature: 'mild',
+        vegetation: 'edgeOrGaps',
+      }),
+    ).toContain('crankbait'))
+  it('setzt Crankbait an der herbstlichen mittleren Kante in die Top 3', () =>
+    expect(
+      topIds({ ...base, season: 'autumn', depth: 'medium', waterTemperature: 'cool', observedStructure: ['dropoff'] }),
+    ).toContain('crankbait'))
+  it('setzt Chatterbait im trüben warmen Flachwasser in die Top 3', () =>
+    expect(
+      topIds({
+        ...base,
+        turbidity: 'turbid',
+        depth: 'shallow',
+        waterTemperature: 'warm',
+        observedStructure: ['shallow'],
+      }),
+    ).toContain('chatterbait'))
+  it('setzt Chatterbait bei warmer sichtbarer Jagd in die Top 3', () =>
+    expect(
+      topIds({
+        ...base,
+        depth: 'shallow',
+        waterTemperature: 'warm',
+        activity: { status: 'observed', signs: ['huntingPerch'] },
+        observedStructure: ['shallow'],
+      }),
+    ).toContain('chatterbait'))
+  it('ordnet Blade Bait im kalten Tiefwasser hinter den kontrollierten Grundoptionen ein', () => {
+    const ids = topIds({
+      ...base,
+      season: 'winter',
+      depth: 'deep',
+      waterTemperature: 'cold',
+      observedStructure: ['dropoff'],
+    })
+    expect(ids[0]).toBe('jig')
+    expect(ids.indexOf('blade-bait')).toBeGreaterThan(ids.indexOf('ned'))
+  })
+  it('setzt Blade Bait an der herbstlichen tiefen Kante in die Top 3', () =>
+    expect(
+      topIds({ ...base, season: 'autumn', depth: 'deep', waterTemperature: 'cool', observedStructure: ['dropoff'] }),
+    ).toContain('blade-bait'))
+  it('setzt Spinnerbait an der trüben lockeren Krautkante in die Top 3', () =>
+    expect(
+      topIds({ ...base, turbidity: 'turbid', depth: 'shallow', waterTemperature: 'mild', vegetation: 'edgeOrGaps' }),
+    ).toContain('spinnerbait'))
+  it('bestraft Crank- und Chatterbait im dichten Kraut stärker als Spinnerbait', () => {
+    const conditions: Conditions = { ...base, depth: 'shallow', vegetation: 'dense' }
+    const vegetationSpot = evaluateSpots(conditions).find(item => item.spot.id === 'vegetation')!
+    const scores = new Map(evaluateSetups(conditions, vegetationSpot).map(item => [item.lure.id, item.score]))
+    expect(scores.get('spinnerbait')).toBeGreaterThan(scores.get('crankbait')!)
+    expect(scores.get('spinnerbait')).toBeGreaterThan(scores.get('chatterbait')!)
+  })
+  it('setzt Popper bei warmem flachem Oberflächenfenster in die Top 3', () =>
+    expect(
+      topIds({
+        ...base,
+        timeOfDay: 'dusk',
+        depth: 'shallow',
+        waterTemperature: 'warm',
+        light: 'diffuse',
+        activity: { status: 'observed', signs: ['surfaceActivity'] },
+        observedStructure: ['shallow'],
+      }),
+    ).toContain('popper'))
+  it('gibt Popper ohne Oberflächenaktivität keinen Top-3-Platz', () =>
+    expect(
+      topIds({
+        ...base,
+        timeOfDay: 'dusk',
+        depth: 'shallow',
+        waterTemperature: 'warm',
+        light: 'diffuse',
+        activity: { status: 'none', signs: [] },
+      }),
+    ).not.toContain('popper'))
+  it('wertet Popper im kalten Flachwasser aus den Top 3', () =>
+    expect(
+      topIds({
+        ...base,
+        season: 'winter',
+        depth: 'shallow',
+        waterTemperature: 'cold',
+        light: 'diffuse',
+        activity: { status: 'observed', signs: ['surfaceActivity'] },
+      }),
+    ).not.toContain('popper'))
+  it('hält die Tiefenkompatibilität aller fünf neuen Typen ein', () => {
+    const deep = evaluateSetups({ ...base, depth: 'deep' }, evaluateSpots({ ...base, depth: 'deep' })[0]).map(
+      item => item.lure.id,
+    )
+    expect(deep).toContain('blade-bait')
+    for (const id of ['crankbait', 'chatterbait', 'spinnerbait', 'popper']) expect(deep).not.toContain(id)
+    const shallow = evaluateSetups({ ...base, depth: 'shallow' }, evaluateSpots({ ...base, depth: 'shallow' })[0]).map(
+      item => item.lure.id,
+    )
+    expect(shallow).not.toContain('blade-bait')
+    expect(shallow).toContain('popper')
+  })
+})
+
+describe('Katalog- und Wechselinvarianten der Erweiterung', () => {
+  it('enthält genau zehn eindeutige und vollständige Ködertypen', () => {
+    expect(lures).toHaveLength(10)
+    expect(new Set(lures.map(lure => lure.id)).size).toBe(10)
+    expect(
+      lures.every(
+        lure =>
+          lure.sizes.length &&
+          lure.depths.length &&
+          lure.mounting &&
+          lure.guidance &&
+          lure.sizeRangesCm &&
+          lure.presentations?.length,
+      ),
+    ).toBe(true)
+  })
+  it('erstellt für jeden neuen Typ Farbhilfe und drei Wechselphasen', () => {
+    const conditions: Conditions = {
+      ...base,
+      depth: 'unknown',
+      waterTemperature: 'warm',
+      activity: { status: 'observed', signs: ['surfaceActivity', 'huntingPerch'] },
+    }
+    const decision = createRecommendationDecision(
+      conditions,
+      lures.map(lure => ({ targetFish: 'perch', lureTypeId: lure.id, sizes: [...lure.sizes] })),
+    )
+    const allRanked = [...decision.expertRanking, decision.practicalPrimary, decision.optionalLureTip].filter(Boolean)
+    expect(allRanked.every(item => item!.colorGuidance.examples.length === 4 && item!.switchPlan.length === 3)).toBe(
+      true,
+    )
+  })
+  it('wählt Popper- und Blade-Alternativen aus dem fachlichen Gegenstil', () => {
+    const popper = createRecommendations({
+      ...base,
+      timeOfDay: 'dusk',
+      depth: 'shallow',
+      waterTemperature: 'warm',
+      light: 'diffuse',
+      activity: { status: 'observed', signs: ['surfaceActivity'] },
+    }).find(item => item.setup.lure.id === 'popper')
+    expect(popper?.switchPlan[1].change).toMatch(/Twitchbait|Spinnerbait|Crankbait/)
+    const blade = createRecommendations({
+      ...base,
+      season: 'autumn',
+      depth: 'deep',
+      waterTemperature: 'cool',
+      observedStructure: ['dropoff'],
+    }).find(item => item.setup.lure.id === 'blade-bait')
+    expect(blade?.switchPlan[1].change).toMatch(/Gummifisch/)
+  })
 })

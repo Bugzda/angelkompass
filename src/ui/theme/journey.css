@@ -1,128 +1,590 @@
 /* Clear first-use, planning and completion paths using the existing visual language. */
-.plan-progress { display:flex; gap:8px; list-style:none; padding:0; margin:0 0 28px; }
-.plan-progress li { display:flex; flex:1; align-items:center; gap:8px; color:var(--ink-soft); font-size:.76rem; font-weight:600; }
-.plan-progress li span { display:grid; place-items:center; flex-shrink:0; width:28px; height:28px; border:1px solid var(--line); border-radius:50%; }
-.plan-progress li[aria-current="step"] { color:var(--ink); }
-.plan-progress li[aria-current="step"] span { background:var(--lime); border-color:var(--lime); color:var(--lime-ink); }
-.app-status { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 16px; padding:10px max(20px,env(safe-area-inset-left)); background:var(--surface-soft); border-bottom:1px solid var(--line); font-size:.72rem; }
-.app-status .connection { display:flex; color:var(--ink); }
-.app-status a { display:flex; align-items:center; gap:8px; min-height:44px; font-weight:700; text-decoration:underline; text-underline-offset:3px; }
-.offline-detail { color:var(--ink-soft); }
-.first-plan { margin:28px 0; padding:28px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); }
-.first-plan h2 { margin:10px 0; }
-.first-plan p { color:var(--ink-soft); font-size:.86rem; line-height:1.6; }
-.first-plan ol { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); list-style:none; padding:0; gap:24px; margin:26px 0 0; }
-.first-plan li { display:flex; align-items:flex-start; gap:12px; }
-.first-plan li > span { font:600 1.6rem 'Barlow Condensed',sans-serif; color:var(--forest); }
-.first-plan li strong { font-size:.88rem; }
-.first-plan li p { margin:6px 0 0; font-size:.78rem; }
-.repeat-plan,.inventory-context { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:22px; margin:20px 0; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); }
-.repeat-plan p,.inventory-context p { margin:6px 0 0; color:var(--ink-soft); font-size:.82rem; line-height:1.6; }
-.inventory-context .secondary,.repeat-plan .secondary { flex-shrink:0; font-size:.8rem; }
-.form-hint { color:var(--ink-soft); line-height:1.6; font-size:.84rem; margin:24px 0; }
-.context-label { font-weight:700; color:var(--forest); font-size:.76rem; line-height:1.6; }
-.save-status { display:flex; align-items:center; gap:8px; color:var(--ink-soft); line-height:1.6; font-size:.78rem; }
-.save-status svg { color:var(--success); flex-shrink:0; }
-.flow-action { position:sticky; bottom:calc(94px + env(safe-area-inset-bottom)); display:flex; justify-content:space-between; align-items:center; gap:14px; margin-top:26px; padding:16px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); box-shadow:var(--shadow-sm); z-index:5; }
-.flow-action > span { font-size:.78rem; color:var(--ink-soft); }
-.flow-action .primary { font-size:.82rem; }
-.practical-grid:has(.quick-start) { grid-template-columns:1fr; }
-.current-briefing:has(.quick-start) { padding:28px; }
-.start-brief { position:relative; margin:24px 0; display:grid; gap:18px; }
-.start-brief dt { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--mint); margin-bottom:7px; }
-.start-brief dd { margin:0; color:#f4f9f5; line-height:1.65; font-size:.94rem; }
-.quick-start { width:100%; position:relative; min-height:56px; }
-.start-note { position:relative; display:block; margin-top:12px; color:#bed2cd; font-size:.73rem; line-height:1.6; }
-.current-briefing .brief-compromise { position:relative; color:#fff0cf; font-size:.82rem; }
-.metric-help summary { min-height:44px; cursor:pointer; font-weight:700; line-height:1.5; padding-block:10px; }
-.completion-card { border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); padding:24px; margin:20px 0; }
-.completion-card h2 { margin:12px 0; }
-.completion-card p { font-size:.9rem; line-height:1.7; color:var(--ink-soft); }
-.completion-card small { display:block; color:var(--ink-soft); line-height:1.5; margin-top:16px; }
-.action-row { display:flex; flex-wrap:wrap; gap:12px; }
-.action-row > a { font-size:.84rem; }
-.water-actions { display:flex; gap:12px; margin-top:16px; }
-.water-actions button { width:100%; }
-.water-feedback button,.feedback button { min-height:56px; }
-.water-card section p { line-height:1.75; }
-button,summary,a { -webkit-tap-highlight-color:transparent; }
-html { scroll-padding-block:110px 190px; }
-@media(max-width:600px){
- .plan-progress { gap:4px; }
- .plan-progress li { gap:5px; font-size:.68rem; }
- .plan-progress li span { width:24px; height:24px; }
- .first-plan { padding:22px; }
- .first-plan ol { grid-template-columns:1fr; gap:20px; }
- .repeat-plan,.inventory-context { align-items:stretch; flex-direction:column; gap:14px; padding:20px; }
- .flow-action { align-items:stretch; flex-direction:column; gap:8px; }
- .current-briefing:has(.quick-start) { padding:22px; }
- .start-brief dd { font-size:.92rem; }
- .action-row { flex-direction:column; }
- .app-status { font-size:.68rem; }
- .water-feedback { gap:8px; }
- .water-feedback button { font-size:.88rem; }
- .theme-control { min-height:44px; }
+.plan-progress {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
 }
-@media(max-width:380px){
- .offline-detail { max-width:180px; text-align:right; }
- .app-status { padding-inline:14px; }
- .plan-progress li { font-size:.64rem; }
+.plan-progress li {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+  font-weight: 600;
 }
-.water-view .session-feedback { position:sticky; bottom:calc(94px + env(safe-area-inset-bottom)); z-index:5; padding:14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); box-shadow:var(--shadow-sm); margin-top:16px; }
-.water-view .feedback-summary { border:0; background:transparent; padding:0 2px; margin:0 0 10px; }
-.water-view .feedback-summary span:last-child { display:none; }
-.water-view .water-feedback { margin:0; padding:0; border:0; }
-.water-view .undo-feedback { margin-top:4px; padding-bottom:0; }
-.water-view .water-card { scroll-margin-bottom:290px; }
+.plan-progress li span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+}
+.plan-progress li[aria-current='step'] {
+  color: var(--ink);
+}
+.plan-progress li[aria-current='step'] span {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--lime-ink);
+}
+.app-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 10px max(20px, env(safe-area-inset-left));
+  background: var(--surface-soft);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.72rem;
+}
+.app-status .connection {
+  display: flex;
+  color: var(--ink);
+}
+.app-status a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.offline-detail {
+  color: var(--ink-soft);
+}
+.first-plan {
+  margin: 28px 0;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.first-plan h2 {
+  margin: 10px 0;
+}
+.first-plan p {
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+.first-plan ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+  padding: 0;
+  gap: 24px;
+  margin: 26px 0 0;
+}
+.first-plan li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.first-plan li > span {
+  font:
+    600 1.6rem 'Barlow Condensed',
+    sans-serif;
+  color: var(--forest);
+}
+.first-plan li strong {
+  font-size: 0.88rem;
+}
+.first-plan li p {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+}
+.repeat-plan,
+.inventory-context {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px;
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.repeat-plan p,
+.inventory-context p {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+.inventory-context .secondary,
+.repeat-plan .secondary {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+.form-hint {
+  color: var(--ink-soft);
+  line-height: 1.6;
+  font-size: 0.84rem;
+  margin: 24px 0;
+}
+.context-label {
+  font-weight: 700;
+  color: var(--forest);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+.save-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  font-size: 0.78rem;
+}
+.save-status svg {
+  color: var(--success);
+  flex-shrink: 0;
+}
+.flow-action {
+  position: sticky;
+  bottom: calc(94px + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-top: 26px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  z-index: 5;
+}
+.flow-action > span {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+.flow-action .primary {
+  font-size: 0.82rem;
+}
+.practical-grid:has(.quick-start) {
+  grid-template-columns: 1fr;
+}
+.current-briefing:has(.quick-start) {
+  padding: 28px;
+}
+.start-brief {
+  position: relative;
+  margin: 24px 0;
+  display: grid;
+  gap: 18px;
+}
+.start-brief dt {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mint);
+  margin-bottom: 7px;
+}
+.start-brief dd {
+  margin: 0;
+  color: #f4f9f5;
+  line-height: 1.65;
+  font-size: 0.94rem;
+}
+.quick-start {
+  width: 100%;
+  position: relative;
+  min-height: 56px;
+}
+.start-note {
+  position: relative;
+  display: block;
+  margin-top: 12px;
+  color: #bed2cd;
+  font-size: 0.73rem;
+  line-height: 1.6;
+}
+.current-briefing .brief-compromise {
+  position: relative;
+  color: #fff0cf;
+  font-size: 0.82rem;
+}
+.metric-help summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1.5;
+  padding-block: 10px;
+}
+.completion-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 24px;
+  margin: 20px 0;
+}
+.completion-card h2 {
+  margin: 12px 0;
+}
+.completion-card p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.completion-card small {
+  display: block;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-top: 16px;
+}
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.action-row > a {
+  font-size: 0.84rem;
+}
+.water-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+.water-actions button {
+  width: 100%;
+}
+.water-feedback button,
+.feedback button {
+  min-height: 56px;
+}
+.water-card section p {
+  line-height: 1.75;
+}
+button,
+summary,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+html {
+  scroll-padding-block: 110px 190px;
+}
+@media (max-width: 600px) {
+  .plan-progress {
+    gap: 4px;
+  }
+  .plan-progress li {
+    gap: 5px;
+    font-size: 0.68rem;
+  }
+  .plan-progress li span {
+    width: 24px;
+    height: 24px;
+  }
+  .first-plan {
+    padding: 22px;
+  }
+  .first-plan ol {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .repeat-plan,
+  .inventory-context {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+  }
+  .flow-action {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .current-briefing:has(.quick-start) {
+    padding: 22px;
+  }
+  .start-brief dd {
+    font-size: 0.92rem;
+  }
+  .action-row {
+    flex-direction: column;
+  }
+  .app-status {
+    font-size: 0.68rem;
+  }
+  .water-feedback {
+    gap: 8px;
+  }
+  .water-feedback button {
+    font-size: 0.88rem;
+  }
+  .theme-control {
+    min-height: 44px;
+  }
+}
+@media (max-width: 380px) {
+  .offline-detail {
+    max-width: 180px;
+    text-align: right;
+  }
+  .app-status {
+    padding-inline: 14px;
+  }
+  .plan-progress li {
+    font-size: 0.64rem;
+  }
+}
+.water-view .session-feedback {
+  position: sticky;
+  bottom: calc(94px + env(safe-area-inset-bottom));
+  z-index: 5;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  margin-top: 16px;
+}
+.water-view .feedback-summary {
+  border: 0;
+  background: transparent;
+  padding: 0 2px;
+  margin: 0 0 10px;
+}
+.water-view .feedback-summary span:last-child {
+  display: none;
+}
+.water-view .water-feedback {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.water-view .undo-feedback {
+  margin-top: 4px;
+  padding-bottom: 0;
+}
+.water-view .water-card {
+  scroll-margin-bottom: 290px;
+}
 
 /* Optional weather assistance stays compact until it is needed. */
-.weather-assist { margin-block: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow-wrap: anywhere; }
-.weather-assist h2 { margin: 0; font: inherit; }
-.weather-toggle { display: flex; align-items: center; gap: 14px; width: 100%; padding: 18px 20px; text-align: left; color: var(--ink); border: 0; border-radius: inherit; background: transparent; cursor: pointer; }
-.weather-toggle > svg:first-child { color: var(--forest); }
-.weather-toggle > svg:last-child { margin-left: auto; transition: transform .18s; }
-.weather-toggle[aria-expanded="true"] > svg:last-child { transform: rotate(180deg); }
-.weather-toggle span { font-weight: 700; font-size: .88rem; }
-.weather-toggle small { display: block; margin-top: 4px; color: var(--ink-soft); font-size: .73rem; font-weight: 500; }
-#weather-content { padding: 0 20px 16px; }
-#weather-content[hidden] { display: none; }
-.weather-assist p { font-size: .85rem; line-height: 1.65; margin-block: 12px; }
-.weather-assist .weather-privacy { font-size: .73rem; color: var(--ink-soft); }
-.weather-privacy a { text-decoration: underline; text-underline-offset: 3px; }
-.weather-search { margin-top: 18px; }
-.weather-search label { display: block; margin-bottom: 8px; font-size: .8rem; font-weight: 600; }
-.weather-search > div { display: flex; gap: 8px; flex-wrap: wrap; }
-.weather-search input { min-width: 0; flex: 1 1 10rem; width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); font: inherit; color: var(--ink); background: var(--surface-raised); }
-.weather-search input::placeholder { color: var(--ink-soft); }
-.weather-assist button { min-height: 44px; white-space: normal; }
-.weather-places { list-style: none; padding: 0; display: grid; gap: 8px; }
-.weather-places button { width: 100%; text-align: left; justify-content: flex-start; }
-.weather-result { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); }
-.weather-loading { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
-.weather-loading p { flex: 1; }
-.situation-page .plan-progress { margin-bottom: 22px; }
-.situation-page > .lead { margin-bottom: 20px; }
-.situation-page .fixed-context { grid-template-columns: 64px 1fr auto; gap: 12px; padding: 12px 18px; margin-bottom: 14px; }
-.situation-page .fixed-context img { width: 64px; height: 42px; }
-.situation-page .fixed-context div:last-child { grid-column: auto; }
-.situation-page .fixed-context strong { font-size: .8rem; }
-.situation-page .inventory-context { margin-block: 14px; padding: 16px 18px; gap: 12px; flex-direction: row; align-items: center; }
-.situation-page .inventory-context strong { font-size: .82rem; }
-.situation-page .inventory-context p { font-size: .75rem; }
-.situation-page .inventory-context .secondary { padding: 10px 14px; font-size: .74rem; }
-.situation-page .form-hint { display: flex; align-items: flex-start; gap: 9px; margin-block: 18px; font-size: .75rem; }
-.situation-page .form-hint svg { margin-top: 3px; color: var(--success); flex-shrink: 0; }
-.observation-group fieldset:last-child { margin-bottom: 0; }
-@media(max-width:480px) {
- .situation-page .inventory-context { align-items: flex-start; flex-direction: column; }
- .situation-page .inventory-context p { margin-top: 4px; }
- .situation-page .inventory-context .secondary { min-height: 44px; padding: 8px 12px; }
- .situation-page .inventory-context:has(.secondary) { display: grid; grid-template-columns: 1fr auto; }
- .situation-page .inventory-context .secondary { max-width: 105px; gap: 6px; }
- .situation-page .fixed-context { padding-inline: 14px; }
- .observation-group { padding: 20px 16px; }
- .observation-group > header { gap: 12px; margin-bottom: 22px; }
- .observation-group h2 { font-size: 1.85rem; }
- .weather-toggle { padding: 16px; gap: 10px; }
- #weather-content { padding-inline: 16px; }
+.weather-assist {
+  margin-block: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+.weather-assist h2 {
+  margin: 0;
+  font: inherit;
+}
+.weather-toggle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 18px 20px;
+  text-align: left;
+  color: var(--ink);
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.weather-toggle > svg:first-child {
+  color: var(--forest);
+}
+.weather-toggle > svg:last-child {
+  margin-left: auto;
+  transition: transform 0.18s;
+}
+.weather-toggle[aria-expanded='true'] > svg:last-child {
+  transform: rotate(180deg);
+}
+.weather-toggle span {
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+.weather-toggle small {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 0.73rem;
+  font-weight: 500;
+}
+#weather-content {
+  padding: 0 20px 16px;
+}
+#weather-content[hidden] {
+  display: none;
+}
+.weather-assist p {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  margin-block: 12px;
+}
+.weather-assist .weather-privacy {
+  font-size: 0.73rem;
+  color: var(--ink-soft);
+}
+.weather-privacy a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.weather-search {
+  margin-top: 18px;
+}
+.weather-search label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.weather-search > div {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.weather-search input {
+  min-width: 0;
+  flex: 1 1 10rem;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface-raised);
+}
+.weather-search input::placeholder {
+  color: var(--ink-soft);
+}
+.weather-assist button {
+  min-height: 44px;
+  white-space: normal;
+}
+.weather-places {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.weather-places button {
+  width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+}
+.weather-result {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.weather-loading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.weather-loading p {
+  flex: 1;
+}
+.situation-page .plan-progress {
+  margin-bottom: 22px;
+}
+.situation-page > .lead {
+  margin-bottom: 20px;
+}
+.situation-page .fixed-context {
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
+  padding: 12px 18px;
+  margin-bottom: 14px;
+}
+.situation-page .fixed-context img {
+  width: 64px;
+  height: 42px;
+}
+.situation-page .fixed-context div:last-child {
+  grid-column: auto;
+}
+.situation-page .fixed-context strong {
+  font-size: 0.8rem;
+}
+.situation-page .inventory-context {
+  margin-block: 14px;
+  padding: 16px 18px;
+  gap: 12px;
+  flex-direction: row;
+  align-items: center;
+}
+.situation-page .inventory-context strong {
+  font-size: 0.82rem;
+}
+.situation-page .inventory-context p {
+  font-size: 0.75rem;
+}
+.situation-page .inventory-context .secondary {
+  padding: 10px 14px;
+  font-size: 0.74rem;
+}
+.situation-page .form-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-block: 18px;
+  font-size: 0.75rem;
+}
+.situation-page .form-hint svg {
+  margin-top: 3px;
+  color: var(--success);
+  flex-shrink: 0;
+}
+.observation-group fieldset:last-child {
+  margin-bottom: 0;
+}
+@media (max-width: 480px) {
+  .situation-page .inventory-context {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .situation-page .inventory-context p {
+    margin-top: 4px;
+  }
+  .situation-page .inventory-context .secondary {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+  .situation-page .inventory-context:has(.secondary) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+  .situation-page .inventory-context .secondary {
+    max-width: 105px;
+    gap: 6px;
+  }
+  .situation-page .fixed-context {
+    padding-inline: 14px;
+  }
+  .observation-group {
+    padding: 20px 16px;
+  }
+  .observation-group > header {
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .observation-group h2 {
+    font-size: 1.85rem;
+  }
+  .weather-toggle {
+    padding: 16px;
+    gap: 10px;
+  }
+  #weather-content {
+    padding-inline: 16px;
+  }
 }

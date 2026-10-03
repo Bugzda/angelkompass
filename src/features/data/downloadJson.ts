@@ -4,7 +4,9 @@ export function downloadJson(content: string, filename: string) {
   link.href = url
   link.download = filename
   document.body.append(link)
-  try { link.click() } finally {
+  try {
+    link.click()
+  } finally {
     link.remove()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }

@@ -12,26 +12,29 @@ import { NotFoundPage, RouteError } from '../ui/components/RouteError'
 import { RetiredPhotoRoute } from './RetiredPhotoRoute'
 import { DataPage } from '../features/data/DataPage'
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Layout />,
-    errorElement: <RouteError />,
-    children: [
-      { index: true, element: <HomePage /> },
-      { path: 'neu', element: <SpeciesPage /> },
-      { path: 'neu/:fish', element: <SituationPage /> },
-      { path: 'neu/:fish/foto', element: <RetiredPhotoRoute /> },
-      { path: 'empfehlung', element: <RecommendationPage /> },
-      { path: 'bestand', element: <InventoryPage /> },
-      { path: 'session/:id', element: <SessionPage /> },
-      { path: 'session/:id/karte', element: <WaterCardPage /> },
-      { path: 'verlauf', element: <SessionsPage /> },
-      { path: 'daten', element: <DataPage /> },
-      { path: '*', element: <NotFoundPage /> },
-    ],
-  },
-], { basename: import.meta.env.BASE_URL })
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <Layout />,
+      errorElement: <RouteError />,
+      children: [
+        { index: true, element: <HomePage /> },
+        { path: 'neu', element: <SpeciesPage /> },
+        { path: 'neu/:fish', element: <SituationPage /> },
+        { path: 'neu/:fish/foto', element: <RetiredPhotoRoute /> },
+        { path: 'empfehlung', element: <RecommendationPage /> },
+        { path: 'bestand', element: <InventoryPage /> },
+        { path: 'session/:id', element: <SessionPage /> },
+        { path: 'session/:id/karte', element: <WaterCardPage /> },
+        { path: 'verlauf', element: <SessionsPage /> },
+        { path: 'daten', element: <DataPage /> },
+        { path: '*', element: <NotFoundPage /> },
+      ],
+    },
+  ],
+  { basename: import.meta.env.BASE_URL },
+)
 
 export function App() {
   return <RouterProvider router={router} />

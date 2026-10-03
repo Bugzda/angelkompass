@@ -12,21 +12,44 @@ import { recoverPendingRestore, storageSnapshot } from '../../features/data/stor
 import { DataPage } from '../../features/data/DataPage'
 import { WeatherAssist } from '../../features/situation/WeatherAssist'
 
-const conditions: Conditions = { targetFish: 'perch', waterType: 'lake', season: 'summer', timeOfDay: 'day', turbidity: 'clear', depth: 'medium', waterTemperature: 'mild', light: 'diffuse', activity: { status: 'none', signs: [] }, vegetation: 'none', observedStructure: [] }
+const conditions: Conditions = {
+  targetFish: 'perch',
+  waterType: 'lake',
+  season: 'summer',
+  timeOfDay: 'day',
+  turbidity: 'clear',
+  depth: 'medium',
+  waterTemperature: 'mild',
+  light: 'diffuse',
+  activity: { status: 'none', signs: [] },
+  vegetation: 'none',
+  observedStructure: [],
+}
 const stock = [{ targetFish: 'perch', lureTypeId: 'jig', sizes: ['medium'] }]
 const makeSession = () => sessionStore.create(conditions, createRecommendations(conditions)[0])!
-beforeEach(() => { localStorage.clear(); sessionStore.resetForTests() })
-afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.useRealTimers() })
+beforeEach(() => {
+  localStorage.clear()
+  sessionStore.resetForTests()
+})
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+  vi.unstubAllGlobals()
+  vi.useRealTimers()
+})
 
 describe('Verlustfreie Speicherung', () => {
-  it.each(['{broken', '{"schemaVersion":2}', '{"schemaVersion":4,"items":[]}'])('verdeckt beschädigten Altbestand nicht mit einer leeren Migration: %s', raw => {
-    localStorage.setItem('angelkompass.inventory.v2', raw)
-    const { result } = renderHook(() => useInventory())
-    act(() => result.current.toggleSize('perch', 'jig', 'medium'))
-    expect(localStorage.getItem(INVENTORY_KEY)).toBeNull()
-    expect(localStorage.getItem('angelkompass.inventory.v2')).toBe(raw)
-    expect(result.current.error).toBeTruthy()
-  })
+  it.each(['{broken', '{"schemaVersion":2}', '{"schemaVersion":4,"items":[]}'])(
+    'verdeckt beschädigten Altbestand nicht mit einer leeren Migration: %s',
+    raw => {
+      localStorage.setItem('angelkompass.inventory.v2', raw)
+      const { result } = renderHook(() => useInventory())
+      act(() => result.current.toggleSize('perch', 'jig', 'medium'))
+      expect(localStorage.getItem(INVENTORY_KEY)).toBeNull()
+      expect(localStorage.getItem('angelkompass.inventory.v2')).toBe(raw)
+      expect(result.current.error).toBeTruthy()
+    },
+  )
   it('erhält unbekannte Bestandsdatensätze bei Änderungen an gültigen Ködern', () => {
     const unreadable = { targetFish: 'future-fish', lureTypeId: 'future-lure', sizes: ['medium'], notes: 'behalten' }
     localStorage.setItem(INVENTORY_KEY, JSON.stringify({ schemaVersion: 3, items: [...stock, unreadable] }))
@@ -37,7 +60,8 @@ describe('Verlustfreie Speicherung', () => {
     expect(result.current.error).toMatch(/unverändert/)
   })
   it('erhält defekte Logbucheinträge bei Rückmeldungen und beim Löschen gültiger Einträge', () => {
-    const session = makeSession(), broken = { id: 'unreadable', feedback: ['original'] }
+    const session = makeSession(),
+      broken = { id: 'unreadable', feedback: ['original'] }
     localStorage.setItem(SESSION_KEY, JSON.stringify({ schemaVersion: 1, sessions: [session, broken] }))
     sessionStore.resetForTests()
     expect(sessionStore.addFeedback(session.id, 'bite')).toBe(true)
@@ -47,7 +71,8 @@ describe('Verlustfreie Speicherung', () => {
     expect(JSON.parse(localStorage.getItem(SESSION_KEY)!).sessions).toEqual([broken])
   })
   it('bewahrt eine zweite aktive Session und macht sie nach Abschluss der ersten wieder zugänglich', () => {
-    const first = makeSession(), second = { ...first, id: 'second', createdAt: new Date(Date.now() + 1000).toISOString() }
+    const first = makeSession(),
+      second = { ...first, id: 'second', createdAt: new Date(Date.now() + 1000).toISOString() }
     localStorage.setItem(SESSION_KEY, JSON.stringify({ schemaVersion: 1, sessions: [first, second] }))
     sessionStore.resetForTests()
     sessionStore.complete(second.id)
@@ -71,16 +96,17 @@ describe('Verlustfreie Speicherung', () => {
 
 describe('Vollständige Datensicherung und Wiederherstellung', () => {
   it('stellt unbekannte Gewichte, Wechselschritt-Snapshots und spätes Feedback ohne Neuberechnung wieder her', () => {
-    const input={...conditions,depth:'unknown' as const}
-    const inventory=[{targetFish:'perch' as const,lureTypeId:'jig' as const,sizes:['medium' as const]}]
-    localStorage.setItem(INVENTORY_KEY,JSON.stringify({schemaVersion:3,items:inventory}))
-    const recommendation=createRecommendationDecision(input,inventory).practicalRanking[0]
-    const session=sessionStore.create(input,recommendation)!
-    for(let i=0;i<3;i++)sessionStore.addFeedback(session.id,'no_success')
-    sessionStore.addFeedback(session.id,'catch')
-    const original=sessionStore.getSnapshot()[0]
-    const backup=parseBackup(serializeBackup())
-    localStorage.clear();sessionStore.resetForTests()
+    const input = { ...conditions, depth: 'unknown' as const }
+    const inventory = [{ targetFish: 'perch' as const, lureTypeId: 'jig' as const, sizes: ['medium' as const] }]
+    localStorage.setItem(INVENTORY_KEY, JSON.stringify({ schemaVersion: 3, items: inventory }))
+    const recommendation = createRecommendationDecision(input, inventory).practicalRanking[0]
+    const session = sessionStore.create(input, recommendation)!
+    for (let i = 0; i < 3; i++) sessionStore.addFeedback(session.id, 'no_success')
+    sessionStore.addFeedback(session.id, 'catch')
+    const original = sessionStore.getSnapshot()[0]
+    const backup = parseBackup(serializeBackup())
+    localStorage.clear()
+    sessionStore.resetForTests()
     restoreBackup(planRestore(backup))
     expect(sessionStore.getSnapshot()[0]).toEqual(original)
     expect(sessionStore.getSnapshot()[0].recommendation.setup.weight).toBe('unknown')
@@ -93,7 +119,8 @@ describe('Vollständige Datensicherung und Wiederherstellung', () => {
     sessionStore.addFeedback(session.id, 'catch')
     const original = sessionStore.getSnapshot()
     const backup = parseBackup(serializeBackup())
-    localStorage.clear(); sessionStore.resetForTests()
+    localStorage.clear()
+    sessionStore.resetForTests()
     const plan = planRestore(backup)
     expect(plan).toMatchObject({ addedSessions: 1, addedSizes: 1 })
     restoreBackup(plan)
@@ -121,7 +148,10 @@ describe('Vollständige Datensicherung und Wiederherstellung', () => {
     expect(plan.archivedSessions).toBe(1)
     restoreBackup(plan)
     expect(sessionStore.getSnapshot().filter(item => item.status === 'active')).toHaveLength(1)
-    expect(sessionStore.getSnapshot().find(item => item.id === imported.id)).toMatchObject({ status: 'completed', recommendation: imported.recommendation })
+    expect(sessionStore.getSnapshot().find(item => item.id === imported.id)).toMatchObject({
+      status: 'completed',
+      recommendation: imported.recommendation,
+    })
   })
   it('liest das bereits vorhandene reine Session-Exportformat', () => {
     makeSession()
@@ -138,7 +168,12 @@ describe('Vollständige Datensicherung und Wiederherstellung', () => {
   it('lehnt unbekannte Sicherungen, ungültige Einträge und doppelte IDs ab', () => {
     makeSession()
     const backup = JSON.parse(serializeBackup())
-    for (const value of [{ ...backup, schemaVersion: 5 }, { ...backup, inventory: [{}] }, { ...backup, sessions: [{}] }, { ...backup, sessions: [...backup.sessions, ...backup.sessions] }]) {
+    for (const value of [
+      { ...backup, schemaVersion: 5 },
+      { ...backup, inventory: [{}] },
+      { ...backup, sessions: [{}] },
+      { ...backup, sessions: [...backup.sessions, ...backup.sessions] },
+    ]) {
       expect(() => parseBackup(JSON.stringify(value))).toThrow()
     }
   })
@@ -155,11 +190,15 @@ describe('Vollständige Datensicherung und Wiederherstellung', () => {
     localStorage.setItem(INVENTORY_KEY, JSON.stringify({ schemaVersion: 3, items: stock }))
     const backup = parseBackup(serializeBackup())
     backup.inventory = [{ targetFish: 'perch', lureTypeId: 'jig', sizes: ['small'] }]
-    const plan = planRestore(backup), before = storageSnapshot()
+    const plan = planRestore(backup),
+      before = storageSnapshot()
     const original = Storage.prototype.setItem
     let failed = false
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) {
-      if (key === SESSION_KEY && !failed) { failed = true; throw new DOMException('Quota', 'QuotaExceededError') }
+      if (key === SESSION_KEY && !failed) {
+        failed = true
+        throw new DOMException('Quota', 'QuotaExceededError')
+      }
       original.call(this, key, value)
     })
     expect(() => restoreBackup(plan)).toThrow(/zurückgesetzt/)
@@ -189,7 +228,11 @@ describe('Vollständige Datensicherung und Wiederherstellung', () => {
     expect(localStorage.getItem('angelkompass.restore.pending.v1')).toBeNull()
   })
   it('zeigt Wiederherstellung auch auf einem noch leeren Gerät', () => {
-    render(<MemoryRouter><DataPage/></MemoryRouter>)
+    render(
+      <MemoryRouter>
+        <DataPage />
+      </MemoryRouter>,
+    )
     expect(screen.getByLabelText('Sicherungsdatei auswählen')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Vollständige Sicherung herunterladen' })).toBeEnabled()
     expect(screen.queryByRole('button', { name: 'Daten ergänzen' })).not.toBeInTheDocument()
@@ -198,8 +241,9 @@ describe('Vollständige Datensicherung und Wiederherstellung', () => {
 
 describe('Abbrechbare Wetterhilfe', () => {
   it('startet eingeklappt und sendet beim Aufklappen keine Anfrage', () => {
-    const fetcher = vi.fn(); vi.stubGlobal('fetch', fetcher)
-    render(<WeatherAssist onApply={vi.fn()}/>)
+    const fetcher = vi.fn()
+    vi.stubGlobal('fetch', fetcher)
+    render(<WeatherAssist onApply={vi.fn()} />)
     const toggle = screen.getByRole('button', { name: /Wetter am Angelort/ })
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
     expect(screen.queryByRole('button', { name: 'Meinen Standort verwenden' })).not.toBeInTheDocument()
@@ -210,23 +254,36 @@ describe('Abbrechbare Wetterhilfe', () => {
   it('beendet auch eine unbeantwortete Standortanfrage nach 15 Sekunden', async () => {
     vi.useFakeTimers()
     vi.stubGlobal('navigator', { geolocation: { getCurrentPosition: vi.fn() } })
-    render(<WeatherAssist onApply={vi.fn()}/>)
+    render(<WeatherAssist onApply={vi.fn()} />)
     fireEvent.click(screen.getByRole('button', { name: /Wetter am Angelort/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Meinen Standort verwenden' }))
-    await act(async () => { await vi.advanceTimersByTimeAsync(15000) })
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(15000)
+    })
     expect(screen.getByRole('alert')).toHaveTextContent('zu lange gedauert')
     expect(screen.getByRole('button', { name: 'Meinen Standort verwenden' })).toBeEnabled()
   })
   it('bricht manuell ab und ignoriert später eintreffende Standortdaten', async () => {
     let success: PositionCallback | undefined
-    const fetcher = vi.fn(); vi.stubGlobal('fetch', fetcher)
-    vi.stubGlobal('navigator', { geolocation: { getCurrentPosition: (callback: PositionCallback) => { success = callback } } })
-    render(<WeatherAssist onApply={vi.fn()}/>)
+    const fetcher = vi.fn()
+    vi.stubGlobal('fetch', fetcher)
+    vi.stubGlobal('navigator', {
+      geolocation: {
+        getCurrentPosition: (callback: PositionCallback) => {
+          success = callback
+        },
+      },
+    })
+    render(<WeatherAssist onApply={vi.fn()} />)
     fireEvent.click(screen.getByRole('button', { name: /Wetter am Angelort/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Meinen Standort verwenden' }))
-    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Abruf abbrechen' })) })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Abruf abbrechen' }))
+    })
     expect(screen.getByRole('status')).toHaveTextContent('abgebrochen')
-    await act(async () => { success?.({ coords: { latitude: 52, longitude: 13 } } as GeolocationPosition) })
+    await act(async () => {
+      success?.({ coords: { latitude: 52, longitude: 13 } } as GeolocationPosition)
+    })
     expect(fetcher).not.toHaveBeenCalled()
     expect(screen.getByRole('button', { name: 'Meinen Standort verwenden' })).toBeEnabled()
   })

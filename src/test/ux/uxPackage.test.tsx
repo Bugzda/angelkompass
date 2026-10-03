@@ -9,51 +9,101 @@ import { SessionsPage } from '../../features/sessions/SessionsPage'
 import { WaterCardPage } from '../../features/sessions/WaterCardPage'
 import { sessionStore } from '../../features/sessions/sessionStore'
 
-const conditions: Conditions = { targetFish:'perch',waterType:'lake',season:'summer',timeOfDay:'dusk',turbidity:'clear',depth:'medium',waterTemperature:'mild',light:'diffuse',activity:{status:'none',signs:[]},vegetation:'edgeOrGaps',observedStructure:[] }
+const conditions: Conditions = {
+  targetFish: 'perch',
+  waterType: 'lake',
+  season: 'summer',
+  timeOfDay: 'dusk',
+  turbidity: 'clear',
+  depth: 'medium',
+  waterTemperature: 'mild',
+  light: 'diffuse',
+  activity: { status: 'none', signs: [] },
+  vegetation: 'edgeOrGaps',
+  observedStructure: [],
+}
 
-beforeEach(()=>{localStorage.clear();sessionStore.resetForTests();vi.stubGlobal('crypto',{randomUUID:()=>`ux-${Math.random()}`})})
-afterEach(()=>{cleanup();vi.restoreAllMocks()})
+beforeEach(() => {
+  localStorage.clear()
+  sessionStore.resetForTests()
+  vi.stubGlobal('crypto', { randomUUID: () => `ux-${Math.random()}` })
+})
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+})
 
-describe('UX-Paket',()=>{
-  it('zeigt eine aktive Session auf der Startseite mit Fortsetzen-Aktion',()=>{
-    sessionStore.create(conditions,createRecommendations(conditions)[0])
-    render(<MemoryRouter><HomePage/></MemoryRouter>)
+describe('UX-Paket', () => {
+  it('zeigt eine aktive Session auf der Startseite mit Fortsetzen-Aktion', () => {
+    sessionStore.create(conditions, createRecommendations(conditions)[0])
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    )
     expect(screen.getByText('AKTIVE SESSION')).toBeInTheDocument()
-    expect(screen.getByRole('link',{name:/Session fortsetzen/})).toHaveAttribute('href',expect.stringMatching(/^\/session\//))
+    expect(screen.getByRole('link', { name: /Session fortsetzen/ })).toHaveAttribute(
+      'href',
+      expect.stringMatching(/^\/session\//),
+    )
   })
 
-  it('bietet im leeren Verlauf direkt die erste Session an',()=>{
-    render(<MemoryRouter><SessionsPage/></MemoryRouter>)
-    expect(screen.getByRole('link',{name:'Ersten Angelplan erstellen'})).toHaveAttribute('href','/neu')
+  it('bietet im leeren Verlauf direkt die erste Session an', () => {
+    render(
+      <MemoryRouter>
+        <SessionsPage />
+      </MemoryRouter>,
+    )
+    expect(screen.getByRole('link', { name: 'Ersten Angelplan erstellen' })).toHaveAttribute('href', '/neu')
   })
 
-  it('zeigt jeden vorhandenen Köder einmal und öffnet Details auf Wunsch',()=>{
-    const top=createRecommendations(conditions);localStorage.setItem('angelkompass.inventory.v1',JSON.stringify(top.map(item=>({lureTypeId:item.setup.lure.id}))))
-    render(<MemoryRouter initialEntries={[{pathname:'/empfehlung',state:conditions}]}><RecommendationPage/></MemoryRouter>)
-    const toggles=screen.getAllByRole('button',{name:'Details anzeigen'})
+  it('zeigt jeden vorhandenen Köder einmal und öffnet Details auf Wunsch', () => {
+    const top = createRecommendations(conditions)
+    localStorage.setItem(
+      'angelkompass.inventory.v1',
+      JSON.stringify(top.map(item => ({ lureTypeId: item.setup.lure.id }))),
+    )
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/empfehlung', state: conditions }]}>
+        <RecommendationPage />
+      </MemoryRouter>,
+    )
+    const toggles = screen.getAllByRole('button', { name: 'Details anzeigen' })
     expect(toggles).toHaveLength(3)
-    expect(toggles.every(button=>button.getAttribute('aria-expanded')==='false')).toBe(true)
-    for(const item of top)expect(screen.getAllByRole('heading',{name:item.setup.lure.label})).toHaveLength(1)
-    expect(screen.queryByRole('region',{name:'Montage und Führung'})).not.toBeInTheDocument()
+    expect(toggles.every(button => button.getAttribute('aria-expanded') === 'false')).toBe(true)
+    for (const item of top) expect(screen.getAllByRole('heading', { name: item.setup.lure.label })).toHaveLength(1)
+    expect(screen.queryByRole('region', { name: 'Montage und Führung' })).not.toBeInTheDocument()
     fireEvent.click(toggles[0])
-    expect(screen.getByRole('button',{name:'Details schließen'})).toHaveAttribute('aria-expanded','true')
-    expect(screen.getByRole('region',{name:'Montage und Führung'})).toBeInTheDocument()
-    expect(screen.getAllByRole('button',{name:'Alternative starten'})).toHaveLength(2)
+    expect(screen.getByRole('button', { name: 'Details schließen' })).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('region', { name: 'Montage und Führung' })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Alternative starten' })).toHaveLength(2)
   })
 
-  it('zeigt die gespeicherte Empfehlung und schreibt Feedback in der Am-Wasser-Karte',()=>{
-    const session=sessionStore.create(conditions,createRecommendations(conditions)[0])!
-    render(<MemoryRouter initialEntries={[`/session/${session.id}/karte`]}><Routes><Route path="/session/:id/karte" element={<WaterCardPage/>}/></Routes></MemoryRouter>)
+  it('zeigt die gespeicherte Empfehlung und schreibt Feedback in der Am-Wasser-Karte', () => {
+    const session = sessionStore.create(conditions, createRecommendations(conditions)[0])!
+    render(
+      <MemoryRouter initialEntries={[`/session/${session.id}/karte`]}>
+        <Routes>
+          <Route path="/session/:id/karte" element={<WaterCardPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
     expect(screen.getByText(session.recommendation.setup.lure.label)).toBeInTheDocument()
-    expect(screen.getByRole('group',{name:'Rückmeldung erfassen'})).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button',{name:'Ohne Kontakt → nächster Schritt'}))
+    expect(screen.getByRole('group', { name: 'Rückmeldung erfassen' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Ohne Kontakt → nächster Schritt' }))
     expect(sessionStore.getSnapshot()[0].progress).toBe('refine')
-    expect(screen.getByRole('heading',{name:session.recommendation.switchPlan[1].title})).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: session.recommendation.switchPlan[1].title })).toBeInTheDocument()
   })
 
-  it('führt auch aus einer fehlenden Am-Wasser-Karte verständlich zurück',()=>{
-    render(<MemoryRouter initialEntries={['/session/fehlt/karte']}><Routes><Route path="/session/:id/karte" element={<WaterCardPage/>}/></Routes></MemoryRouter>)
-    expect(screen.getByRole('heading',{name:'Session nicht gefunden'})).toBeInTheDocument()
-    expect(screen.getByRole('link',{name:'Zum Logbuch'})).toHaveAttribute('href','/verlauf')
+  it('führt auch aus einer fehlenden Am-Wasser-Karte verständlich zurück', () => {
+    render(
+      <MemoryRouter initialEntries={['/session/fehlt/karte']}>
+        <Routes>
+          <Route path="/session/:id/karte" element={<WaterCardPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    expect(screen.getByRole('heading', { name: 'Session nicht gefunden' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Zum Logbuch' })).toHaveAttribute('href', '/verlauf')
   })
 })

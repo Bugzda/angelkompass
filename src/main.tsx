@@ -11,7 +11,11 @@ import { createPwaUpdateFlow } from './app/pwaUpdateFlow'
 import { sessionStore } from './features/sessions/sessionStore'
 
 let recoveryError = false
-try { recoverPendingRestore() } catch { recoveryError = true }
+try {
+  recoverPendingRestore()
+} catch {
+  recoveryError = true
+}
 void removeRetiredPhotoData().catch(() => {})
 if ('serviceWorker' in navigator) observeOfflineReadiness(navigator.serviceWorker, pwaStatusStore.offlineReady)
 const updateFlow = createPwaUpdateFlow({
@@ -27,10 +31,19 @@ const updateSW = registerSW({
 })
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {recoveryError ? <main className="page-shell empty-state">
-      <h1>Wiederherstellung pausiert.</h1>
-      <p>Eine unterbrochene Datensicherung konnte noch nicht zurückgesetzt werden. Deine Sicherung bleibt erhalten. Prüfe den verfügbaren Browser-Speicher und öffne die App erneut.</p>
-      <button className="primary" onClick={() => window.location.reload()}>Erneut versuchen</button>
-    </main> : <App/>}
+    {recoveryError ? (
+      <main className="page-shell empty-state">
+        <h1>Wiederherstellung pausiert.</h1>
+        <p>
+          Eine unterbrochene Datensicherung konnte noch nicht zurückgesetzt werden. Deine Sicherung bleibt erhalten.
+          Prüfe den verfügbaren Browser-Speicher und öffne die App erneut.
+        </p>
+        <button className="primary" onClick={() => window.location.reload()}>
+          Erneut versuchen
+        </button>
+      </main>
+    ) : (
+      <App />
+    )}
   </StrictMode>,
 )

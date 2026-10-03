@@ -2,7 +2,12 @@ import { describe, expect, it, vi } from 'vitest'
 import { createPwaUpdateFlow } from '../../app/pwaUpdateFlow'
 
 function harness() {
-  const actions = { activate: vi.fn().mockResolvedValue(undefined), reload: vi.fn(), canReload: vi.fn().mockReturnValue(true), offer: vi.fn() }
+  const actions = {
+    activate: vi.fn().mockResolvedValue(undefined),
+    reload: vi.fn(),
+    canReload: vi.fn().mockReturnValue(true),
+    offer: vi.fn(),
+  }
   const flow = createPwaUpdateFlow(actions)
   flow.available()
   const apply = () => actions.offer.mock.lastCall![0]() as Promise<void>

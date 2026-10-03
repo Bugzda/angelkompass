@@ -18,7 +18,8 @@ export type GuidanceMode = 'slow' | 'controlled' | 'active'
 export type LureMaterial = 'soft' | 'hard' | 'metal' | 'hybrid'
 export type ConfidenceLevel = 'low' | 'medium' | 'high'
 export type EvidenceClass = 'science' | 'experience' | 'weak' | 'observation'
-export type RuleGroup = 'thermalPhase' | 'visibility' | 'habitatObservation' | 'activityObservation' | 'presentation' | 'control'
+export type RuleGroup =
+  'thermalPhase' | 'visibility' | 'habitatObservation' | 'activityObservation' | 'presentation' | 'control'
 
 export interface Conditions {
   targetFish: TargetFish
@@ -36,10 +37,41 @@ export interface Conditions {
   pikeSafetyConfirmed?: boolean
 }
 
-export interface SpotType { id: SpotFeature; label: string; description: string; seasonalAffinity: Season[]; depthAffinity: Array<Exclude<Depth, 'unknown'>>; priority: number }
-export type LureId = 'dropshot' | 'carolina' | 'jig' | 'ned' | 'twitchbait' | 'spinner' | 'crankbait' | 'chatterbait' | 'blade-bait' | 'spinnerbait' | 'popper' | 'tail-spinner' | 'jerkbait' | 'spoon' | 'swimbait' | 'tailbait'
-export interface NumericRange { min: number; max?: number; openEnded?: boolean }
-export interface GuidanceSet { slow: string; controlled: string; active: string }
+export interface SpotType {
+  id: SpotFeature
+  label: string
+  description: string
+  seasonalAffinity: Season[]
+  depthAffinity: Array<Exclude<Depth, 'unknown'>>
+  priority: number
+}
+export type LureId =
+  | 'dropshot'
+  | 'carolina'
+  | 'jig'
+  | 'ned'
+  | 'twitchbait'
+  | 'spinner'
+  | 'crankbait'
+  | 'chatterbait'
+  | 'blade-bait'
+  | 'spinnerbait'
+  | 'popper'
+  | 'tail-spinner'
+  | 'jerkbait'
+  | 'spoon'
+  | 'swimbait'
+  | 'tailbait'
+export interface NumericRange {
+  min: number
+  max?: number
+  openEnded?: boolean
+}
+export interface GuidanceSet {
+  slow: string
+  controlled: string
+  active: string
+}
 export interface PresentationProfile {
   id: string
   label: string
@@ -76,14 +108,69 @@ export interface ReasonContribution {
   appliedDelta: number
 }
 
-export interface RankedSpot { spot: SpotType; score: number; reasons: ReasonContribution[] }
-export interface ResolvedPresentation { profileId: string; profileLabel: string; mounting: string; sizeLabel: string; weightLabel: string; weightKind: WeightKind; guidance: string; mode: GuidanceMode }
-export interface RankedSetup { lure: LureType; score: number; size: SizeClass; color: ColorFamily; weight: WeightClass; resolvedPresentation?: ResolvedPresentation; reasons: ReasonContribution[] }
-export interface ConfidenceMetric { value: number; level: ConfidenceLevel; explanation: string; missingFields?: string[]; contributingRules?: number }
-export interface InventoryFit { preferredSize: SizeClass; selectedSize: SizeClass; exact: boolean }
-export interface SwitchSetup { lureId: LureId; lureLabel: string; spotLabel: string; size: SizeClass; presentation: ResolvedPresentation; inventoryFit?: InventoryFit; colorLabel?: string }
-export interface SwitchStep { phase: 'initial' | 'refine' | 'move'; title: string; change: string; limit: string; reason: string; setup?: SwitchSetup }
-export interface ColorGuidance { family: ColorFamily; familyLabel: string; baseLabel?: string; finishLabel?: string; accentLabel?: string; alternative?: string; examples: string[]; reason: string }
+export interface RankedSpot {
+  spot: SpotType
+  score: number
+  reasons: ReasonContribution[]
+}
+export interface ResolvedPresentation {
+  profileId: string
+  profileLabel: string
+  mounting: string
+  sizeLabel: string
+  weightLabel: string
+  weightKind: WeightKind
+  guidance: string
+  mode: GuidanceMode
+}
+export interface RankedSetup {
+  lure: LureType
+  score: number
+  size: SizeClass
+  color: ColorFamily
+  weight: WeightClass
+  resolvedPresentation?: ResolvedPresentation
+  reasons: ReasonContribution[]
+}
+export interface ConfidenceMetric {
+  value: number
+  level: ConfidenceLevel
+  explanation: string
+  missingFields?: string[]
+  contributingRules?: number
+}
+export interface InventoryFit {
+  preferredSize: SizeClass
+  selectedSize: SizeClass
+  exact: boolean
+}
+export interface SwitchSetup {
+  lureId: LureId
+  lureLabel: string
+  spotLabel: string
+  size: SizeClass
+  presentation: ResolvedPresentation
+  inventoryFit?: InventoryFit
+  colorLabel?: string
+}
+export interface SwitchStep {
+  phase: 'initial' | 'refine' | 'move'
+  title: string
+  change: string
+  limit: string
+  reason: string
+  setup?: SwitchSetup
+}
+export interface ColorGuidance {
+  family: ColorFamily
+  familyLabel: string
+  baseLabel?: string
+  finishLabel?: string
+  accentLabel?: string
+  alternative?: string
+  examples: string[]
+  reason: string
+}
 
 export interface Recommendation {
   rank: number
@@ -97,7 +184,12 @@ export interface Recommendation {
   inventoryFit?: InventoryFit
 }
 
-export interface InventoryItem { targetFish: TargetFish; lureTypeId: LureType['id']; sizes: SizeClass[]; migratedNeedsReview?: boolean }
+export interface InventoryItem {
+  targetFish: TargetFish
+  lureTypeId: LureType['id']
+  sizes: SizeClass[]
+  migratedNeedsReview?: boolean
+}
 export interface RecommendationDecision {
   expertRanking: Recommendation[]
   practicalRanking: Recommendation[]
