@@ -195,3 +195,135 @@
     top: calc(70px + env(safe-area-inset-top));
   }
 }
+
+/* Lure box gap analysis. */
+.inventory-gap-page .chips {
+  margin-bottom: 22px;
+}
+.gap-result {
+  min-height: 120px;
+}
+.gap-loading {
+  padding: 28px 20px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+.logbook-stats.gap-stats > div {
+  justify-content: flex-end;
+  padding: 20px 16px;
+}
+.logbook-stats.gap-stats dd {
+  font-size: clamp(1.9rem, 8vw, 3.4rem);
+  white-space: nowrap;
+}
+.gap-stats dd small {
+  margin-left: 2px;
+  font-size: 0.55em;
+}
+.gap-legend {
+  margin: 12px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.gap-heading {
+  margin: 32px 0 14px;
+}
+.gap-suggestions {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gap-suggestion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.gap-suggestion > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.gap-suggestion > div small {
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+}
+.gap-kind {
+  justify-self: start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.gap-kind.newSize {
+  background: var(--success-bg);
+  color: var(--success);
+}
+.gap-figures {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+}
+.gap-figures strong {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.gap-suggestion .secondary {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.gap-method {
+  margin-top: 28px;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+  font-size: 0.82rem;
+}
+.gap-method summary {
+  min-height: 32px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gap-method p {
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+.inventory-gap-page .save-confirmation {
+  margin-top: 16px;
+}
+@media (max-width: 480px) {
+  .gap-suggestion {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .gap-suggestion .secondary {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+  }
+  .logbook-stats.gap-stats dt {
+    letter-spacing: 0.06em;
+  }
+}

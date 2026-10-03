@@ -55,19 +55,21 @@ export function Layout() {
           ? 'Datensicherung'
           : path === '/bestand'
             ? 'Köderbox'
-            : path === '/verlauf'
-              ? 'Logbuch'
-              : path.endsWith('/karte')
-                ? 'Am Wasser'
-                : path.startsWith('/session/')
-                  ? 'Deine Session'
-                  : path === '/empfehlung'
-                    ? 'Dein Angelplan'
-                    : path === '/neu'
-                      ? 'Zielfisch wählen'
-                      : path.startsWith('/neu/')
-                        ? 'Bedingungen am See'
-                        : 'Seite nicht gefunden'
+            : path === '/bestand/analyse'
+              ? 'Köderbox-Analyse'
+              : path === '/verlauf'
+                ? 'Logbuch'
+                : path.endsWith('/karte')
+                  ? 'Am Wasser'
+                  : path.startsWith('/session/')
+                    ? 'Deine Session'
+                    : path === '/empfehlung'
+                      ? 'Dein Angelplan'
+                      : path === '/neu'
+                        ? 'Zielfisch wählen'
+                        : path.startsWith('/neu/')
+                          ? 'Bedingungen am See'
+                          : 'Seite nicht gefunden'
     document.title = `${title} · Angelkompass`
   }, [location.pathname])
   const update = async () => {

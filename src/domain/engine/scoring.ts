@@ -258,14 +258,9 @@ function buildInventorySwitchPlan(
   })
 }
 
-function rankCandidates(
-  conditions: Conditions,
-  spotAllowed: (spot: RankedSpot) => boolean = () => true,
-  spotOverride?: RankedSpot[],
-): Array<Recommendation & { totalScore: number }> {
+/** Best spot/setup pair per lure, ordered by total score. Shared by the ranking and the inventory analysis. */
+function orderCandidates(conditions: Conditions, eligibleSpots: RankedSpot[]) {
   const profile = profileFor(conditions.targetFish)
-  const rankedSpots = spotOverride ?? evaluateSpots(conditions)
-  const eligibleSpots = rankedSpots.filter(spotAllowed)
   const candidates = eligibleSpots
     .flatMap(spot => evaluateSetups(conditions, spot).map(setup => ({ spot, setup })))
     .sort(
@@ -279,6 +274,16 @@ function rankCandidates(
     if (!selected.some(item => item.setup.lure.id === candidate.setup.lure.id)) selected.push(candidate)
     if (selected.length === profile.lures.length) break
   }
+  return { candidates, selected }
+}
+
+function rankCandidates(
+  conditions: Conditions,
+  spotAllowed: (spot: RankedSpot) => boolean = () => true,
+  spotOverride?: RankedSpot[],
+): Array<Recommendation & { totalScore: number }> {
+  const eligibleSpots = (spotOverride ?? evaluateSpots(conditions)).filter(spotAllowed)
+  const { candidates, selected } = orderCandidates(conditions, eligibleSpots)
   const coverage = calculateInputCoverage(conditions)
   return selected.map(({ spot, setup }, index) => {
     const alternative =
@@ -346,17 +351,23 @@ const sizeFallbacks: Record<SizeClass, SizeClass[]> = {
   large: ['large', 'medium', 'small'],
 }
 
+/** The owned size used for a lure: the preferred size, otherwise the nearest owned neighbour size. */
+export function inventorySizeFor(
+  conditions: Conditions,
+  inventory: InventoryItem[],
+  lure: LureType,
+  preferredSize: SizeClass,
+): SizeClass | undefined {
+  const item = inventory.find(entry => entry.targetFish === conditions.targetFish && entry.lureTypeId === lure.id)
+  return sizeFallbacks[preferredSize].find(size => item?.sizes.includes(size) && lure.sizes.includes(size))
+}
+
 function adaptToInventory(
   conditions: Conditions,
   inventory: InventoryItem[],
   recommendation: Recommendation & { totalScore: number },
 ) {
-  const item = inventory.find(
-    entry => entry.targetFish === conditions.targetFish && entry.lureTypeId === recommendation.setup.lure.id,
-  )
-  const selectedSize = sizeFallbacks[recommendation.setup.size].find(
-    size => item?.sizes.includes(size) && recommendation.setup.lure.sizes.includes(size),
-  )
+  const selectedSize = inventorySizeFor(conditions, inventory, recommendation.setup.lure, recommendation.setup.size)
   if (!selectedSize) return undefined
   const properties = setupProperties(conditions, recommendation.setup.lure, recommendation.spot, selectedSize)
   return {
@@ -403,15 +414,32 @@ function neutralSpot(conditions: Conditions): RankedSpot {
   }
 }
 
+/** Confirmed practical spots, or a neutral water area when no structure is confirmed. */
+function applicableSpots(
+  conditions: Conditions,
+  confirmedSpots = evaluateSpots(conditions).filter(spot => isPracticalSpot(conditions, spot)),
+) {
+  return confirmedSpots.length ? confirmedSpots : [neutralSpot(conditions)]
+}
+
+/**
+ * Inventory-independent order of applicable lures with their preferred size, exactly as the practical
+ * ranking sees them before the inventory filter. Used for the descriptive lure box analysis.
+ */
+export function applicableLureOrder(conditions: Conditions): Array<{ lure: LureType; size: SizeClass }> {
+  return orderCandidates(conditions, applicableSpots(conditions)).selected.map(({ setup }) => ({
+    lure: setup.lure,
+    size: setup.size,
+  }))
+}
+
 export function createRecommendationDecision(
   conditions: Conditions,
   inventory: InventoryItem[],
 ): RecommendationDecision {
   const completeRanking = rankCandidates(conditions)
   const confirmedSpots = evaluateSpots(conditions).filter(spot => isPracticalSpot(conditions, spot))
-  const applicableRanking = confirmedSpots.length
-    ? rankCandidates(conditions, () => true, confirmedSpots)
-    : rankCandidates(conditions, () => true, [neutralSpot(conditions)])
+  const applicableRanking = rankCandidates(conditions, () => true, applicableSpots(conditions, confirmedSpots))
   const inventoryCandidates = applicableRanking.map(expert => ({
     expert,
     practical: adaptToInventory(conditions, inventory, expert),

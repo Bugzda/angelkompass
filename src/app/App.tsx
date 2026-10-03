@@ -3,6 +3,7 @@ import { HomePage } from '../features/home/HomePage'
 import { RecommendationPage } from '../features/recommendations/RecommendationPage'
 import { SituationPage } from '../features/situation/SituationPage'
 import { InventoryPage } from '../features/inventory/InventoryPage'
+import { InventoryGapPage } from '../features/inventory/InventoryGapPage'
 import { Layout } from '../ui/components/Layout'
 import { SessionPage } from '../features/sessions/SessionPage'
 import { SessionsPage } from '../features/sessions/SessionsPage'
@@ -27,6 +28,7 @@ const router = createBrowserRouter(
         { path: 'aktiv', element: <ActivePlanRedirect /> },
         { path: 'empfehlung', element: <RecommendationPage /> },
         { path: 'bestand', element: <InventoryPage /> },
+        { path: 'bestand/analyse', element: <InventoryGapPage /> },
         { path: 'session/:id', element: <SessionPage /> },
         { path: 'session/:id/karte', element: <WaterCardPage /> },
         { path: 'verlauf', element: <SessionsPage /> },

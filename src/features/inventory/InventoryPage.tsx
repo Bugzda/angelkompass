@@ -107,6 +107,20 @@ export function InventoryPage() {
           Suche zurücksetzen
         </button>
       )}
+      {!context && (
+        <Link
+          viewTransition
+          className="data-link"
+          to="/bestand/analyse"
+          state={fishFilter === 'all' ? undefined : { targetFish: fishFilter }}
+        >
+          <Icon name="chart" size={18} />
+          <span>
+            Lücken in der Köderbox finden<small>Welche Ergänzung bringt dir am meisten?</small>
+          </span>
+          <Icon name="arrow-right" size={18} />
+        </Link>
+      )}
       <Link viewTransition className="data-link" to="/daten">
         <Icon name="download" size={18} />
         <span>
