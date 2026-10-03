@@ -12,7 +12,7 @@ export type SpotFeature = 'vegetation' | 'shallow' | 'dropoff' | 'hardCover' | '
 export type ObservableStructure = Exclude<SpotFeature, 'vegetation' | 'openWater'>
 export type SizeClass = 'small' | 'medium' | 'large'
 export type ColorFamily = 'natural' | 'contrast' | 'transparent'
-export type WeightClass = 'ultralight' | 'light' | 'medium' | 'heavy'
+export type WeightClass = 'ultralight' | 'light' | 'medium' | 'heavy' | 'unknown'
 export type WeightKind = 'terminal' | 'lure-total' | 'none'
 export type GuidanceMode = 'slow' | 'controlled' | 'active'
 export type LureMaterial = 'soft' | 'hard' | 'metal' | 'hybrid'
@@ -80,7 +80,9 @@ export interface RankedSpot { spot: SpotType; score: number; reasons: ReasonCont
 export interface ResolvedPresentation { profileId: string; profileLabel: string; mounting: string; sizeLabel: string; weightLabel: string; weightKind: WeightKind; guidance: string; mode: GuidanceMode }
 export interface RankedSetup { lure: LureType; score: number; size: SizeClass; color: ColorFamily; weight: WeightClass; resolvedPresentation?: ResolvedPresentation; reasons: ReasonContribution[] }
 export interface ConfidenceMetric { value: number; level: ConfidenceLevel; explanation: string; missingFields?: string[]; contributingRules?: number }
-export interface SwitchStep { phase: 'initial' | 'refine' | 'move'; title: string; change: string; limit: string; reason: string }
+export interface InventoryFit { preferredSize: SizeClass; selectedSize: SizeClass; exact: boolean }
+export interface SwitchSetup { lureId: LureId; lureLabel: string; spotLabel: string; size: SizeClass; presentation: ResolvedPresentation; inventoryFit?: InventoryFit; colorLabel?: string }
+export interface SwitchStep { phase: 'initial' | 'refine' | 'move'; title: string; change: string; limit: string; reason: string; setup?: SwitchSetup }
 export interface ColorGuidance { family: ColorFamily; familyLabel: string; baseLabel?: string; finishLabel?: string; accentLabel?: string; alternative?: string; examples: string[]; reason: string }
 
 export interface Recommendation {
@@ -92,7 +94,7 @@ export interface Recommendation {
   colorGuidance: ColorGuidance
   reasons: string[]
   switchPlan: SwitchStep[]
-  inventoryFit?: { preferredSize: SizeClass; selectedSize: SizeClass; exact: boolean }
+  inventoryFit?: InventoryFit
 }
 
 export interface InventoryItem { targetFish: TargetFish; lureTypeId: LureType['id']; sizes: SizeClass[]; migratedNeedsReview?: boolean }
@@ -115,6 +117,7 @@ export interface SessionFeedback {
   id: string
   outcome: FeedbackOutcome
   phase: Exclude<SessionProgress, 'exhausted'>
+  progressBefore?: SessionProgress
   createdAt: string
 }
 

@@ -109,8 +109,8 @@
 .focused-plan .water-progress { margin: 20px 0; gap: 10px; }
 .focused-plan .water-progress li { font-size: .8rem; }
 .focused-plan .water-progress li span { font-size: 1.25rem; }
-.starting-setup { position: relative; z-index: 1; border-top: 1px solid #43645f; }
-.starting-setup summary { min-height: 48px; padding-block: 12px; font-weight: 700; font-size: .94rem; cursor: pointer; line-height: 1.5; }
+.starting-setup, .step-setup { position: relative; z-index: 1; border-top: 1px solid #43645f; }
+.starting-setup summary, .step-setup summary { min-height: 48px; padding-block: 12px; font-weight: 700; font-size: .94rem; cursor: pointer; line-height: 1.5; }
 .original-plan-label p { margin: 8px 0; }
 .original-plan-label small, .weight-hint { font-size: .85rem; line-height: 1.6; color: #c6dcd5; }
 .focused-plan .water-specs { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin: 12px 0; }
@@ -119,6 +119,21 @@
 .focused-plan .starting-setup section { margin-top: 16px; padding-top: 16px; }
 .starting-setup h2 { font-size: 1.6rem; margin-bottom: 10px; }
 .starting-setup section p { font-size: .94rem; margin-block: 8px; }
+.switch-setup { margin-block: 12px 20px; overflow-wrap: anywhere; }
+.switch-lure { display: block; font-size: 1rem; }
+.switch-setup .switch-spot { font-size: .85rem; line-height: 1.6; color: var(--ink-soft); margin: 6px 0 16px; }
+.switch-specs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 14px; margin-block: 16px; }
+.switch-specs dt { color: var(--ink-soft); font-size: .82rem; margin-bottom: 6px; }
+.switch-specs dd { margin: 0; font-size: .9rem; line-height: 1.6; }
+.switch-setup h3 { font-size: 1.5rem; margin: 18px 0 8px; }
+.switch-setup p { font-size: .94rem; line-height: 1.65; margin: 8px 0; }
+.switch-setup-details { margin-top: 14px; }
+.switch-setup-details summary { min-height: 48px; padding-block: 12px; font-size: .85rem; font-weight: 700; line-height: 1.6; cursor: pointer; }
+.attempts article.done .switch-setup h3::after { content: none; }
+.focused-plan .switch-setup .switch-spot, .focused-plan .switch-specs dt, .legacy-step-note { color: #c6dcd5; }
+.focused-plan .switch-setup h3 { color: #fff; }
+.focused-plan .switch-setup .brief-compromise { color: #fff0cf; background: #533e24; }
+.legacy-step-note { font-size: .85rem; line-height: 1.65; }
 
 .water-view .session-feedback { bottom: var(--nav-clearance); padding: 8px 12px 12px; }
 .feedback-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; }
@@ -130,6 +145,7 @@
 .session-feedback .feedback button, .session-feedback .water-feedback button { min-height: 52px; padding: 8px; border-radius: 14px; background: var(--surface-raised); border: 1px solid var(--line); color: var(--ink); font-size: .9rem; }
 .session-feedback .advance-step { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px; }
 .session-feedback .advance-step small { font-weight: 500; font-size: .8rem; line-height: 1.3; }
+.session-feedback .ongoing-feedback { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .water-view > .save-status { font-size: .82rem; }
 .water-view > .full { font-size: .88rem; }
 

@@ -11,6 +11,7 @@ import { canRecommend } from '../../domain/models/validation'
 import { useInventory } from '../inventory/useInventory'
 import { sessionStore } from '../sessions/sessionStore'
 import { useSessions } from '../sessions/useSessions'
+import { SwitchSetupDetails } from './SwitchSetupDetails'
 
 const confidenceLabel = (level: ConfidenceMetric['level']) => level === 'high' ? 'Hohe Evidenz' : level === 'medium' ? 'Mittlere Evidenz' : 'Geringe Evidenz'
 const sizeName = { small: 'Klein', medium: 'Mittel', large: 'Groß' } as const
@@ -40,7 +41,7 @@ function RecommendationDetails({ recommendation, fish }: { recommendation: Recom
       {sources.length > 0 && <><h3>Quellen der angewendeten Regeln</h3><ul className="rule-sources">{sources.map(source => <li key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a><small>{source.authors} · {source.year}</small><p>{source.scope}</p></li>)}</ul></>}
     </details>
     <details className="plan-disclosure"><summary>Wechselplan bei ausbleibendem Kontakt</summary>
-      <ol className="switch-plan">{recommendation.switchPlan.map(step => <li key={step.phase}><h3>{step.title}</h3><p>{step.change}</p><small>{step.limit} · {step.reason}</small></li>)}</ol>
+      <ol className="switch-plan">{recommendation.switchPlan.map(step => <li key={step.phase}><h3>{step.title}</h3><p>{step.change}</p><small>{step.limit} · {step.reason}</small>{step.setup && <details className="switch-setup-details"><summary>Montage & Führung</summary><SwitchSetupDetails setup={step.setup}/></details>}</li>)}</ol>
     </details>
     <details className="plan-disclosure color-guidance"><summary>Farbe · {recommendation.colorGuidance.familyLabel}</summary>
       <p><strong>Grundton:</strong> {recommendation.colorGuidance.baseLabel ?? recommendation.colorGuidance.familyLabel}<br/><strong>Finish:</strong> {recommendation.colorGuidance.finishLabel ?? 'Passend zum Ködermaterial'}<br/><strong>Akzent:</strong> {recommendation.colorGuidance.accentLabel ?? 'Kein fester Akzent'}</p>

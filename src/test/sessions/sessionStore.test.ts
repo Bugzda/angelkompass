@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRecommendations } from '../../domain/engine/scoring'
+import { createRecommendationDecision, createRecommendations } from '../../domain/engine/scoring'
+import { lures } from '../../domain/catalogs/lures'
 import type { Conditions } from '../../domain/models/types'
-import { sessionStore } from '../../features/sessions/sessionStore'
+import { parseSessions, sessionStore } from '../../features/sessions/sessionStore'
 
 const conditions: Conditions = {
   targetFish: 'perch', waterType: 'lake', season: 'summer', timeOfDay: 'day', turbidity: 'slightly_turbid',
@@ -47,6 +48,62 @@ describe('lokaler Session-Zustandsautomat', () => {
     expect(sessionStore.getSnapshot()[0].progress).toBe('exhausted')
     expect(sessionStore.addFeedback(session.id, 'no_success')).toBe(false)
     expect(sessionStore.getSnapshot()[0].feedback).toHaveLength(3)
+  })
+
+  it('erfasst nach dem Wechselplan weiter Biss und Fang und erhält beim Rückgängigmachen den Fortschritt', () => {
+    const session = sessionStore.create(conditions, createRecommendations(conditions)[0])!
+    const snapshot = JSON.stringify(session.recommendation)
+    for (let i=0;i<3;i++) sessionStore.addFeedback(session.id, 'no_success')
+    expect(sessionStore.addFeedback(session.id, 'bite')).toBe(true)
+    expect(sessionStore.addFeedback(session.id, 'catch')).toBe(true)
+    expect(sessionStore.addFeedback(session.id, 'no_success')).toBe(false)
+    sessionStore.resetForTests()
+    expect(sessionStore.getSnapshot()[0]).toMatchObject({progress:'exhausted',status:'active'})
+    expect(sessionStore.getSnapshot()[0].feedback.at(-1)).toMatchObject({phase:'move',progressBefore:'exhausted',outcome:'catch'})
+    sessionStore.undoFeedback(session.id)
+    expect(sessionStore.getSnapshot()[0].progress).toBe('exhausted')
+    sessionStore.undoFeedback(session.id)
+    expect(sessionStore.getSnapshot()[0].progress).toBe('exhausted')
+    sessionStore.undoFeedback(session.id)
+    expect(sessionStore.getSnapshot()[0].progress).toBe('move')
+    expect(JSON.stringify(sessionStore.getSnapshot()[0].recommendation)).toBe(snapshot)
+  })
+
+  it('erhält bei einem späten Speicherfehler den ausgeschöpften Plan und die bisherigen Rückmeldungen', () => {
+    const session = sessionStore.create(conditions, createRecommendations(conditions)[0])!
+    for (let i=0;i<3;i++) sessionStore.addFeedback(session.id, 'no_success')
+    const original = sessionStore.getSnapshot()[0]
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Quota', 'QuotaExceededError') })
+    expect(sessionStore.addFeedback(session.id,'catch')).toBe(false)
+    expect(sessionStore.getSnapshot()[0]).toEqual(original)
+    expect(sessionStore.getError()).toMatch(/nicht lokal gespeichert/)
+  })
+
+  it('erhält neue Wechselschritt-Snapshots beim erneuten Laden und bewahrt beschädigte Originale', () => {
+    const inventory=lures.map(lure=>({targetFish:'perch' as const,lureTypeId:lure.id,sizes:[...lure.sizes]}))
+    const recommendation=createRecommendationDecision(conditions,inventory).practicalRanking[0]
+    const session=sessionStore.create(conditions,recommendation)!
+    const before=JSON.stringify(session.recommendation)
+    sessionStore.resetForTests()
+    expect(JSON.stringify(sessionStore.getSnapshot()[0].recommendation)).toBe(before)
+    const broken=JSON.parse(JSON.stringify(session))
+    broken.recommendation.switchPlan[1].setup.presentation=null
+    const result=parseSessions(JSON.stringify({schemaVersion:1,sessions:[broken]}))
+    expect(result.sessions).toEqual([])
+    expect(result.retained).toEqual([broken])
+  })
+
+  it('berechnet eine alte Flachwasser-Gewichtsangabe bei unbekannter Tiefe nicht nachträglich neu', () => {
+    const input={...conditions,depth:'unknown' as const}
+    const recommendation=createRecommendations(input)[0]
+    recommendation.setup.weight='ultralight'
+    recommendation.setup.resolvedPresentation!.weightLabel='1–4 g Beschwerung · gespeicherte frühere Angabe'
+    const session=sessionStore.create(input,recommendation)!
+    const snapshot=JSON.stringify(session.recommendation)
+    sessionStore.resetForTests()
+    sessionStore.addFeedback(session.id,'no_success')
+    expect(JSON.stringify(sessionStore.getSnapshot()[0].recommendation)).toBe(snapshot)
+    expect(sessionStore.getSnapshot()[0].recommendation.switchPlan.every(step=>step.setup===undefined)).toBe(true)
   })
 
   it('schließt manuell ab, sperrt Feedback und erlaubt danach eine neue Session', () => {

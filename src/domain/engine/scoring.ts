@@ -1,4 +1,4 @@
-import type { Conditions, ConfidenceLevel, ConfidenceMetric, InventoryItem, LureType, RankedSetup, RankedSpot, ReasonContribution, Recommendation, RecommendationDecision, RuleGroup, SizeClass, SwitchStep } from '../models/types'
+import type { Conditions, ConfidenceLevel, ConfidenceMetric, GuidanceMode, InventoryItem, LureType, RankedSetup, RankedSpot, ReasonContribution, Recommendation, RecommendationDecision, RuleGroup, SizeClass, SwitchSetup, SwitchStep } from '../models/types'
 import { evidencePoints, type ScoringContext, type ScoringRule } from '../rules/perchLakeRules'
 import { profileFor } from '../species/profiles'
 import { buildColorGuidance, preferredColorFamily } from './colorGuidance'
@@ -77,10 +77,44 @@ function buildSwitchPlan(setup:RankedSetup,alternative:string,nextSpot:string,ac
   ]
 }
 
-function buildInventorySwitchPlan(setup:RankedSetup,alternative:string|undefined,nextSpot:string,active:boolean):SwitchStep[]{
-  if(alternative)return buildSwitchPlan(setup,alternative,nextSpot,active)
-  const steps=buildSwitchPlan(setup,setup.lure.label,nextSpot,active)
-  return steps.map(step=>step.phase==='refine'?{...step,change:`Bleibe beim vorhandenen ${setup.lure.label}; variiere Führung, Tempo und Pausen, bevor du den Bereich wechselst.`}:step)
+function isSwitchAlternative(conditions: Conditions, setup: RankedSetup, candidate: RankedSetup) {
+  if(candidate.lure.id===setup.lure.id)return false
+  const specialIds:LureType['id'][]=setup.lure.id==='popper'?(conditions.targetFish==='pike'?['jerkbait','spinnerbait','crankbait']:['twitchbait','spinnerbait','crankbait']):setup.lure.id==='blade-bait'||setup.lure.id==='tail-spinner'?['jig']:setup.lure.id==='tailbait'?['jig','jerkbait']:[]
+  return specialIds.length ? specialIds.includes(candidate.lure.id) : setup.lure.style==='search' ? candidate.lure.style!=='search' : candidate.lure.style==='search'
+}
+
+function snapshotSetup(conditions: Conditions, recommendation: Recommendation, spot: RankedSpot, mode?: GuidanceMode): SwitchSetup {
+  const color = buildColorGuidance(recommendation.setup.color, conditions, recommendation.setup.lure)
+  return {
+    lureId: recommendation.setup.lure.id,
+    lureLabel: recommendation.setup.lure.label,
+    spotLabel: spot.spot.label,
+    size: recommendation.setup.size,
+    presentation: resolvePresentation(conditions, recommendation.setup.lure, spot, recommendation.setup.size, mode).presentation,
+    colorLabel: color.baseLabel ?? color.familyLabel,
+    ...(recommendation.inventoryFit ? { inventoryFit: { ...recommendation.inventoryFit } } : {}),
+  }
+}
+
+function buildInventorySwitchPlan(conditions: Conditions, recommendation: Recommendation, alternative: Recommendation | undefined, nextSpot: RankedSpot | undefined): SwitchStep[] {
+  const initial = snapshotSetup(conditions, recommendation, recommendation.spot)
+  const refineMode = initial.presentation.mode==='slow' ? 'slow' : 'controlled'
+  const refine = snapshotSetup(conditions, alternative ?? recommendation, recommendation.spot, refineMode)
+  const move = { ...refine, presentation: { ...refine.presentation }, spotLabel: nextSpot?.spot.label ?? 'Anderer erreichbarer Wasserbereich' }
+  const steps = buildSwitchPlan(recommendation.setup, alternative?.setup.lure.label ?? recommendation.setup.lure.label, nextSpot?.spot.label ?? 'einen anderen erreichbaren Wasserbereich', conditions.activity.status==='observed')
+  return steps.map(step => {
+    if(step.phase==='initial')return { ...step, setup: initial }
+    if(step.phase==='move')return { ...step, ...(!alternative ? { limit: 'Nach zwei Versuchen ohne Kontakt' } : {}), setup: move }
+    return {
+      ...step,
+      ...(!alternative ? {
+        change: `Bleibe beim vorhandenen ${recommendation.setup.lure.label}; variiere Führung, Tempo und Pausen, bevor du den Bereich wechselst.`,
+        limit: 'Führung, Tempo und Pausen am selben Mikrospot variieren',
+        reason: 'Kein passender anderer Präsentationsstil unter deinen vorhandenen Optionen. Nutze die Führung unten für den zweiten Versuch.',
+      } : {}),
+      setup: refine,
+    }
+  })
 }
 
 function rankCandidates(conditions:Conditions,spotAllowed:((spot:RankedSpot)=>boolean)=()=>true,spotOverride?:RankedSpot[]):Array<Recommendation&{totalScore:number}>{
@@ -95,8 +129,7 @@ function rankCandidates(conditions:Conditions,spotAllowed:((spot:RankedSpot)=>bo
   }
   const coverage=calculateInputCoverage(conditions)
   return selected.map(({spot,setup},index)=>{
-    const specialIds=setup.lure.id==='popper'?(conditions.targetFish==='pike'?['jerkbait','spinnerbait','crankbait']:['twitchbait','spinnerbait','crankbait']):setup.lure.id==='blade-bait'||setup.lure.id==='tail-spinner'?['jig']:setup.lure.id==='tailbait'?['jig','jerkbait']:[]
-    const alternative=candidates.find(item=>item.spot.spot.id===spot.spot.id&&item.setup.lure.id!==setup.lure.id&&(specialIds.length?specialIds.includes(item.setup.lure.id):setup.lure.style==='search'?item.setup.lure.style!=='search':item.setup.lure.style==='search'))?.setup.lure.label??(conditions.targetFish==='zander'?(setup.lure.id==='dropshot'?'Zander-Gummifisch':'Drop Shot'):conditions.targetFish==='pike'?'Hecht-Softbait / Gummifisch':setup.lure.style==='search'?'Ned Rig':'Twitchbait')
+    const alternative=candidates.find(item=>item.spot.spot.id===spot.spot.id&&isSwitchAlternative(conditions,setup,item.setup))?.setup.lure.label??(conditions.targetFish==='zander'?(setup.lure.id==='dropshot'?'Zander-Gummifisch':'Drop Shot'):conditions.targetFish==='pike'?'Hecht-Softbait / Gummifisch':setup.lure.style==='search'?'Ned Rig':'Twitchbait')
     const allApplied=[...spot.reasons,...setup.reasons].filter(item=>item.appliedDelta!==0)
     const positive=allApplied.filter(item=>item.appliedDelta>0).sort((a,b)=>b.appliedDelta-a.appliedDelta)
     const explained=(positive.length?positive:allApplied.sort((a,b)=>Math.abs(b.appliedDelta)-Math.abs(a.appliedDelta))).slice(0,4)
@@ -143,9 +176,9 @@ export function createRecommendationDecision(conditions:Conditions,inventory:Inv
   const inventoryCandidates=applicableRanking.map(expert=>({expert,practical:adaptToInventory(conditions,inventory,expert)}))
   const practicalBase=inventoryCandidates.map(item=>item.practical).filter((item):item is NonNullable<typeof item>=>Boolean(item)).slice(0,3)
   const practicalRanking=practicalBase.map((item,index)=>{
-    const alternative=practicalBase.find(other=>other.setup.lure.id!==item.setup.lure.id)?.setup.lure.label
-    const nextSpot=confirmedSpots.find(spot=>spot.spot.id!==item.spot.spot.id)?.spot.label??'einen anderen erreichbaren Wasserbereich'
-    return{...item,rank:index+1,switchPlan:buildInventorySwitchPlan(item.setup,alternative,nextSpot,conditions.activity.status==='observed')}
+    const alternative=practicalBase.find(other=>isSwitchAlternative(conditions,item.setup,other.setup))
+    const nextSpot=confirmedSpots.find(spot=>spot.spot.id!==item.spot.spot.id)
+    return{...item,rank:index+1,switchPlan:buildInventorySwitchPlan(conditions,item,alternative,nextSpot)}
   })
   const practicalPrimary=practicalRanking[0]
   const practicalAlternatives=practicalRanking.slice(1)

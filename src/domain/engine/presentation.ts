@@ -38,24 +38,24 @@ function resolvedWeightLabel(profile:NonNullable<LureType['presentations']>[numb
     const value=rangeLabel(profile.lureWeightBySize?.[size],'g')
     return value?`${value} Ködergesamtgewicht · keine Zusatzbeschwerung`:'Ködergesamtgewicht passend zur Größe · keine Zusatzbeschwerung'
   }
-  const depth=conditions.depth==='unknown'?'shallow':conditions.depth
-  const value=rangeLabel(profile.terminalWeightByDepth?.[depth],'g')
+  if(conditions.depth==='unknown')return'Keine feste Grammzahl · Tiefe unbekannt; die leichteste kontrollierbare Beschwerung wählen'
+  const value=rangeLabel(profile.terminalWeightByDepth?.[conditions.depth],'g')
   return value?`${value} Beschwerung · mit der leichtesten kontrollierbaren Stufe beginnen`:'Leichteste kontrollierbare Beschwerung verwenden; keine pauschale Grammzahl'
 }
 
 function legacyWeightClass(profile:NonNullable<LureType['presentations']>[number],conditions:Conditions,size:SizeClass):WeightClass{
   if(profile.weightKind==='none')return'ultralight'
   if(profile.weightKind==='lure-total')return size==='small'?'light':size==='medium'?'medium':'heavy'
-  const depth=conditions.depth==='unknown'?'shallow':conditions.depth
-  const max=profile.terminalWeightByDepth?.[depth]?.max??profile.terminalWeightByDepth?.[depth]?.min
+  if(conditions.depth==='unknown')return'unknown'
+  const max=profile.terminalWeightByDepth?.[conditions.depth]?.max??profile.terminalWeightByDepth?.[conditions.depth]?.min
   return max===undefined?'medium':max<=4?'ultralight':max<=8?'light':max<=15?'medium':'heavy'
 }
 
-export function resolvePresentation(conditions:Conditions,lure:LureType,spot:RankedSpot,size:SizeClass):{presentation:ResolvedPresentation;weight:WeightClass}{
+export function resolvePresentation(conditions:Conditions,lure:LureType,spot:RankedSpot,size:SizeClass,modeOverride?:GuidanceMode):{presentation:ResolvedPresentation;weight:WeightClass}{
   const profile=selectProfile(conditions,lure,spot)
-  const mode=guidanceMode(conditions)
+  const mode=modeOverride??guidanceMode(conditions)
   if(!profile){
-    return{presentation:{profileId:'legacy',profileLabel:'Standardmontage',mounting:lure.mounting,sizeLabel:sizeLabelFor(lure,size),weightLabel:'Beschwerung passend zum Zielhorizont',weightKind:'terminal',guidance:lure.guidance,mode},weight:conditions.depth==='deep'?'heavy':conditions.depth==='shallow'?'light':'medium'}
+    return{presentation:{profileId:'legacy',profileLabel:'Standardmontage',mounting:lure.mounting,sizeLabel:sizeLabelFor(lure,size),weightLabel:conditions.depth==='unknown'?'Keine feste Grammzahl · Tiefe unbekannt; die leichteste kontrollierbare Beschwerung wählen':'Beschwerung passend zum Zielhorizont',weightKind:'terminal',guidance:lure.guidance,mode},weight:conditions.depth==='unknown'?'unknown':conditions.depth==='deep'?'heavy':conditions.depth==='shallow'?'light':'medium'}
   }
   let guidance=profile.guidance[mode]
   if(conditions.depth==='deep')guidance+=` Sinkzeit messen und den ${profile.style==='bottom'?'Grundkontakt':'Zielhorizont'} reproduzierbar halten.`
@@ -63,5 +63,5 @@ export function resolvePresentation(conditions:Conditions,lure:LureType,spot:Ran
 }
 
 export function presentationForDisplay(setup:{lure:LureType;size:SizeClass;weight:WeightClass;resolvedPresentation?:ResolvedPresentation}){
-  return setup.resolvedPresentation??{profileId:'legacy',profileLabel:'Standardmontage',mounting:setup.lure.mounting,sizeLabel:sizeLabelFor(setup.lure,setup.size),weightLabel:({ultralight:'Ultraleicht',light:'Leicht',medium:'Mittel',heavy:'Schwer'} as const)[setup.weight],weightKind:'terminal' as const,guidance:setup.lure.guidance,mode:'controlled' as const}
+  return setup.resolvedPresentation??{profileId:'legacy',profileLabel:'Standardmontage',mounting:setup.lure.mounting,sizeLabel:sizeLabelFor(setup.lure,setup.size),weightLabel:({ultralight:'Ultraleicht',light:'Leicht',medium:'Mittel',heavy:'Schwer',unknown:'Keine feste Grammzahl'} as const)[setup.weight],weightKind:'terminal' as const,guidance:setup.lure.guidance,mode:'controlled' as const}
 }

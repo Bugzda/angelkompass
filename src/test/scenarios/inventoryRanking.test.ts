@@ -21,6 +21,12 @@ describe('bestandsbasierte Top-Empfehlungen',()=>{
       expect(decision.practicalRanking).toHaveLength(count)
       expect(new Set(decision.practicalRanking.map(item=>item.setup.lure.id)).size).toBe(count)
       expect(decision.practicalRanking.every(item=>isRecommendationAvailable(conditions,inventoryFor(fish,depth,count),item))).toBe(true)
+      for(const recommendation of decision.practicalRanking)for(const step of recommendation.switchPlan){
+        const setup=step.setup!
+        expect(setup).toBeDefined()
+        expect(inventoryFor(fish,depth,count).some(item=>item.lureTypeId===setup.lureId&&item.sizes.includes(setup.size))).toBe(true)
+        expect(decision.practicalRanking.some(item=>item.setup.lure.id===setup.lureId)).toBe(true)
+      }
       const compatibleCount=profileFor(fish).lures.filter(lure=>depth==='unknown'||lure.depths.includes(depth)).length
       if(count<compatibleCount)expect(decision.optionalLureTip).toBeDefined();else expect(decision.optionalLureTip).toBeUndefined()
     })
@@ -63,5 +69,42 @@ describe('bestandsbasierte Top-Empfehlungen',()=>{
     const ranking=createRecommendationDecision(conditions,inventory).practicalRanking
     expect(new Set(ranking.map(item=>item.spot.spot.id)).size).toBeGreaterThan(1)
     for(const item of ranking)expect(item.switchPlan.find(step=>step.phase==='move')?.change).not.toContain(`: ${item.spot.spot.label}.`)
+    for(const item of ranking){
+      expect(item.switchPlan[1].setup?.spotLabel).toBe(item.spot.spot.label)
+      expect(item.switchPlan[2].setup?.spotLabel).not.toBe(item.spot.spot.label)
+      expect(item.switchPlan[2].setup?.presentation).toEqual(item.switchPlan[1].setup?.presentation)
+    }
+  })
+
+  it('wechselt vom Twitchbait zum vorhandenen Gummifisch, auch wenn ein Spinner höher gerankt ist',()=>{
+    const conditions:Conditions={...conditionsFor('perch','shallow','warm'),turbidity:'clear',light:'bright',activity:{status:'observed',signs:['huntingPerch']},observedStructure:['shallow'],structureStatus:'observed'}
+    const inventory:InventoryItem[]=[{targetFish:'perch',lureTypeId:'twitchbait',sizes:['medium']},{targetFish:'perch',lureTypeId:'spinner',sizes:['medium']},{targetFish:'perch',lureTypeId:'jig',sizes:['small']}]
+    const decision=createRecommendationDecision(conditions,inventory)
+    expect(decision.practicalRanking.map(item=>item.setup.lure.id)).toEqual(['twitchbait','spinner','jig'])
+    const step=decision.practicalRanking[0].switchPlan[1]
+    expect(step.change).toContain('Softbait / Gummifisch')
+    expect(step.setup).toMatchObject({lureId:'jig',size:'small',inventoryFit:{preferredSize:'medium',selectedSize:'small',exact:false},presentation:{profileId:'jighead',mode:'controlled',sizeLabel:'3–5 cm'}})
+    expect(step.setup?.presentation.weightLabel).toContain('1–4 g')
+    expect(step.setup?.presentation.guidance).toContain('Grundkontakt')
+    expect(decision.expertRanking).toEqual(createRecommendationDecision(conditions,[]).expertRanking)
+  })
+
+  it('erklärt bei zwei vorhandenen Suchködern den fehlenden Gegenstil und bleibt beim Startköder',()=>{
+    const conditions=conditionsFor('perch','shallow','warm')
+    const inventory:InventoryItem[]=[{targetFish:'perch',lureTypeId:'twitchbait',sizes:['medium']},{targetFish:'perch',lureTypeId:'spinner',sizes:['medium']}]
+    const recommendation=createRecommendationDecision(conditions,inventory).practicalRanking[0]
+    const step=recommendation.switchPlan[1]
+    expect(step.setup?.lureId).toBe(recommendation.setup.lure.id)
+    expect(step.change).toContain('Bleibe beim vorhandenen')
+    expect(step.reason).toContain('Kein passender anderer Präsentationsstil')
+    expect(step.limit).not.toContain('Ein zweiter Präsentationsstil')
+    expect(recommendation.switchPlan[2].limit).toBe('Nach zwei Versuchen ohne Kontakt')
+  })
+
+  it('erhält die bestehende Popper-Wechselstrategie für vorhandene Unterwasseroptionen',()=>{
+    const conditions:Conditions={...conditionsFor('perch','shallow','warm'),timeOfDay:'dusk',activity:{status:'observed',signs:['surfaceActivity']}}
+    const inventory:InventoryItem[]=[{targetFish:'perch',lureTypeId:'popper',sizes:['medium']},{targetFish:'perch',lureTypeId:'twitchbait',sizes:['medium']},{targetFish:'perch',lureTypeId:'jig',sizes:['medium']}]
+    const recommendation=createRecommendationDecision(conditions,inventory).practicalRanking.find(item=>item.setup.lure.id==='popper')!
+    expect(recommendation.switchPlan[1].setup?.lureId).toBe('twitchbait')
   })
 })

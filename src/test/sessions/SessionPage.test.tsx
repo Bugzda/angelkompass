@@ -33,6 +33,19 @@ describe('Sessionansicht', () => {
     expect(screen.queryByRole('button', { name: 'Biss' })).not.toBeInTheDocument()
   })
 
+  it('protokolliert nach dem Wechselplan weitere Fänge bis zum bewussten Abschluss', () => {
+    const session=sessionStore.create(conditions,createRecommendations(conditions)[0])!
+    for(let i=0;i<3;i++)sessionStore.addFeedback(session.id,'no_success')
+    render(<MemoryRouter initialEntries={[`/session/${session.id}`]}><Routes><Route path="/session/:id" element={<SessionPage/>}/></Routes></MemoryRouter>)
+    expect(screen.queryByRole('button',{name:/Ohne Kontakt/})).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button',{name:'Fang'}))
+    expect(screen.getByText(/Nach dem Wechselplan/)).toBeVisible()
+    fireEvent.click(screen.getByRole('button',{name:'Letzte Rückmeldung rückgängig machen'}))
+    expect(sessionStore.getSnapshot()[0].progress).toBe('exhausted')
+    fireEvent.click(screen.getByRole('button',{name:'Session beenden'}))
+    expect(screen.queryByRole('button',{name:'Fang'})).not.toBeInTheDocument()
+  })
+
   it('zeigt für eine fehlende Session einen klaren Rückweg',()=>{
     render(<MemoryRouter initialEntries={['/session/fehlt']}><Routes><Route path="/session/:id" element={<SessionPage/>}/></Routes></MemoryRouter>)
     expect(screen.getByRole('heading',{name:'Session nicht gefunden'})).toBeInTheDocument()

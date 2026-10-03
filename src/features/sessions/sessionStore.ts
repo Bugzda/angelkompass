@@ -22,22 +22,35 @@ function isConditions(value: unknown): value is Conditions {
   return canRecommend(value)
 }
 
+function isPresentation(value: unknown): boolean {
+  return isRecord(value) && typeof value.profileId==='string' && typeof value.profileLabel==='string' && typeof value.mounting==='string' &&
+    typeof value.sizeLabel==='string' && typeof value.weightLabel==='string' && typeof value.guidance==='string' &&
+    oneOf(value.weightKind,['terminal','lure-total','none']) && oneOf(value.mode,['slow','controlled','active'])
+}
+
+function isSwitchSetup(value: unknown): boolean {
+  if(!isRecord(value) || typeof value.lureId!=='string' || typeof value.lureLabel!=='string' || typeof value.spotLabel!=='string' || !oneOf(value.size,['small','medium','large']) || !isPresentation(value.presentation) || (value.colorLabel!==undefined && typeof value.colorLabel!=='string'))return false
+  const fit=value.inventoryFit
+  return fit===undefined || (isRecord(fit) && oneOf(fit.preferredSize,['small','medium','large']) && fit.selectedSize===value.size && typeof fit.exact==='boolean' && fit.exact===(fit.preferredSize===fit.selectedSize))
+}
+
 function isRecommendation(value: unknown): value is Recommendation {
   if (!isRecord(value) || !isRecord(value.spot) || !isRecord(value.spot.spot) || !isRecord(value.setup) || !isRecord(value.setup.lure)) return false
   const color=value.colorGuidance
   if(!isRecord(color)||!stringArray(color.examples))return false
   if(!['baseLabel','finishLabel','accentLabel','alternative'].every(key=>color[key]===undefined||typeof color[key]==='string'))return false
   const presentation=value.setup.resolvedPresentation
-  const validPresentation=presentation===undefined||(isRecord(presentation)&&typeof presentation.profileId==='string'&&typeof presentation.profileLabel==='string'&&typeof presentation.mounting==='string'&&typeof presentation.sizeLabel==='string'&&typeof presentation.weightLabel==='string'&&typeof presentation.guidance==='string'&&oneOf(presentation.weightKind,['terminal','lure-total','none'])&&oneOf(presentation.mode,['slow','controlled','active']))
+  const validPresentation=presentation===undefined||isPresentation(presentation)
   return Number.isInteger(value.rank) && Number(value.rank)>0 && typeof value.spot.spot.label === 'string' && typeof value.setup.lure.id === 'string' && typeof value.setup.lure.label === 'string' && typeof value.setup.lure.mounting === 'string' && typeof value.setup.lure.guidance === 'string' &&
-    oneOf(value.setup.size,['small','medium','large'])&&oneOf(value.setup.weight,['ultralight','light','medium','heavy'])&&oneOf(value.setup.color,['natural','contrast','transparent'])&&validPresentation&&
+    oneOf(value.setup.size,['small','medium','large'])&&oneOf(value.setup.weight,['ultralight','light','medium','heavy','unknown'])&&oneOf(value.setup.color,['natural','contrast','transparent'])&&validPresentation&&
     oneOf(color.family,['natural','contrast','transparent'])&&typeof color.familyLabel==='string'&&typeof color.reason==='string'&&stringArray(value.reasons)&&
-    Array.isArray(value.switchPlan) && value.switchPlan.length === 3 && value.switchPlan.every((step,index) => isRecord(step) && step.phase===['initial', 'refine', 'move'][index] && typeof step.title === 'string'&&typeof step.change==='string'&&typeof step.limit==='string'&&typeof step.reason==='string')
+    Array.isArray(value.switchPlan) && value.switchPlan.length === 3 && value.switchPlan.every((step,index) => isRecord(step) && step.phase===['initial', 'refine', 'move'][index] && typeof step.title === 'string'&&typeof step.change==='string'&&typeof step.limit==='string'&&typeof step.reason==='string'&&(step.setup===undefined||isSwitchSetup(step.setup)))
 }
 
 function isFeedback(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && oneOf(value.outcome, ['bite', 'catch', 'no_success']) &&
-    oneOf(value.phase, ['initial', 'refine', 'move']) && validDate(value.createdAt)
+    oneOf(value.phase, ['initial', 'refine', 'move']) && validDate(value.createdAt) &&
+    (value.progressBefore===undefined || value.progressBefore===value.phase || (value.progressBefore==='exhausted' && value.phase==='move' && value.outcome!=='no_success'))
 }
 
 export function isSession(value: unknown): value is FishingSession {
@@ -126,13 +139,14 @@ export const sessionStore = {
     if(!oneOf(outcome,['bite','catch','no_success']))return false
     const sessions = current()
     const session = sessions.find((item) => item.id === id)
-    if (!session || session.status !== 'active' || session.progress === 'exhausted') return false
+    if (!session || session.status !== 'active' || (session.progress === 'exhausted' && outcome === 'no_success')) return false
     const now = new Date().toISOString()
     const next: Record<Exclude<SessionProgress, 'exhausted'>, SessionProgress> = { initial: 'refine', refine: 'move', move: 'exhausted' }
+    const phase = session.progress==='exhausted' ? 'move' : session.progress
     const updated: FishingSession = {
       ...session,
-      progress: outcome === 'no_success' ? next[session.progress] : session.progress,
-      feedback: [...session.feedback, { id: crypto.randomUUID(), outcome, phase: session.progress, createdAt: now }],
+      progress: outcome === 'no_success' ? next[phase] : session.progress,
+      feedback: [...session.feedback, { id: crypto.randomUUID(), outcome, phase, createdAt: now, ...(session.progress==='exhausted' ? { progressBefore: session.progress } : {}) }],
       updatedAt: now,
     }
     return persist(sessions.map((item) => item.id === id ? updated : item))
@@ -151,7 +165,7 @@ export const sessionStore = {
     const last=session?.feedback.at(-1)
     if(!session||session.status!=='active'||!last)return false
     return persist(current().map(item=>item.id===id?{
-      ...item,progress:last.phase,feedback:item.feedback.slice(0,-1),updatedAt:new Date().toISOString(),
+      ...item,progress:last.progressBefore??last.phase,feedback:item.feedback.slice(0,-1),updatedAt:new Date().toISOString(),
     }:item))
   },
   delete(id: string): boolean { emit();return persist(current().filter((session) => session.id !== id)) },

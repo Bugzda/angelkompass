@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, renderHook, screen } from '@testing-li
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Conditions } from '../../domain/models/types'
-import { createRecommendations } from '../../domain/engine/scoring'
+import { createRecommendationDecision, createRecommendations } from '../../domain/engine/scoring'
 import { sessionStore, SESSION_KEY } from '../../features/sessions/sessionStore'
 import { serializeSessions } from '../../features/sessions/sessionExport'
 import { INVENTORY_KEY, loadInventory } from '../../features/inventory/inventoryStorage'
@@ -70,6 +70,23 @@ describe('Verlustfreie Speicherung', () => {
 })
 
 describe('Vollständige Datensicherung und Wiederherstellung', () => {
+  it('stellt unbekannte Gewichte, Wechselschritt-Snapshots und spätes Feedback ohne Neuberechnung wieder her', () => {
+    const input={...conditions,depth:'unknown' as const}
+    const inventory=[{targetFish:'perch' as const,lureTypeId:'jig' as const,sizes:['medium' as const]}]
+    localStorage.setItem(INVENTORY_KEY,JSON.stringify({schemaVersion:3,items:inventory}))
+    const recommendation=createRecommendationDecision(input,inventory).practicalRanking[0]
+    const session=sessionStore.create(input,recommendation)!
+    for(let i=0;i<3;i++)sessionStore.addFeedback(session.id,'no_success')
+    sessionStore.addFeedback(session.id,'catch')
+    const original=sessionStore.getSnapshot()[0]
+    const backup=parseBackup(serializeBackup())
+    localStorage.clear();sessionStore.resetForTests()
+    restoreBackup(planRestore(backup))
+    expect(sessionStore.getSnapshot()[0]).toEqual(original)
+    expect(sessionStore.getSnapshot()[0].recommendation.setup.weight).toBe('unknown')
+    sessionStore.undoFeedback(session.id)
+    expect(sessionStore.getSnapshot()[0].progress).toBe('exhausted')
+  })
   it('stellt Bestand, Fortschritt und Empfehlungssnapshot unverändert auf einem leeren Gerät wieder her', () => {
     localStorage.setItem(INVENTORY_KEY, JSON.stringify({ schemaVersion: 3, items: stock }))
     const session = makeSession()

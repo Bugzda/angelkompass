@@ -13,13 +13,13 @@ export function SessionFeedback({ session, compact = false }: { session: Fishing
       </div>
       {active && session.feedback.length > 0 && <button className="undo-feedback" aria-label="Letzte Rückmeldung rückgängig machen" onClick={() => sessionStore.undoFeedback(session.id)}>Rückgängig</button>}
     </div>
-    {active && session.progress !== 'exhausted' && <fieldset className={compact ? 'water-feedback' : 'feedback'}>
+    {active && <fieldset className={`${compact ? 'water-feedback' : 'feedback'}${session.progress === 'exhausted' ? ' ongoing-feedback' : ''}`}>
       <legend className="sr-only">Rückmeldung erfassen</legend>
       <button onClick={() => sessionStore.addFeedback(session.id, 'bite')}>Biss</button>
       <button onClick={() => sessionStore.addFeedback(session.id, 'catch')}>Fang</button>
-      <button className="advance-step" aria-label={session.progress === 'move' ? 'Ohne Kontakt → letzten Schritt beenden' : 'Ohne Kontakt → nächster Schritt'} onClick={() => sessionStore.addFeedback(session.id, 'no_success')}>
+      {session.progress !== 'exhausted' && <button className="advance-step" aria-label={session.progress === 'move' ? 'Ohne Kontakt → letzten Schritt beenden' : 'Ohne Kontakt → nächster Schritt'} onClick={() => sessionStore.addFeedback(session.id, 'no_success')}>
         <span>Ohne Kontakt</span><small>{session.progress === 'move' ? 'Schritt beenden →' : 'Nächster Schritt →'}</small>
-      </button>
+      </button>}
     </fieldset>}
   </div>
 }

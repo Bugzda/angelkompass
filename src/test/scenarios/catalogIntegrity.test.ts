@@ -43,4 +43,18 @@ describe.each(Object.values(speciesProfiles))('$label: Katalog und Präsentation
       }
     }
   })
+  it('gibt bei unbekannter Tiefe keine tiefenabhängige Grammzahl oder Gewichtsklasse vor', () => {
+    const input = { ...conditions, targetFish: profile.targetFish, pikeSafetyConfirmed: true, depth: 'unknown' as const }
+    for (const spot of evaluateSpots(input)) for (const setup of evaluateSetups(input, spot)) {
+      const presentation = setup.resolvedPresentation!
+      if (presentation.weightKind === 'terminal') {
+        expect(setup.weight, setup.lure.id).toBe('unknown')
+        expect(presentation.weightLabel).toContain('Tiefe unbekannt')
+        expect(presentation.weightLabel).not.toMatch(/\d.*\bg\b/)
+      } else if (presentation.weightKind === 'lure-total') {
+        expect(setup.weight).not.toBe('unknown')
+        expect(presentation.weightLabel).toContain('Ködergesamtgewicht')
+      }
+    }
+  })
 })

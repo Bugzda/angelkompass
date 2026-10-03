@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { Conditions } from '../../domain/models/types'
+import type { Conditions, Recommendation } from '../../domain/models/types'
 import { createRecommendationDecision } from '../../domain/engine/scoring'
 import { lures } from '../../domain/catalogs/lures'
 import { sessionStore } from '../../features/sessions/sessionStore'
@@ -12,8 +12,8 @@ import { Layout } from '../../ui/components/Layout'
 const conditions: Conditions = { targetFish: 'perch', waterType: 'lake', season: 'autumn', timeOfDay: 'night', turbidity: 'clear', depth: 'medium', waterTemperature: 'unknown', light: 'unknown', activity: { status: 'unknown', signs: [] }, vegetation: 'unknown', observedStructure: ['dropoff'], structureStatus: 'observed' }
 const inventory = lures.map(lure => ({ targetFish: 'perch' as const, lureTypeId: lure.id, sizes: [...lure.sizes] }))
 const recommendation = () => createRecommendationDecision(conditions, inventory).practicalRanking[0]
-function showSession() {
-  const session = sessionStore.create(conditions, recommendation())!
+function showSession(savedRecommendation: Recommendation = recommendation()) {
+  const session = sessionStore.create(conditions, savedRecommendation)!
   render(<MemoryRouter initialEntries={[`/session/${session.id}/karte`]}><Routes><Route element={<Layout/>}><Route path="/session/:id/karte" element={<WaterCardPage/>}/></Route></Routes></MemoryRouter>)
   return session
 }
@@ -61,17 +61,53 @@ describe('Aktueller Arbeitsauftrag und gespeicherter Startplan', () => {
     expect(sessionStore.getSnapshot()[0].feedback).toHaveLength(0)
   })
 
-  it('zeigt nach allen Schritten einen Abschluss und lässt den letzten Schritt zurücknehmen', () => {
+  it('lässt nach allen Schritten Biss und Fang zu und nimmt Rückmeldungen in der richtigen Reihenfolge zurück', () => {
     showSession()
     fireEvent.click(screen.getByRole('button', { name: 'Ohne Kontakt → nächster Schritt' }))
     fireEvent.click(screen.getByRole('button', { name: 'Ohne Kontakt → nächster Schritt' }))
     fireEvent.click(screen.getByRole('button', { name: 'Ohne Kontakt → letzten Schritt beenden' }))
-    expect(screen.getByRole('heading', { name: 'Versuch abschließen' })).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Weiterangeln oder abschließen' })).toBeVisible()
     expect(screen.getByRole('region', { name: 'Aktueller Handlungsschritt' })).toHaveFocus()
-    expect(screen.queryByRole('button', { name: 'Fang' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Ohne Kontakt/ })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Biss' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Fang' }))
+    expect(sessionStore.getSnapshot()[0].feedback.slice(-2).map(item=>item.outcome)).toEqual(['bite','catch'])
+    fireEvent.click(screen.getByRole('button', { name: 'Letzte Rückmeldung rückgängig machen' }))
+    expect(sessionStore.getSnapshot()[0].progress).toBe('exhausted')
+    fireEvent.click(screen.getByRole('button', { name: 'Letzte Rückmeldung rückgängig machen' }))
+    expect(sessionStore.getSnapshot()[0].progress).toBe('exhausted')
     fireEvent.click(screen.getByRole('button', { name: 'Letzte Rückmeldung rückgängig machen' }))
     expect(sessionStore.getSnapshot()[0].progress).toBe('move')
     expect(screen.getByRole('button', { name: 'Fang' })).toBeEnabled()
+  })
+
+  it('zeigt Montage, Größe, Gewicht und Führung aus dem aktuellen Wechselschritt', () => {
+    const session=showSession()
+    const setup=session.recommendation.switchPlan[1].setup!
+    fireEvent.click(screen.getByRole('button',{name:'Ohne Kontakt → nächster Schritt'}))
+    const panel=screen.getByText('Montage & Führung für diesen Schritt').closest('details')!
+    expect(panel).toHaveAttribute('open')
+    expect(within(panel).getByText(setup.lureLabel,{exact:true})).toBeVisible()
+    expect(within(panel).getByText(setup.presentation.sizeLabel,{exact:true})).toBeVisible()
+    expect(within(panel).getByText(setup.presentation.weightLabel,{exact:true})).toBeVisible()
+    expect(within(panel).getByText(setup.presentation.mounting,{exact:true})).toBeVisible()
+    expect(within(panel).getByText(setup.presentation.guidance,{exact:true})).toBeVisible()
+  })
+
+  it('erfindet bei alten Plänen keine fehlenden Wechselschritt-Montagen und erhält den Snapshot', () => {
+    const legacy=recommendation()
+    legacy.switchPlan.forEach(step=>{delete step.setup})
+    legacy.switchPlan[1].change='Gespeicherte frühere Wechselanweisung'
+    legacy.setup.resolvedPresentation!.mounting='Gespeicherte frühere Startmontage'
+    const session=showSession(legacy)
+    const snapshot=JSON.stringify(session.recommendation)
+    fireEvent.click(screen.getByRole('button',{name:'Ohne Kontakt → nächster Schritt'}))
+    expect(screen.getByRole('region',{name:'Aktueller Handlungsschritt'})).toHaveTextContent('Gespeicherte frühere Wechselanweisung')
+    expect(screen.getByText(/Die Montage dieses Wechselschritts wurde/)).toBeVisible()
+    expect(screen.queryByText('Montage & Führung für diesen Schritt')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByText('Ursprünglicher Startplan'))
+    expect(screen.getByText('Gespeicherte frühere Startmontage')).toBeVisible()
+    expect(JSON.stringify(sessionStore.getSnapshot()[0].recommendation)).toBe(snapshot)
   })
 
   it('führt eine aktive Session unter Aktiver Plan und einen abgeschlossenen Eintrag unter Logbuch', () => {

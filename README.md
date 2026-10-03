@@ -29,6 +29,8 @@ Jahreszeit und Tageszeit sind bei neuen Plänen automatisch aus der Gerätezeit 
 
 Neben Jahreszeit, Tageszeit, Trübung und Tiefe verarbeitet das See-MVP manuell gewählte Wassertemperaturklassen, Licht, beobachtete Aktivität und das Krautbild. Unbekannte Angaben bleiben neutral.
 
+Bei unbekannter Tiefe wird für zusätzliche Beschwerung keine feste Grammzahl oder Flachwasser-Gewichtsklasse vorgegeben. Die Anleitung empfiehlt die leichteste kontrollierbare Beschwerung. Größenabhängige Ködergesamtgewichte bleiben davon unabhängig.
+
 Produktive Regeln sind deklarativ nach Evidenzklasse und Ursache gruppiert. Gruppen-Caps verhindern, dass korrelierte Angaben wie Saison und Temperatur mehrfach dominieren. Jede Empfehlung weist Eingabeabdeckung und Evidenzgüte getrennt aus und enthält eine dreistufige Wechselstrategie.
 
 Das vollständige Wissensarchiv unter `research/` bleibt Referenzmaterial und wird nicht zur Laufzeit geladen.
@@ -40,6 +42,10 @@ Auf der Bedingungsseite lassen sich über Standortfreigabe oder Ortssuche aktuel
 ## Lokale Sessions
 
 Eine der maximal drei vorhandenen Empfehlungen kann als aktive Session gespeichert werden. Biss und Fang werden protokolliert; „Kein Erfolg“ schaltet durch den dreistufigen Wechselplan. Sessions und Verlauf bleiben ausschließlich auf dem Gerät und verändern weder Ranking noch Regelgewichte. Details stehen in [`docs/meilenstein-session-feedback.md`](docs/meilenstein-session-feedback.md).
+
+Neue Angelpläne speichern Köder, vorhandene Größe, Beschwerung oder Ködergewicht, Montage, Führung und Grundfarbe für jeden Wechselschritt. Der zweite Versuch verwendet einen passenden anderen Präsentationsstil aus den maximal drei vorhandenen Optionen; die bestehenden Sonderwechsel für Popper, Blade Bait, Spinnertail und Tailbait bleiben erhalten. Fehlt ein passender Gegenstil, wird die Variation mit dem Startköder ausdrücklich erklärt. Beim Spotwechsel bleibt die Montage des zweiten Versuchs erhalten. Die Am-Wasser-Karte zeigt die Angaben des aktuellen Schritts; ursprüngliche Startangaben sind später separat aufklappbar. Alte Sessions werden nicht neu berechnet. Fehlen gespeicherte Wechselschritt-Montagen, erklärt die Karte diese Grenze.
+
+Nach dem letzten Wechselschritt bleibt die Session bis zum bewussten Abschluss aktiv. Bisse und Fänge können weiter erfasst und rückgängig gemacht werden; weitere Fortschaltungen sind gesperrt. Späte Rückmeldungen erscheinen in den Sessiondetails als „Nach dem Wechselplan“. Beim Rückgängigmachen eines späteren Bisses oder Fangs bleibt der Plan ausgeschöpft; erst die Rücknahme des letzten Wechsels führt zurück zu Schritt drei.
 
 Die letzte Rückmeldung einer aktiven Session lässt sich einschließlich des Phasenwechsels rückgängig machen. Das Logbuch bietet Filter nach Zielfisch, Biss-/Fangzähler und einen JSON-Export aller Session-Snapshots. Zum Löschen eines Eintrags nach links wischen oder das Drei-Punkte-Menü öffnen und „Endgültig löschen“ bestätigen. „Abbrechen“ erhält den Eintrag; die Bestätigung erfolgt innerhalb der App ohne Browserdialog. Bei einem Speicherfehler bleibt die Session erhalten und das Löschen kann erneut versucht werden. Die Köderbox bietet Suche, Zielfischfilter und eine Bestandsübersicht. Beim Bearbeiten der Bedingungen und beim Browser-Zurück bleiben Eingaben im Verlauf des aktuellen Tabs erhalten.
 

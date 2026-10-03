@@ -7,6 +7,7 @@ import { useSessions } from './useSessions'
 import { Icon } from '../../ui/components/Icon'
 import { presentationForDisplay } from '../../domain/engine/presentation'
 import { SessionFeedback } from './SessionFeedback'
+import { SwitchSetupDetails } from '../recommendations/SwitchSetupDetails'
 
 const outcomeLabels: Record<FeedbackOutcome, string> = { bite: 'Biss', catch: 'Fang', no_success: 'Kein Erfolg' }
 const phaseOrder = ['initial', 'refine', 'move'] as const
@@ -50,11 +51,11 @@ function SessionDetails({ session }: { session: FishingSession }) {
     <div className="attempts" ref={attemptsRef}>{session.recommendation.switchPlan.map((step, index) => {
       const currentIndex = session.progress === 'exhausted' ? phaseOrder.length : phaseOrder.indexOf(session.progress)
       const state = index < currentIndex ? 'done' : active && index === currentIndex ? 'active-attempt' : ''
-      return <article className={state} tabIndex={-1} aria-current={active&&index===currentIndex?'step':undefined} key={step.phase}><span className="step">0{index + 1}</span><div><h3>{step.title}</h3><p>{step.change}</p><small><b>{step.limit}</b> · {step.reason}</small></div></article>
+      return <article className={state} tabIndex={-1} aria-current={active&&index===currentIndex?'step':undefined} key={step.phase}><span className="step">0{index + 1}</span><div><h3>{step.title}</h3><p>{step.change}</p><small><b>{step.limit}</b> · {step.reason}</small>{step.setup && <details className="switch-setup-details"><summary>Montage & Führung für diesen Schritt</summary><SwitchSetupDetails setup={step.setup}/></details>}</div></article>
     })}</div>
     <SessionFeedback session={session}/>
-    {active && session.progress === 'exhausted' && <aside className="notice" tabIndex={-1} ref={exhaustedRef}><strong>Plan ausgeschöpft</strong><p>Alle drei Wechselphasen wurden ohne Erfolg durchlaufen. Beende die Session oder erfasse neue Bedingungen.</p></aside>}
-    {session.feedback.length > 0 && <div className="feedback-log"><h2>Rückmeldungen</h2>{[...session.feedback].reverse().map((item) => <p key={item.id}><strong>{outcomeLabels[item.outcome]}</strong><span>{date(item.createdAt)} · Phase {phaseOrder.indexOf(item.phase) + 1}</span></p>)}</div>}
+    {active && session.progress === 'exhausted' && <aside className="notice" tabIndex={-1} ref={exhaustedRef}><strong>Plan ausgeschöpft · Session weiterhin aktiv</strong><p>Alle drei Wechselphasen sind ausprobiert. Du kannst weiter Bisse und Fänge erfassen, die Session beenden oder mit neuen Bedingungen planen.</p></aside>}
+    {session.feedback.length > 0 && <div className="feedback-log"><h2>Rückmeldungen</h2>{[...session.feedback].reverse().map((item) => <p key={item.id}><strong>{outcomeLabels[item.outcome]}</strong><span>{date(item.createdAt)} · {item.progressBefore === 'exhausted' ? 'Nach dem Wechselplan' : `Phase ${phaseOrder.indexOf(item.phase) + 1}`}</span></p>)}</div>}
     {active && <div className="session-actions"><button className="secondary" onClick={() => sessionStore.complete(session.id)}>Session beenden</button>{session.progress === 'exhausted' && <button className="primary" onClick={restart}>Beenden & neu planen</button>}</div>}
   </>
 }
