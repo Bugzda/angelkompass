@@ -30,7 +30,7 @@ Erreichbar über „Lücken in der Köderbox finden“ in der Köderbox. Die Ana
 - **Planbar:** Anteil der Situationen mit mindestens einem startbaren Köder.
 - **Beste Wahl dabei:** Der fachlich vorn liegende Köder ist in seiner Wunschgröße vorhanden.
 - **Größenkompromiss:** Die erste startbare Option nutzt eine Nachbargröße.
-- Je Vorschlag: **erstmals planbar** (nur wenn die Box nicht leer ist), **würde dein Startköder** (die Ergänzung wäre erste startbare Option) und **fachlich beste Wahl** (genau dieser Köder in dieser Größe liegt fachlich vorn).
+- Je Vorschlag: **erstmals planbar** und **würde dein Startköder** (die Ergänzung wäre erste startbare Option), beide nur bei nicht leerer Box, weil sonst jede Ergänzung 100 % erreicht und **fachlich beste Wahl** (genau dieser Köder in dieser Größe liegt fachlich vorn).
 
 Sortierung: zuerst erstmals planbare Situationen, dann Startköder, dann fachlich beste Wahl. Bei leerer Box macht jede Ergänzung jeden Plan möglich, deshalb wird dort nach fachlich bester Wahl sortiert. Angezeigt werden bis zu fünf Vorschläge, je Köder nur die nützlichste Größe. „Habe ich jetzt“ markiert die Größe in der Köderbox, danach wird neu gerechnet.
 

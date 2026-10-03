@@ -99,6 +99,19 @@ describe('Köderbox-Analyse', () => {
     expect(full.candidates).toEqual([])
   })
 
+  it('blendet bei leerer Box die nichtssagende Startköder-Angabe aus', async () => {
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/bestand/analyse', state: { targetFish: 'zander' } }]}>
+        <Routes>
+          <Route path="/bestand/analyse" element={<InventoryGapPage />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    expect(await screen.findByRole('heading', { name: 'Guter Start für deine Box' }, { timeout: 5000 })).toBeVisible()
+    expect(screen.getAllByText(/fachlich beste Wahl/).length).toBeGreaterThan(0)
+    expect(screen.queryByText(/würde dein Startköder/)).not.toBeInTheDocument()
+  })
+
   it('ordnet bei leerer Box nach fachlich bester Wahl', () => {
     const analysis = analyzeInventoryGaps('zander', [], sample('zander'))
     expect(analysis.covered).toBe(0)

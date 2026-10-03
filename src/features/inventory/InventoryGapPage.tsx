@@ -45,9 +45,12 @@ function Suggestion({
             <strong>{percent(candidate.unlocks, total)} %</strong> erstmals planbar
           </li>
         )}
-        <li>
-          <strong>{percent(candidate.primary, total)} %</strong> würde dein Startköder
-        </li>
+        {/* With an empty box every candidate would be the start lure, so the figure says nothing there. */}
+        {analysis.covered > 0 && (
+          <li>
+            <strong>{percent(candidate.primary, total)} %</strong> würde dein Startköder
+          </li>
+        )}
         <li>
           <strong>{percent(candidate.bestFit, total)} %</strong> fachlich beste Wahl
         </li>
